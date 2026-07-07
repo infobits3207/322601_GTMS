@@ -1,0 +1,480 @@
+{% extends 'base_template.html' %}
+
+{% block extra_head %}
+  <style>
+    .page-header { margin-bottom: 1.5rem; }
+    .page-title  { font-size: 20px; font-weight: 600; color: #2c2c2a; margin: 0 0 4px; }
+    .page-sub    { font-size: 14px; color: #888780; margin: 0; }
+
+    .card {
+      background: #fff; border: 0.5px solid var(--GTMS-secondary-dark);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .05em; color: var(--GTMS-primary-light); margin: 0 0 1rem;
+    }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 13px; font-weight: 500; color: #5f5e5a; }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
+      padding: 8px 11px; font-size: 14px; color: #2c2c2a;
+      background: #fff; width: 100%;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none; border-color: var(--GTMS-primary);
+      box-shadow: 0 0 0 3px #14213d4f;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    /* ── multi-row (email / phone / fax) ── */
+    .multi-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+    .multi-row input { flex: 1; }
+
+    /* ── address and product block ── */
+    .details-block {
+      border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 10px;
+      padding: 1rem; margin-bottom: 0.75rem; position: relative;
+    }
+    .details-block .block-label {
+      font-size: 12px; font-weight: 600; color: #888780;
+      text-transform: uppercase; letter-spacing: .04em;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── file upload ── */
+    .upload-zone {
+      border: 1.5px dashed #d1cec0; border-radius: 10px;
+      padding: 1.25rem; text-align: center; cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .upload-zone:hover { border-color: var(--GTMS-primary); }
+    .upload-zone input[type=file] { display: none; }
+    .upload-zone i { font-size: 28px; color: #d1cec0; display: block; margin-bottom: 6px; }
+    .upload-zone p { font-size: 13px; color: #888780; margin: 0; }
+    .upload-zone .link { color: var(--GTMS-primary); cursor: pointer; }
+    .file-list { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+    .file-list li {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: #5f5e5a;
+      padding: 4px 0; border-bottom: 0.5px solid var(--GTMS-secondary);
+    }
+    .file-list li:last-child { border-bottom: none; }
+    .file-list i { color: #888780; }
+
+    /* ── shared button styles ── */
+    .btn-add-row {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 13px; color: var(--GTMS-primary-light); background: none;
+      border: none; cursor: pointer; padding: 4px 0;
+    }
+    .btn-add-row:hover { text-decoration: underline; }
+    .btn-remove {
+      background: none; border: none; cursor: pointer;
+      color: #a32d2d; font-size: 18px; padding: 0 4px; flex-shrink: 0;
+    }
+
+    .form-actions { display: flex; gap: 10px; margin-top: 0.5rem; }
+    .btn-submit {
+      background: var(--GTMS-primary); color: #fff;
+      border: none; border-radius: 8px; padding: 10px 24px;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+    .btn-cancel {
+      background: none; color: #5f5e5a;
+      border: 0.5px solid #d3d1c7; border-radius: 8px;
+      padding: 10px 20px; font-size: 14px; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-cancel:hover { background: #f7f6f2; }
+
+    .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
+    .alert-error { background: #fcebeb; color: #a32d2d; }
+
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: 1; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="page-header">
+    <h1 class="page-title">Add supplier</h1>
+    <p class="page-sub">All fields except Company name are optional.</p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" id="supplier-form">
+    {% csrf_token %}
+
+    {# ── 1. Company details ── #}
+    <div class="card">
+      <p class="section-title">Company details</p>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="Company_name">Company name <span style="color:#a32d2d">*</span></label>
+          <input type="text" id="Company_name" name="Company_name" required placeholder="e.g. Bharat Infotech Solutions">
+        </div>
+        <div class="form-group full">
+          <label for="Description">Description</label>
+          <textarea id="Description" name="Description" placeholder="Brief description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="Website_link">Website</label>
+          <input type="url" id="Website_link" name="Website_link" placeholder="https://example.com">
+        </div>
+        <div class="form-group">
+          <label for="Contact_person">Contact person</label>
+          <input type="text" id="Contact_person" name="Contact_person">
+        </div>
+        <div class="form-group">
+          <label for="WCPD_code">WCPD code</label>
+          <input type="text" id="WCPD_code" name="WCPD_code" placeholder="e.g. 35-OLI">
+        </div>
+        <div class="form-group">
+          <label for="Admin_remark">Admin remark</label>
+          <input type="text" id="Admin_remark" name="Admin_remark">
+        </div>
+      </div>
+    </div>
+
+    {# ── 2. Registrations ── #}
+    <div class="card">
+      <p class="section-title">Registrations &amp; codes</p>
+      <div class="form-grid">
+        <div class="form-group"><label>GST number</label><input type="text" name="GST_number" placeholder="22AAAAA0000A1Z5"></div>
+        <div class="form-group"><label>IEC code</label><input type="text" name="IEC_code"></div>
+        <div class="form-group"><label>PAN number</label><input type="text" name="PAN_number" placeholder="AAAAA0000A"></div>
+        <div class="form-group"><label>DIN number</label><input type="text" name="DIN_number"></div>
+        <div class="form-group"><label>CIN number</label><input type="text" name="CIN_number"></div>
+        <div class="form-group"><label>DUNS number</label><input type="text" name="DUNS_number"></div>
+      </div>
+    </div>
+
+    {# ── 3. Contact info ── #}
+    <div class="card">
+      <p class="section-title">Contact information</p>
+
+      <div class="form-group" style="margin-bottom:1rem">
+        <label>Email addresses</label>
+        <div id="email-rows">
+          <div class="multi-row">
+            <input type="email" name="Email" placeholder="email@example.com">
+          </div>
+        </div>
+        <button type="button" class="btn-add-row" onclick="addContactRow('email-rows','Email','email@example.com','email')">
+          <i class="ti ti-plus"></i> Add email
+        </button>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1rem">
+        <label>Phone numbers</label>
+        <div id="phone-rows">
+          <div class="multi-row">
+            <input type="tel" name="Phone" placeholder="+91 98765 43210">
+          </div>
+        </div>
+        <button type="button" class="btn-add-row" onclick="addContactRow('phone-rows','Phone','+91','tel')">
+          <i class="ti ti-plus"></i> Add phone
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label>FAX numbers</label>
+        <div id="fax-rows">
+          <div class="multi-row">
+            <input type="text" name="FAX" placeholder="FAX number">
+          </div>
+        </div>
+        <button type="button" class="btn-add-row" onclick="addContactRow('fax-rows','FAX','FAX number','text')">
+          <i class="ti ti-plus"></i> Add FAX
+        </button>
+      </div>
+    </div>
+
+    {# ── 4. Product ── #}
+    <div class="card">
+      <p class="section-title">Products</p>
+      <div id="product_blocks">
+        <div class="details-block">
+          <div class="block-label">Product</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Sector</label>
+              <input type="text" name="Sector">
+            </div>
+            <div class="form-group">
+              <label>Division</label>
+              <input type="text" name="Division">
+            </div>
+            <div class="form-group">
+              <label>Product group</label>
+              <input type="text" name="Product_group">
+            </div>
+
+            <div class="form-group">
+              <label>Product category</label>
+              <input type="text" name="Product_category" list="category_list" id="Product_category" onchange="fetchProductname()">
+            </div>
+            <datalist id="category_list">
+              {% for ct in category_list %}
+                <option>{{ct}}</option>
+              {% endfor %}
+            </datalist>
+
+            <div class="form-group full">
+              <label>Product name</label>
+              <input type="text" name="Product" placeholder="Pesticides" list="product_list">
+            </div>
+            <datalist id="product_list"></datalist>
+              
+            <div class="form-group">
+              <label>HSN code</label>
+              <input type="text" name="HSN_code">
+            </div>
+            <div class="form-group">
+              <label>Minimum order quantity</label>
+              <input type="text" name="Min_order_quantity" placeholder="10 kg">
+            </div>
+            <div class="form-group full">
+              <label>Factory address</label>
+              <textarea name="Factory_address" rows="2"></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Warehouse address</label>
+              <textarea name="Warehouse_address" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-add-row" onclick="addProductBlock()">
+        <i class="ti ti-plus"></i> Add another product
+      </button>
+    </div>
+
+    {# ── 5. Addresses ── #}
+    <div class="card">
+      <p class="section-title">Addresses</p>
+      <div id="address-blocks">
+        <div class="details-block">
+          <div class="block-label">Address</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Street / full address</label>
+              <textarea name="Address" rows="2" placeholder="Building, street, area..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" name="City" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label>State</label>
+              <input type="text" name="State" placeholder="State">
+            </div>
+            <div class="form-group">
+              <label>Country</label>
+              <input type="text" name="Country" placeholder="Country" value="India">
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-add-row" onclick="addAddressBlock()">
+        <i class="ti ti-plus"></i> Add another address
+      </button>
+    </div>
+
+    {# ── 6. Documents & images ── #}
+    <div class="card">
+      <p class="section-title">Documents &amp; images</p>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Documents</label>
+          <div class="upload-zone" onclick="document.getElementById('doc-input').click()">
+            <i class="ti ti-file-upload"></i>
+            <p>Click to upload or drag &amp; drop<br><span class="link">Browse files</span></p>
+            <input type="file" id="doc-input" name="documents" multiple
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv">
+          </div>
+          <ul class="file-list" id="doc-list"></ul>
+        </div>
+
+        <div class="form-group">
+          <label>Images</label>
+          <div class="upload-zone" onclick="document.getElementById('img-input').click()">
+            <i class="ti ti-photo-up"></i>
+            <p>Click to upload or drag &amp; drop<br><span class="link">Browse files</span></p>
+            <input type="file" id="img-input" name="images" multiple
+                  accept=".jpg,.jpeg,.png,.gif,.webp">
+          </div>
+          <ul class="file-list" id="img-list"></ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-submit">
+        <i class="ti ti-check"></i> Save supplier
+      </button>
+      <a href="{% url 'supplier:suppliers_list' %}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
+{% endblock %}
+
+{% block extra_script %}
+  <script>
+    // ── contact row (email / phone / fax) ──
+    function addContactRow(containerId, name, placeholder, type) {
+      const div = document.createElement('div');
+      div.className = 'multi-row';
+      div.innerHTML = `
+        <input type="${type}" name="${name}" placeholder="${placeholder}">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()" aria-label="Remove">
+          <i class="ti ti-x"></i>
+        </button>`;
+      document.getElementById(containerId).appendChild(div);
+      div.querySelector('input').focus();
+    }
+
+    function addProductBlock() {
+      const block = document.createElement('div');
+      block.className = 'details-block';
+      block.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+          <div class="block-label">Another product</div>
+          <button type="button" class="btn-remove" onclick="this.closest('.details-block').remove()" aria-label="Remove address">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Sector</label>
+            <input type="text" name="Sector">
+          </div>
+          <div class="form-group">
+            <label>Division</label>
+            <input type="text" name="Division">
+          </div>
+          <div class="form-group">
+            <label>Product group</label>
+            <input type="text" name="Product_group">
+          </div>
+          <div class="form-group">
+            <label>Product category</label>
+            <input type="text" name="Product_category">
+          </div>
+          <div class="form-group full">
+            <label>Product name</label>
+            <input type="text" name="Product" placeholder="Pesticides">
+          </div>
+          <div class="form-group">
+            <label>HSN code</label>
+            <input type="text" name="HSN_code">
+          </div>
+          <div class="form-group">
+            <label>Minimum order quantity</label>
+            <input type="text" name="Min_order_quantity" placeholder="10 kg">
+          </div>
+          <div class="form-group full">
+            <label>Factory address</label>
+            <textarea name="Factory_address" rows="2"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Warehouse address</label>
+            <textarea name="Warehouse_address" rows="2"></textarea>
+          </div>
+        </div>
+      `
+      document.getElementById('product_blocks').appendChild(block);
+    }
+
+    function fetchProductname() {
+      const category = document.getElementById('Product_category').value.trim();
+      const categoryList = [{% for ct in category_list %}"{{ ct }}",{% endfor %}];
+
+      if (!categoryList.includes(category)) {
+        // user typed something not in list — clear product dropdown and stop
+        document.getElementById('product_list').innerHTML = '';
+        return;
+      }
+
+      fetch(`/supplier/fetch_products/?category_name=${encodeURIComponent(category)}`)
+        .then(response => response.json())
+        .then(data => {
+          const datalist = document.getElementById('product_list');
+          datalist.innerHTML = '';  // clear previous options before adding new ones
+          data.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product;
+            datalist.appendChild(option);
+          });
+        })
+        .catch(err => console.error('Failed to fetch products:', err));
+    }
+
+    // ── address block ──
+    function addAddressBlock() {
+      const block = document.createElement('div');
+      block.className = 'details-block';
+      block.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+          <div class="block-label">Another address</div>
+          <button type="button" class="btn-remove" onclick="this.closest('.details-block').remove()" aria-label="Remove address">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Street / full address</label>
+            <textarea name="Address" rows="2" placeholder="Building, street, area..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" name="City" placeholder="City">
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <input type="text" name="State" placeholder="State">
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <input type="text" name="Country" placeholder="Country" value="India">
+          </div>
+        </div>`;
+      document.getElementById('address-blocks').appendChild(block);
+      block.querySelector('textarea').focus();
+    }
+
+    // ── file list preview ──
+    function showFiles(inputId, listId) {
+      const input = document.getElementById(inputId);
+      const list  = document.getElementById(listId);
+      input.addEventListener('change', () => {
+        list.innerHTML = '';
+        Array.from(input.files).forEach(f => {
+          const li = document.createElement('li');
+          li.innerHTML = `<i class="ti ti-file"></i> ${f.name} <span style="color:#b0ae a6;margin-left:auto">${(f.size/1024).toFixed(1)} KB</span>`;
+          list.appendChild(li);
+        });
+      });
+    }
+    showFiles('doc-input', 'doc-list');
+    showFiles('img-input', 'img-list');
+  </script>
+{% endblock %}
