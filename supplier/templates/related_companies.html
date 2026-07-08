@@ -1,0 +1,99 @@
+{% extends 'base_template.html' %}
+
+{% block extra_head %}
+  <style>
+    .page-header { margin-bottom: 1.5rem; display:flex; align-items:flex-start; justify-content:space-between; }
+    .page-title  { font-size: 20px; font-weight: 600; color: #2c2c2a; margin: 0 0 4px; }
+    .page-sub    { font-size: 14px; color: #888780; margin: 0; }
+
+    .card {
+      background: #fff; border: 0.5px solid var(--GTMS-secondary-dark);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .05em; color: var(--GTMS-primary-light); margin: 0 0 1rem;
+    }
+
+    /* ── related buyers ── */
+    .buyers-section { margin-top: 0.5rem; }
+    .buyer-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 0.5px solid #f0ede6;
+    }
+    .buyer-row:last-child { border-bottom: none; }
+    .buyer-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #e6f1fb; color: #185fa5;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; flex-shrink: 0;
+    }
+    .buyer-name { font-size: 14px; font-weight: 500; color: #2c2c2a; }
+    .buyer-meta { font-size: 12px; color: #888780; margin-top: 2px; }
+    .tag {
+      display: inline-block; font-size: 11px; padding: 2px 8px;
+      border-radius: 20px; background: #e6f1fb; color: #185fa5; margin: 2px 2px 0 0;
+    }
+    .tag-green { background: #eaf3de; color: #3b6d11; }
+    .empty-note { font-size: 13px; color: #888780; padding: 0.5rem 0; }
+
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ supplier.Company_name }}</h1>
+      <p class="page-sub">Related buyers and suppliers</p>
+    </div>
+  </div>
+
+  {# ── 7. Related buyers (read-only, outside the form) ── #}
+  <div class="card" style="margin-top:1.5rem">
+    <p class="section-title">Related buyers</p>
+    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">Buyers who purchase the same products this supplier sells.</p>
+    <div class="buyers-section">
+      {% for bp in related_buyers_direct %}
+        <div class="buyer-row">
+          <div class="buyer-avatar">{{ bp.Buyer.Company_name|slice:":2"|upper }}</div>
+          <div>
+            <div class="buyer-name">{{ bp.Buyer.Company_name }}</div>
+            <div class="buyer-meta">
+              Buys: <span class="tag tag-green">{{ bp.Product }}</span>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="empty-note">No buyers currently purchase the same products.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-title">Related Suppliers</p>
+    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">
+      Suppliers who purchase products that need this supplier's items as a raw material input.
+    </p>
+    <div class="buyers-section">
+      {% for item in related_suppliers %}
+        <div class="buyer-row">
+          <div class="buyer-avatar">{{ item.Supplier.Company_name|slice:":2"|upper }}</div>
+          <div>
+            <div class="buyer-name">{{ item.Supplier.Company_name }}</div>
+            <div class="buyer-meta">
+              Sells: <span class="tag">{{ item.needs_product }}</span>
+              &nbsp;which uses:
+              {% for via in item.via_supplier_product %}
+                <span class="tag tag-green">{{ via }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="empty-note">No downstream supplier found via recipe relationships.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}

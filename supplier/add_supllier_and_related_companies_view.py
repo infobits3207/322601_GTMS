@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
 import pandas as pd
 from supplier.models import supplier_details, supplier_contact_details,supplier_addresses, supplier_media, Sell_products
+from buyer.models import Purchase_products
 from django.utils import timezone
 import os
 from django.conf import settings
@@ -14,12 +15,12 @@ SUPPLIER_FIELDS = [
     'Contact_person', 'WCPD_code', 'Admin_remark',
 ]
 
-recipe_df = pd.read_excel(
+_recipe_df = pd.read_excel(
     os.path.join(settings.STATICFILES_DIRS[0], 'recipe_pairs_all_categories.xlsx')
 )
+_category_list = sorted(_recipe_df['Category'].dropna().unique().tolist())
 
 def supplier_add(request):
-    category_list = recipe_df['Category'].unique().tolist()
 
     if request.method == 'POST':
         company_name = request.POST.get('Company_name', '').strip()
@@ -101,7 +102,7 @@ def supplier_add(request):
         return redirect('supplier:suppliers_list')
     
     context = {
-        'category_list': category_list,
+        'category_list': _category_list,
     }
 
     return render(request, 'supplier_add.html',context)
@@ -110,7 +111,7 @@ def fetch_products(request):
     category = request.GET.get('category_name')
     print(category)
 
-    df = recipe_df[recipe_df['Category'] == category]
+    df = _recipe_df[_recipe_df['Category'] == category]
     print(df.head())
 
     # The correct way to get unique values across both columns combined
@@ -118,3 +119,84 @@ def fetch_products(request):
 
     print(Product_list)
     return JsonResponse(list(Product_list),safe=False)
+
+
+def _related_suppliers(supplier_products):
+    sell_names = [p.Product.strip().upper() for p in supplier_products if p.Product.strip()]
+    if not sell_names or _recipe_df.empty:
+        return []
+
+    recipe = _recipe_df.copy()
+    recipe['Input Item Norm'] = recipe['Input Item'].str.strip().str.upper()
+    recipe['Output Item Norm'] = recipe['Output Item'].str.strip().str.upper()
+
+    mask = recipe['Input Item Norm'].isin(sell_names)
+    output_items = recipe[mask][['Output Item', 'Output Item Norm', 'Input Item']].drop_duplicates()
+
+    if output_items.empty:
+        return []
+
+    output_names = output_items['Output Item'].unique().tolist()  # original casing for the DB query
+
+    seller_products = Sell_products.objects.filter(
+        Product__in=output_names
+    ).select_related('Supplier')
+
+    results = []
+    seen = set()
+    for sp in seller_products:
+        product_norm = sp.Product.strip().upper()
+        key = (sp.Supplier.id, product_norm)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        # exact, case-insensitive match
+        matching = output_items[output_items['Output Item Norm'] == product_norm]
+        via = matching['Input Item'].tolist()
+
+        results.append({
+            'Supplier': sp.Supplier,
+            'needs_product': sp.Product,
+            'via_supplier_product': via,
+        })
+
+    return results
+
+def _related_buyers_direct(supplier_products):
+    """
+    Also find buyers who directly purchase the same product the supplier sells.
+    """
+    sell_names = [p.Product.strip() for p in supplier_products if p.Product.strip()]
+    if not sell_names:
+        return []
+    buyer_products = Purchase_products.objects.filter(
+        Product__in=sell_names
+    ).select_related('Buyer').distinct()
+    return list(buyer_products)
+
+def related_companies(request,sp_id):
+    supplier = get_object_or_404(supplier_details, id=sp_id)
+    contacts  = supplier_contact_details.objects.filter(Supplier=supplier)
+    addresses = supplier_addresses.objects.filter(Supplier=supplier)
+    media     = supplier_media.objects.filter(Supplier=supplier)
+    products  = Sell_products.objects.filter(Supplier=supplier).exclude(Product='')
+
+    related_suppliers = _related_suppliers(products)
+    related_buyers_direct   = _related_buyers_direct(products)
+
+    context = {
+        'supplier':     supplier,
+        'Emails':       contacts.exclude(Email='').values_list('Email', flat=True),
+        'Phone_numbers':contacts.exclude(Phone='').values_list('Phone', flat=True),
+        'FAX_numbers':  contacts.exclude(FAX='').values_list('FAX', flat=True),
+        'addresses':    addresses,
+        'media':        media,
+        'documents':    media.exclude(Document='').exclude(Document=None),
+        'images':       media.exclude(Image='').exclude(Image=None),
+        'Products':     products,
+        'related_buyers_direct':   related_buyers_direct,
+        'related_suppliers': related_suppliers,
+        'category_list': _category_list,
+    }
+    return render(request,'related_companies.html',context)

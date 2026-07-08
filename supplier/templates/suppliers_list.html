@@ -101,10 +101,10 @@
   .add-wrapper { position: relative; display: inline-block; }
   .btn-add {
     display: inline-flex; align-items: center; gap: 6px;
-    background: var(--GTMS-primary); color: #fff; border: none;
+    background: var(--GTMS-primary-light); color: #fff; border: none;
     border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer;
   }
-  .btn-add:hover { opacity: 0.9; }
+  .btn-add:hover { background: var(--GTMS-primary); }
   .dropdown-menu {
     display: none; position: absolute; right: 0; top: calc(100% + 6px);
     background: #fff; border: 0.5px solid #e5e3da; border-radius: 12px;
@@ -239,7 +239,7 @@
     <div class="search-bar-group">
       <div class="search-wrap search-wrap--main">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" name="q" value="{{ search|default:'' }}" placeholder="Search by company name or product">
+        <input type="text" name="search" value="{{ search|default:'' }}" placeholder="Search by company name or product">
       </div>
       <div class="search-wrap">
         <i class="fa-solid fa-location-dot"></i>
@@ -259,7 +259,7 @@
         <i class="fa-solid fa-magnifying-glass"></i> Search
       </button>
       {% if search or city or state or country %}
-        <a href="{% url 'suppliers_list' %}" class="btn-clear">Clear</a>
+        <a href="{% url 'supplier:suppliers_list' %}" class="btn-clear">Clear</a>
       {% endif %}
     </div>
   </form>
@@ -328,8 +328,11 @@
             <a href="{% url 'supplier:supplier_detail' s.id %}" class="act-btn" title="Edit">
               <i class="ti ti-edit" aria-hidden="true"></i>
             </a>
-            <button class="act-btn del" title="Delete"
-                    onclick="return confirm(`Delete '{{s.Company_name}}'? This cannot be undone.`)">
+            <a href="{% url 'supplier:related_companies' s.id %}" class="act-btn" title="View related companies">
+              <i class="fa-solid fa-users"></i>
+            </a>
+            <button class="act-btn del" title="Delete supplier" name="delete"
+                    onclick="confirmDelete({{ s.id }}, '{{ s.Company_name|escapejs }}')">
               <i class="ti ti-trash" aria-hidden="true"></i>
             </button>
           </div>

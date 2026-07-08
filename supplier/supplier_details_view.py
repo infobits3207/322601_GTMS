@@ -30,7 +30,6 @@ PRODUCT_FIELDS = [
 
 ADDRESS_FIELDS = ['Address', 'City', 'State', 'Country']
 
-
 # ── helpers ───────────────────────────────────────────────
 
 def _reconcile_contacts(supplier, field, new_values):
@@ -106,63 +105,6 @@ def _reconcile_products(supplier, submitted):
         if name not in submitted_keys:
             obj.delete()
 
-
-def _related_suppliers(supplier_products):
-    sell_names = [p.Product.strip().upper() for p in supplier_products if p.Product.strip()]
-    if not sell_names or _recipe_df.empty:
-        return []
-
-    recipe = _recipe_df.copy()
-    recipe['Input Item Norm'] = recipe['Input Item'].str.strip().str.upper()
-    recipe['Output Item Norm'] = recipe['Output Item'].str.strip().str.upper()
-
-    mask = recipe['Input Item Norm'].isin(sell_names)
-    output_items = recipe[mask][['Output Item', 'Output Item Norm', 'Input Item']].drop_duplicates()
-
-    if output_items.empty:
-        return []
-
-    output_names = output_items['Output Item'].unique().tolist()  # original casing for the DB query
-
-    seller_products = Sell_products.objects.filter(
-        Product__in=output_names
-    ).select_related('Supplier')
-
-    results = []
-    seen = set()
-    for sp in seller_products:
-        product_norm = sp.Product.strip().upper()
-        key = (sp.Supplier.id, product_norm)
-        if key in seen:
-            continue
-        seen.add(key)
-
-        # exact, case-insensitive match
-        matching = output_items[output_items['Output Item Norm'] == product_norm]
-        via = matching['Input Item'].tolist()
-
-        results.append({
-            'Supplier': sp.Supplier,
-            'needs_product': sp.Product,
-            'via_supplier_product': via,
-        })
-
-    return results
-
-
-def _related_buyers_direct(supplier_products):
-    """
-    Also find buyers who directly purchase the same product the supplier sells.
-    """
-    sell_names = [p.Product.strip() for p in supplier_products if p.Product.strip()]
-    if not sell_names:
-        return []
-    buyer_products = Purchase_products.objects.filter(
-        Product__in=sell_names
-    ).select_related('Buyer').distinct()
-    return list(buyer_products)
-
-
 # ── views ─────────────────────────────────────────────────
 
 def supplier_detail(request, sp_id):
@@ -171,9 +113,6 @@ def supplier_detail(request, sp_id):
     addresses = supplier_addresses.objects.filter(Supplier=supplier)
     media     = supplier_media.objects.filter(Supplier=supplier)
     products  = Sell_products.objects.filter(Supplier=supplier).exclude(Product='')
-
-    related_suppliers = _related_suppliers(products)
-    related_buyers_direct   = _related_buyers_direct(products)
 
     context = {
         'supplier':     supplier,
@@ -185,8 +124,6 @@ def supplier_detail(request, sp_id):
         'documents':    media.exclude(Document='').exclude(Document=None),
         'images':       media.exclude(Image='').exclude(Image=None),
         'Products':     products,
-        'related_buyers_direct':   related_buyers_direct,
-        'related_suppliers': related_suppliers,
         'category_list': _category_list,
     }
     return render(request, 'Edit_supplier.html', context)

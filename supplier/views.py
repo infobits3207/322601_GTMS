@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import transaction
 import pandas as pd
+from django.db.models.functions import Lower
 from supplier.models import supplier_details, supplier_contact_details,supplier_addresses, supplier_media, Sell_products
+from django.db.models import Q
 from django.utils import timezone
 import os
 from django.conf import settings
@@ -142,4 +144,32 @@ def suppliers_list(request):
         'Sell_products', 'supplier_contact_details', 'supplier_addresses'
     ).order_by('-Created_at')
 
-    return render(request, 'suppliers_list.html', {'suppliers': suppliers})
+    search = request.GET.get('search',None)
+    if search:
+        # suppliers = suppliers.filter(Company_name__contains = request.GET.get('search'))
+        suppliers = suppliers.filter(
+            Q(Company_name__contains = request.GET.get('search')) |
+            Q(Sell_products__Product__contains = request.GET.get('search'))
+        )
+
+    city = request.GET.get('city',None)
+    if city:
+        suppliers = suppliers.filter(supplier_addresses__City__contains = city)
+
+    state = request.GET.get('state',None)
+    if state:
+        suppliers = suppliers.filter(supplier_addresses__State__contains = state)
+
+    country = request.GET.get('country',None)
+    if country:
+        suppliers = suppliers.filter(supplier_addresses__Country__contains   = country)
+
+    context = {
+        'search': search,
+        'city': city,
+        'state': state,
+        'country': country,
+        'suppliers': suppliers,
+    }
+
+    return render(request, 'suppliers_list.html', context)
