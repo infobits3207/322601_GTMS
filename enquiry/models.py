@@ -18,7 +18,9 @@ class Enquiry_media(models.Model):
 
 class Enquiry_email_messages(models.Model):
     Enquiry = models.ForeignKey(Enquiry_details,on_delete=models.CASCADE,related_name='Enquiry_email_messages')
-    Email = models.TextField(blank=True)
+    To = models.EmailField(blank=True)
+    Subject = models.TextField(blank=True)
+    Body = models.TextField(blank=True)
     Time = models.DateTimeField(blank=True,null=True)
 
 class Enquiry_products(models.Model):

@@ -144,7 +144,7 @@
   .supplier-row {
     display: grid;
     /* Company | WCPD/IEC | Contact | Products | Added | Actions */
-    grid-template-columns: 2fr 100px 1.4fr 1.6fr 80px 64px;
+    grid-template-columns: 2fr 70px 1.4fr 1.6fr 80px 124px;
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
@@ -197,6 +197,14 @@
   }
   .act-btn:hover { background: #f0ede6; color: #2c2c2a; }
   .act-btn.del:hover { background: #fcebeb; color: #a32d2d; }
+  .email-history {
+    display: inline-block; position: relative;
+  }
+  .email-history .fa-clock-rotate-left {
+    position: absolute; font-size:10px;
+    right:-3px; bottom:-2px; padding:1px;
+    background:#fff; border-radius:50%;
+  }
 
   .empty-state { text-align: center; padding: 3rem 1rem; color: #888780; }
   .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
@@ -332,9 +340,15 @@
               <i class="fa-solid fa-users"></i>
             </a>
             <button class="act-btn del" title="Delete supplier" name="delete"
-                    onclick="confirmDelete({{ s.id }}, '{{ s.Company_name|escapejs }}')">
+                    onclick="confirmDelete(this,{{ s.id }}, '{{ s.Company_name|escapejs }}')">
               <i class="ti ti-trash" aria-hidden="true"></i>
             </button>
+            <a href="{% url 'supplier:supplier_detail' s.id %}" class="act-btn" title="Email history">
+              <span class="email-history">
+                <i class="fa-solid fa-envelope"></i>
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </span>
+            </a>
           </div>
         </div>
       {% endfor %}
@@ -370,10 +384,29 @@
       }
     });
 
-    function confirmDelete(id, name) {
-      if (confirm(`Delete "${name}"? This cannot be undone.`)) {
-        window.location.href = `/supplier/delete/${id}/`;
-      }
+    function confirmDelete(delete_action,id, name) {
+      if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+      
+      const supplier = delete_action.closest('.supplier-row')
+      const supplier_id = id
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      fetch("{% url 'supplier:delete_supplier' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({ sp_id: supplier_id })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          supplier.style.display = 'none';
+        } else {
+          return
+        }
+      });
     }
   </script>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
 import pandas as pd
@@ -6,7 +7,7 @@ from django.db.models.functions import Lower
 from supplier.models import supplier_details, supplier_contact_details,supplier_addresses, supplier_media, Sell_products
 from django.db.models import Q
 from django.utils import timezone
-import os
+import os, json
 from django.conf import settings
 
 SUPPLIER_FIELDS = [
@@ -134,42 +135,51 @@ def suppliers_list(request):
         if errors:
             messages.error(request, f"Import finished with errors: {'; '.join(errors)}")
         else:
-            messages.success(
-                request,
-                f"Imported {created} supplier(s). {skipped} already existed and were skipped."
-            )
+            messages.success(request, f"Imported {created} supplier(s). {skipped} already existed and were skipped.")
         return redirect('supplier:suppliers_list')
 
     suppliers = supplier_details.objects.prefetch_related(
         'Sell_products', 'supplier_contact_details', 'supplier_addresses'
     ).order_by('-Created_at')
 
-    search = request.GET.get('search',None)
+    search = request.GET.get('search', '').strip()
+    city   = request.GET.get('city', '').strip()
+    state  = request.GET.get('state', '').strip()
+    country = request.GET.get('country', '').strip()
+
     if search:
-        # suppliers = suppliers.filter(Company_name__contains = request.GET.get('search'))
         suppliers = suppliers.filter(
-            Q(Company_name__contains = request.GET.get('search')) |
-            Q(Sell_products__Product__contains = request.GET.get('search'))
+            Q(Company_name__icontains=search) |
+            Q(Sell_products__Product__icontains=search)
         )
 
-    city = request.GET.get('city',None)
     if city:
-        suppliers = suppliers.filter(supplier_addresses__City__contains = city)
+        suppliers = suppliers.filter(supplier_addresses__City__icontains=city)
 
-    state = request.GET.get('state',None)
     if state:
-        suppliers = suppliers.filter(supplier_addresses__State__contains = state)
+        suppliers = suppliers.filter(supplier_addresses__State__icontains=state)
 
-    country = request.GET.get('country',None)
     if country:
-        suppliers = suppliers.filter(supplier_addresses__Country__contains   = country)
+        suppliers = suppliers.filter(supplier_addresses__Country__icontains=country)
+
+    # always call distinct() at the end — any filter across a FK relation can produce duplicates
+    suppliers = suppliers.distinct()
 
     context = {
-        'search': search,
-        'city': city,
-        'state': state,
-        'country': country,
-        'suppliers': suppliers,
+        'search': search, 'city': city, 'state': state,
+        'country': country, 'suppliers': suppliers,
     }
-
     return render(request, 'suppliers_list.html', context)
+
+def delete_supplier(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        sp_id = data.get('sp_id')
+
+        supplier = supplier_details.objects.filter(id=sp_id).first()
+
+        if supplier:
+            supplier.delete()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False})

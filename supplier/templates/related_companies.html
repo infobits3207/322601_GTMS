@@ -15,28 +15,87 @@
       letter-spacing: .05em; color: var(--GTMS-primary-light); margin: 0 0 1rem;
     }
 
-    /* ── related buyers ── */
-    .buyers-section { margin-top: 0.5rem; }
-    .buyer-row {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 10px 0; border-bottom: 0.5px solid #f0ede6;
+    .company-row {
+      border: 0.5px solid var(--GTMS-secondary-dark);
+      border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden;
     }
-    .buyer-row:last-child { border-bottom: none; }
-    .buyer-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
+
+    .company-header {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 14px; cursor: pointer;
+      justify-content: space-between;
+    }
+    .company-header:hover { background: #f7f6f2; }
+
+    .company-left  { display: flex; align-items: flex-start; gap: 12px; }
+    .company-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
       background: #e6f1fb; color: #185fa5;
       display: flex; align-items: center; justify-content: center;
       font-size: 12px; font-weight: 600; flex-shrink: 0;
     }
-    .buyer-name { font-size: 14px; font-weight: 500; color: #2c2c2a; }
-    .buyer-meta { font-size: 12px; color: #888780; margin-top: 2px; }
+    .company-avatar.green { background: #eaf3de; color: #3b6d11; }
+    .company-name { font-size: 14px; font-weight: 500; color: #2c2c2a; }
+    .company-meta { font-size: 12px; color: #888780; margin-top: 3px; }
+
     .tag {
       display: inline-block; font-size: 11px; padding: 2px 8px;
       border-radius: 20px; background: #e6f1fb; color: #185fa5; margin: 2px 2px 0 0;
     }
     .tag-green { background: #eaf3de; color: #3b6d11; }
+
+    .toggle-icon { font-size: 16px; color: #888780; flex-shrink: 0; transition: transform .2s; margin-top: 2px; }
+    .company-row.open .toggle-icon { transform: rotate(180deg); }
+
+    /* ── email compose panel ── */
+    .email-panel {
+      display: none; border-top: 0.5px solid var(--GTMS-secondary-dark);
+      padding: 14px; background: #fafaf8;
+    }
+    .company-row.open .email-panel { display: block; }
+
+    .email-panel label {
+      font-size: 12px; font-weight: 500; color: #5f5e5a; display: block; margin-bottom: 4px;
+    }
+    .email-panel input,
+    .email-panel textarea,
+    .email-panel select {
+      width: 100%; border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
+      padding: 8px 10px; font-size: 13px; color: #2c2c2a;
+      background: #fff; margin-bottom: 10px;
+    }
+    .email-panel input:focus,
+    .email-panel textarea:focus,
+    .email-panel select:focus {
+      outline: none; border-color: var(--GTMS-primary); box-shadow: 0 0 0 3px #14213d1a;
+    }
+    .email-panel textarea { resize: vertical; min-height: 90px; }
+    .email-panel .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .send-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .btn-send {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--GTMS-primary); color: #fff; border: none;
+      border-radius: 8px; padding: 8px 16px; font-size: 13px;
+      font-weight: 500; cursor: pointer;
+    }
+    .btn-send:hover { opacity: 0.9; }
+    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .send-status {
+      font-size: 12px; display: none;
+    }
+    .send-status.success { color: #3b6d11; display: inline; }
+    .send-status.error   { color: #a32d2d; display: inline; }
+
     .empty-note { font-size: 13px; color: #888780; padding: 0.5rem 0; }
 
+    .email-input {
+      display:none; margin-top:6px
+    }
+    .back-to-select {
+      display:none; font-size:12px; margin:4px 0px
+    }
   </style>
 {% endblock %}
 
@@ -49,51 +108,218 @@
     </div>
   </div>
 
-  {# ── 7. Related buyers (read-only, outside the form) ── #}
-  <div class="card" style="margin-top:1.5rem">
-    <p class="section-title">Related buyers</p>
-    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">Buyers who purchase the same products this supplier sells.</p>
-    <div class="buyers-section">
-      {% for bp in related_buyers_direct %}
-        <div class="buyer-row">
-          <div class="buyer-avatar">{{ bp.Buyer.Company_name|slice:":2"|upper }}</div>
-          <div>
-            <div class="buyer-name">{{ bp.Buyer.Company_name }}</div>
-            <div class="buyer-meta">
-              Buys: <span class="tag tag-green">{{ bp.Product }}</span>
-            </div>
-          </div>
-        </div>
-      {% empty %}
-        <p class="empty-note">No buyers currently purchase the same products.</p>
-      {% endfor %}
-    </div>
-  </div>
-
+  {# ── Related buyers ── #}
   <div class="card">
-    <p class="section-title">Related Suppliers</p>
+    <p class="section-title">Related buyers</p>
     <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">
-      Suppliers who purchase products that need this supplier's items as a raw material input.
+      Buyers who purchase the same products this supplier sells.
     </p>
-    <div class="buyers-section">
-      {% for item in related_suppliers %}
-        <div class="buyer-row">
-          <div class="buyer-avatar">{{ item.Supplier.Company_name|slice:":2"|upper }}</div>
-          <div>
-            <div class="buyer-name">{{ item.Supplier.Company_name }}</div>
-            <div class="buyer-meta">
-              Sells: <span class="tag">{{ item.needs_product }}</span>
-              &nbsp;which uses:
-              {% for via in item.via_supplier_product %}
-                <span class="tag tag-green">{{ via }}</span>
-              {% endfor %}
+
+    {% for bp in related_buyers_direct %}
+      <div class="company-row" id="buyer-row-{{ forloop.counter }}">
+        <div class="company-header" onclick="toggleRow('buyer-row-{{ forloop.counter }}')">
+          <div class="company-left">
+            <div class="company-avatar green">{{ bp.Buyer.Company_name|slice:":2"|upper }}</div>
+            <div>
+              <div class="company-name">{{ bp.Buyer.Company_name }}</div>
+              <div class="company-meta">
+                Buys: <span class="tag tag-green">{{ bp.Product }}</span>
+              </div>
             </div>
           </div>
+          <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
         </div>
-      {% empty %}
-        <p class="empty-note">No downstream supplier found via recipe relationships.</p>
-      {% endfor %}
-    </div>
+
+        <div class="email-panel">
+          <form onsubmit="sendEmail(event, this)">
+            {% csrf_token %}
+            <input type="hidden" name="company_type" value="buyer">
+            <input type="hidden" name="company_id"   value="{{ bp.Buyer.id }}">
+
+            <div class="form-row">
+              <div>
+                <label>To</label>
+                <select name="to_email">
+                  {% for c in bp.Buyer.Buyer_contact_details.all %}
+                    {% if c.Email %}<option value="{{ c.Email }}">{{ c.Email }}</option>{% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+              <div>
+                <label>Subject</label>
+                <input type="text" name="subject"
+                      value="Product enquiry — {{ supplier.Company_name }}"
+                      placeholder="Email subject">
+              </div>
+            </div>
+
+            <label>Message</label>
+            <textarea name="content" placeholder="Write your message here…"></textarea>
+
+            <div class="send-row">
+              <button type="submit" class="btn-send">
+                <i class="ti ti-send" aria-hidden="true"></i> Send email
+              </button>
+              <span class="send-status"></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <p class="empty-note">No buyers currently purchase the same products.</p>
+    {% endfor %}
   </div>
 
+  {# ── Related suppliers ── #}
+  <div class="card">
+    <p class="section-title">Related suppliers</p>
+    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">
+      Suppliers who manufacture products that use this supplier's items as raw material input.
+    </p>
+
+    {% for item in related_suppliers %}
+      <div class="company-row" id="supplier-row-{{ forloop.counter }}">
+        <div class="company-header" onclick="toggleRow('supplier-row-{{ forloop.counter }}')">
+          <div class="company-left">
+            <div class="company-avatar">{{ item.Supplier.Company_name|slice:":2"|upper }}</div>
+            <div>
+              <div class="company-name">{{ item.Supplier.Company_name }}</div>
+              <div class="company-meta">
+                Sells: <span class="tag">{{ item.needs_product }}</span>
+                &nbsp;uses:
+                {% for via in item.via_supplier_product %}
+                  <span class="tag tag-green">{{ via }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
+        </div>
+
+        <div class="email-panel">
+          <form onsubmit="sendEmail(event, this)">
+            {% csrf_token %}
+            <input type="hidden" name="company_type" value="supplier">
+            <input type="hidden" name="company_id"   value="{{ item.Supplier.id }}">
+
+            <div class="form-row">
+              <div>
+                <label>To</label>
+                <select name="to_email_select" onchange="handleEmailSelect(this)">
+                  <option value="" selected disabled>Select mail options</option>
+                  {% for c in item.Supplier.supplier_contact_details.all %}
+                    {% if c.Email %}
+                      <option value="{{ c.Email }}">{{ c.Email }}</option>
+                    {% endif %}
+                  {% endfor %}
+                  <option value="manual">Type manually</option>
+                </select>
+                <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
+                <a href="#" class="back-to-select" 
+                  onclick="resetEmailSelect(this.closest('div'));return false">
+                  ← Pick from list
+                </a>
+              </div>
+              <div>
+                <label>Subject</label>
+                <input type="text" name="subject" placeholder="Email subject"
+                      value="Raw material supply — {{ supplier.Company_name }}">
+              </div>
+            </div>
+
+            <label>Message</label>
+            <textarea name="content" placeholder="Write your message here…"></textarea>
+
+            <div class="send-row">
+              <button type="submit" class="btn-send">
+                <i class="ti ti-send" aria-hidden="true"></i> Send email
+              </button>
+              <span class="send-status"></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <p class="empty-note">No downstream suppliers found via recipe relationships.</p>
+    {% endfor %}
+  </div>
+
+{% endblock %}
+
+{% block extra_script %}
+  <script>
+    function toggleRow(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function sendEmail(event, form) {
+      event.preventDefault();
+      const btn    = form.querySelector('.btn-send');
+      const status = form.querySelector('.send-status');
+      const data   = new FormData(form);
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ti ti-loader-2" aria-hidden="true"></i> Sending…';
+      status.className = 'send-status';
+      status.textContent = '';
+
+      fetch("{% url 'supplier:send_company_email' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
+        body: data,
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          status.textContent = '✓ Email sent';
+          status.className = 'send-status success';
+          form.querySelector('textarea[name="content"]').value = '';
+        } else {
+          status.textContent = res.error || 'Failed to send.';
+          status.className = 'send-status error';
+        }
+      })
+      .catch(() => {
+        status.textContent = 'Network error. Try again.';
+        status.className = 'send-status error';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-send" aria-hidden="true"></i> Send email';
+      });
+    }
+
+    function handleEmailSelect(select) {
+      console.log(">>>>>>>>>>>>>")
+      const input = select.nextElementSibling;  // the input right after the select
+      const backLink = select.parentElement.querySelector('a');
+
+      if (select.value === 'manual') {
+        select.style.display = 'none';
+        input.style.display  = 'block';
+        input.value = '';
+        input.focus();
+
+        if (backLink) backLink.style.display = 'block';
+      } else {
+        input.value = select.value;  // keep input in sync so the form always submits to_email
+      }
+    }
+
+    // run on page load so input starts pre-filled with the first dropdown value
+    document.querySelectorAll('select[name="to_email_select"]').forEach(select => {
+      const input = select.nextElementSibling;
+      input.value = select.value;  // sync initial value
+    });
+
+    function resetEmailSelect(container) {
+      const select = container.querySelector('select[name="to_email_select"]');
+      const input  = container.querySelector('input[name="to_email"]');
+      const link   = container.querySelector('a');
+      select.style.display = '';
+      select.value = '';
+      input.style.display  = 'none';
+      link.style.display   = 'none';
+    }
+  </script>
 {% endblock %}

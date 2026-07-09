@@ -34,7 +34,9 @@ class Buyer_addresses(models.Model):
 
 class Buyer_email_messages(models.Model):
     Buyer = models.ForeignKey(buyer_details,on_delete=models.CASCADE,related_name='Buyer_email_messages')
-    Email = models.TextField(blank=True)
+    To = models.EmailField(blank=True)
+    Subject = models.TextField(blank=True)
+    Body = models.TextField(blank=True)
     Time = models.DateTimeField(blank=True,null=True)
 
 class Buyer_media(models.Model):
