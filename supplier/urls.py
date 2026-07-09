@@ -12,7 +12,7 @@ urlpatterns = [
     path('related_companies/<int:sp_id>', add_supllier_and_related_companies_view.related_companies, name='related_companies'),
 
     path('send-email/', email_view.send_company_email, name='send_company_email'),
-    path('<int:sp_id>/email-history/', email_view.email_history, name='email_history'),
+    path('<int:sp_id>/email_history/', email_view.email_history, name='email_history'),
 
     path('supplier_detail/<int:sp_id>', supplier_details_view.supplier_detail, name='supplier_detail'),
     path('edit_supplier/<int:sp_id>', supplier_details_view.edit_supplier, name='edit_supplier'),

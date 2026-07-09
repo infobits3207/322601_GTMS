@@ -116,8 +116,8 @@
     font-size: 13px; color: #3d3d3a; text-decoration: none;
     border: none; background: none; width: 100%; cursor: pointer;
   }
-  .dropdown-item:hover { background: #f7f6f2; }
-  .dropdown-item i { font-size: 16px; color: #888780; }
+  .dropdown-item:hover { background: var(--GTMS-secondary); }
+  .dropdown-item i { font-size: 16px; color: var(--GTMS-text-muted); }
 
   .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
   .alert-success { background: #eaf3de; color: #3b6d11; }
@@ -125,11 +125,11 @@
 
   /* ── excel panel ── */
   .excel-panel {
-    display: none; background: #f7f6f2; border: 0.5px solid #e5e3da;
+    display: none; background: var(--GTMS-secondary); border: 0.5px solid #e5e3da;
     border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
   }
   .excel-panel.open { display: block; }
-  .excel-panel label { font-size: 12px; font-weight: 500; color: #5f5e5a; display: block; margin-bottom: 6px; }
+  .excel-panel label { font-size: 12px; font-weight: 500; color: var(--GTMS-text-secondary); display: block; margin-bottom: 6px; }
   .excel-panel .btn-import {
     display: inline-flex; align-items: center; gap: 5px;
     background: var(--GTMS-primary); color: #fff; border: none;
@@ -157,7 +157,7 @@
   }
   .list-header span {
     font-size: 11px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: .05em; color: #888780;
+    letter-spacing: .05em; color: var(--GTMS-text-muted);
   }
 
   .supplier-row {
@@ -166,14 +166,14 @@
   .supplier-row:hover { border-color: #c5c3ba; }
 
   /* cells */
-  .company-name { font-size: 14px; font-weight: 500; color: #2c2c2a; }
-  .company-sub  { font-size: 12px; color: #888780; margin-top: 2px; }
+  .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary); }
+  .company-sub  { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; }
 
-  .wcpd-code { font-size: 13px; font-weight: 500; color: #2c2c2a; }
-  .iec-code  { font-size: 11px; color: #888780; margin-top: 2px; }
+  .wcpd-code { font-size: 13px; font-weight: 500; color: var(--GTMS-text-primary); }
+  .iec-code  { font-size: 11px; color: var(--GTMS-text-muted); margin-top: 2px; }
 
   .contact-line {
-    font-size: 12px; color: #5f5e5a;
+    font-size: 12px; color: var(--GTMS-text-secondary);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
@@ -185,17 +185,17 @@
   }
   .tag-more {
     display: inline-block; font-size: 11px; padding: 2px 7px;
-    border-radius: 20px; background: #f0ede6; color: #888780; white-space: nowrap;
+    border-radius: 20px; background: #f0ede6; color: var(--GTMS-text-muted); white-space: nowrap;
   }
 
-  .date-cell { font-size: 12px; color: #888780; }
+  .date-cell { font-size: 12px; color: var(--GTMS-text-muted); }
 
   .action-cell { display: flex; gap: 6px; align-items: center; }
   .act-btn {
     background: none; border: none; cursor: pointer;
-    color: #888780; font-size: 16px; padding: 5px; border-radius: 6px;
+    color: var(--GTMS-text-muted); font-size: 16px; padding: 5px; border-radius: 6px;
   }
-  .act-btn:hover { background: #f0ede6; color: #2c2c2a; }
+  .act-btn:hover { background: #f0ede6; color: var(--GTMS-text-primary); }
   .act-btn.del:hover { background: #fcebeb; color: #a32d2d; }
   .email-history {
     display: inline-block; position: relative;
@@ -206,7 +206,7 @@
     background:#fff; border-radius:50%;
   }
 
-  .empty-state { text-align: center; padding: 3rem 1rem; color: #888780; }
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--GTMS-text-muted); }
   .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
 </style>
 {% endblock %}
@@ -343,7 +343,7 @@
                     onclick="confirmDelete(this,{{ s.id }}, '{{ s.Company_name|escapejs }}')">
               <i class="ti ti-trash" aria-hidden="true"></i>
             </button>
-            <a href="{% url 'supplier:supplier_detail' s.id %}" class="act-btn" title="Email history">
+            <a href="{% url 'supplier:email_history' s.id %}" class="act-btn" title="Email history">
               <span class="email-history">
                 <i class="fa-solid fa-envelope"></i>
                 <i class="fa-solid fa-clock-rotate-left"></i>

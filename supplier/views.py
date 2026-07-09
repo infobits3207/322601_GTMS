@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
 import pandas as pd
-from django.db.models.functions import Lower
 from supplier.models import supplier_details, supplier_contact_details,supplier_addresses, supplier_media, Sell_products
 from django.db.models import Q
 from django.utils import timezone

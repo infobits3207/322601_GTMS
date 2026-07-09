@@ -3,8 +3,8 @@
 {% block extra_head %}
   <style>
     .page-header { margin-bottom: 1.5rem; }
-    .page-title  { font-size: 20px; font-weight: 600; color: #2c2c2a; margin: 0 0 4px; }
-    .page-sub    { font-size: 14px; color: #888780; margin: 0; }
+    .page-title  { font-size: 20px; font-weight: 600; color: var(--GTMS-text-primary); margin: 0 0 4px; }
+    .page-sub    { font-size: 14px; color: var(--GTMS-text-muted); margin: 0; }
 
     .card {
       background: #fff; border: 0.5px solid var(--GTMS-secondary-dark);
@@ -19,12 +19,12 @@
     .form-grid .full { grid-column: 1 / -1; }
 
     .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group label { font-size: 13px; font-weight: 500; color: #5f5e5a; }
+    .form-group label { font-size: 13px; font-weight: 500; color: var(--GTMS-text-secondary); }
     .form-group input,
     .form-group textarea,
     .form-group select {
       border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
-      padding: 8px 11px; font-size: 14px; color: #2c2c2a;
+      padding: 8px 11px; font-size: 14px; color: var(--GTMS-text-primary);
       background: #fff; width: 100%;
     }
     .form-group input:focus,
@@ -45,7 +45,7 @@
       padding: 1rem; margin-bottom: 0.75rem; position: relative;
     }
     .details-block .block-label {
-      font-size: 12px; font-weight: 600; color: #888780;
+      font-size: 12px; font-weight: 600; color: var(--GTMS-text-muted);
       text-transform: uppercase; letter-spacing: .04em;
       margin-bottom: 0.75rem;
     }
@@ -59,16 +59,16 @@
     .upload-zone:hover { border-color: var(--GTMS-primary); }
     .upload-zone input[type=file] { display: none; }
     .upload-zone i { font-size: 28px; color: #d1cec0; display: block; margin-bottom: 6px; }
-    .upload-zone p { font-size: 13px; color: #888780; margin: 0; }
+    .upload-zone p { font-size: 13px; color: var(--GTMS-text-muted); margin: 0; }
     .upload-zone .link { color: var(--GTMS-primary); cursor: pointer; }
     .file-list { list-style: none; padding: 0; margin: 0.5rem 0 0; }
     .file-list li {
       display: flex; align-items: center; gap: 8px;
-      font-size: 13px; color: #5f5e5a;
+      font-size: 13px; color: var(--GTMS-text-secondary);
       padding: 4px 0; border-bottom: 0.5px solid var(--GTMS-secondary);
     }
     .file-list li:last-child { border-bottom: none; }
-    .file-list i { color: #888780; }
+    .file-list i { color: var(--GTMS-text-muted); }
 
     /* ── shared button styles ── */
     .btn-add-row {
@@ -90,12 +90,12 @@
     }
     .btn-submit:hover { opacity: 0.9; }
     .btn-cancel {
-      background: none; color: #5f5e5a;
+      background: none; color: var(--GTMS-text-secondary);
       border: 0.5px solid #d3d1c7; border-radius: 8px;
       padding: 10px 20px; font-size: 14px; cursor: pointer;
       text-decoration: none; display: inline-flex; align-items: center;
     }
-    .btn-cancel:hover { background: #f7f6f2; }
+    .btn-cancel:hover { background: var(--GTMS-secondary); }
 
     .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
     .alert-error { background: #fcebeb; color: #a32d2d; }

@@ -15,7 +15,7 @@
     {% block extra_head %} {% endblock %}
     <style>
       :root {
-        --GTMS-sidebar-text: #5f5e5a;
+        --GTMS-sidebar-text: var(--GTMS-text-secondary);
         --GTMS-sidebar-active-bg: #e6f1fb;
         --GTMS-sidebar-active-text: #185fa5;
       }
@@ -69,7 +69,7 @@
       .sidebar-brand-name {
         font-size: 15px;
         font-weight: 600;
-        color: #2c2c2a;
+        color: var(--GTMS-text-primary);
       }
 
       .sidebar-nav {
@@ -98,7 +98,7 @@
 
       .sidebar-link:hover {
         background-color: #f1efe8;
-        color: #2c2c2a;
+        color: var(--GTMS-text-primary);
       }
 
       .sidebar-link.active {

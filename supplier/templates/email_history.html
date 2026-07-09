@@ -6,16 +6,8 @@
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 1.5rem;
     }
-    .page-title { font-size: 20px; font-weight: 600; color: #2c2c2a; margin: 0 0 2px; }
-    .page-sub   { font-size: 14px; color: #888780; margin: 0; }
-
-    .btn-compose {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--GTMS-primary); color: #fff; border: none;
-      border-radius: 8px; padding: 9px 16px; font-size: 13px;
-      font-weight: 500; cursor: pointer;
-    }
-    .btn-compose:hover { opacity: 0.9; }
+    .page-title { font-size: 20px; font-weight: 600; color: var(--GTMS-text-primary); margin: 0 0 2px; }
+    .page-sub   { font-size: 14px; color: var(--GTMS-text-muted); margin: 0; }
 
     /* ── layout: sidebar thread list + main panel ── */
     .email-layout {
@@ -37,7 +29,7 @@
     }
     .thread-search input {
       width: 100%; border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 8px; padding: 7px 10px; font-size: 13px; color: #2c2c2a;
+      border-radius: 8px; padding: 7px 10px; font-size: 13px; color: var(--GTMS-text-primary);
     }
     .thread-search input:focus { outline: none; border-color: var(--GTMS-primary); }
 
@@ -47,15 +39,15 @@
       padding: 12px 14px; border-bottom: 0.5px solid #f0ede6;
       cursor: pointer; transition: background 0.1s;
     }
-    .thread-item:hover   { background: #f7f6f2; }
+    .thread-item:hover   { background: var(--GTMS-secondary); }
     .thread-item.active  { background: #e6f1fb; border-left: 3px solid var(--GTMS-primary); }
     .thread-item:last-child { border-bottom: none; }
 
     .thread-top  { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-    .thread-name { font-size: 13px; font-weight: 500; color: #2c2c2a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .thread-time { font-size: 11px; color: #888780; white-space: nowrap; flex-shrink: 0; }
-    .thread-subject { font-size: 12px; color: #5f5e5a; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .thread-preview { font-size: 12px; color: #888780; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .thread-name { font-size: 13px; font-weight: 500; color: var(--GTMS-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .thread-time { font-size: 11px; color: var(--GTMS-text-muted); white-space: nowrap; flex-shrink: 0; }
+    .thread-subject { font-size: 12px; color: #434241; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .thread-preview { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* ── main panel ── */
     .email-main {
@@ -67,7 +59,7 @@
     .email-empty {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      color: #888780; gap: 8px;
+      color: var(--GTMS-text-muted); gap: 8px;
     }
     .email-empty i { font-size: 40px; }
     .email-empty p { font-size: 14px; }
@@ -77,14 +69,14 @@
     .email-detail.visible { display: flex; }
 
     .detail-header { border-bottom: 0.5px solid #f0ede6; padding-bottom: 1rem; }
-    .detail-subject { font-size: 18px; font-weight: 600; color: #2c2c2a; margin-bottom: 8px; }
-    .detail-meta    { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: #888780; }
+    .detail-subject { font-size: 18px; font-weight: 600; color: var(--GTMS-text-primary); margin-bottom: 8px; }
+    .detail-meta    { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--GTMS-text-muted); }
     .detail-meta span { display: flex; align-items: center; gap: 4px; }
     .detail-meta i    { font-size: 13px; }
 
     .email-bubble {
-      background: #f7f6f2; border-radius: 10px; padding: 1rem;
-      font-size: 13px; color: #2c2c2a; line-height: 1.6;
+      background: var(--GTMS-secondary); border-radius: 10px; padding: 1rem;
+      font-size: 13px; color: var(--GTMS-text-primary); line-height: 1.6;
       white-space: pre-wrap; word-break: break-word;
     }
 
@@ -93,15 +85,15 @@
       border-top: 0.5px solid var(--GTMS-secondary-dark);
       padding: 1rem 1.5rem; background: #fafaf8;
     }
-    .compose-panel h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #888780; margin: 0 0 10px; }
+    .compose-panel h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--GTMS-text-muted); margin: 0 0 10px; }
 
     .compose-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .compose-panel label { font-size: 12px; font-weight: 500; color: #5f5e5a; display: block; margin-bottom: 4px; }
+    .compose-panel label { font-size: 12px; font-weight: 500; color: var(--GTMS-text-secondary); display: block; margin-bottom: 4px; }
     .compose-panel input,
     .compose-panel select,
     .compose-panel textarea {
       width: 100%; border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 8px; padding: 7px 10px; font-size: 13px; color: #2c2c2a; background: #fff;
+      border-radius: 8px; padding: 7px 10px; font-size: 13px; color: var(--GTMS-text-primary); background: #fff;
     }
     .compose-panel input:focus,
     .compose-panel select:focus,
@@ -122,41 +114,12 @@
     .send-status.success { color: #3b6d11; }
     .send-status.error   { color: #a32d2d; }
 
-    /* new compose modal */
-    .modal-backdrop {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5); z-index: 200;
-      align-items: center; justify-content: center;
+    .email-input {
+      display:none; margin-top:6px
     }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      background: #fff; border-radius: 14px; width: 540px; max-width: 95vw;
-      box-shadow: 0 8px 32px rgba(0,0,0,.15); overflow: hidden;
-    }
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px; border-bottom: 0.5px solid #e5e3da;
-    }
-    .modal-header h3 { font-size: 15px; font-weight: 600; color: #2c2c2a; margin: 0; }
-    .modal-close {
-      background: none; border: none; font-size: 18px; cursor: pointer; color: #888780; padding: 2px;
-    }
-    .modal-close:hover { color: #2c2c2a; }
-    .modal-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 10px; }
-    .modal-body label { font-size: 12px; font-weight: 500; color: #5f5e5a; display: block; margin-bottom: 4px; }
-    .modal-body input,
-    .modal-body select,
-    .modal-body textarea {
-      width: 100%; border: 0.5px solid #d3d1c7; border-radius: 8px;
-      padding: 8px 10px; font-size: 13px; color: #2c2c2a;
-    }
-    .modal-body input:focus,
-    .modal-body select:focus,
-    .modal-body textarea:focus { outline: none; border-color: var(--GTMS-primary); box-shadow: 0 0 0 3px #14213d1a; }
-    .modal-body textarea { resize: vertical; min-height: 120px; }
-    .modal-footer {
-      padding: 12px 18px; border-top: 0.5px solid #e5e3da;
-      display: flex; align-items: center; justify-content: space-between;
+    .back-to-select {
+      display:none; font-size:12px; 
+      margin:4px 0px; cursor: pointer;
     }
 
     .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
@@ -185,9 +148,6 @@
       <h1 class="page-title">Email History</h1>
       <p class="page-sub">{{ supplier.Company_name }}</p>
     </div>
-    <button class="btn-compose" onclick="openCompose()">
-      <i class="ti ti-edit" aria-hidden="true"></i> New email
-    </button>
   </div>
 
   <div class="email-layout">
@@ -202,20 +162,20 @@
           <div class="thread-item"
               id="thread-{{ forloop.counter }}"
               onclick="openThread({{ forloop.counter }})"
-              data-subject="{{ email.subject }}"
-              data-to="{{ email.to_email }}"
-              data-body="{{ email.body }}"
+              data-subject="{{ email.Subject }}"
+              data-to="{{ email.To }}"
+              data-body="{{ email.Body }}"
               data-time="{{ email.Time|date:'d M Y, H:i' }}"
-              data-searchtext="{{ email.subject|lower }} {{ email.to_email|lower }} {{ email.body|lower }}">
+              data-searchtext="{{ email.Subject|lower }} {{ email.To|lower }} {{ email.Body|lower }}">
             <div class="thread-top">
-              <div class="thread-name">{{ email.to_email }}</div>
+              <div class="thread-name">{{ email.To }}</div>
               <div class="thread-time">{{ email.Time|date:"d M" }}</div>
             </div>
-            <div class="thread-subject">{{ email.subject }}</div>
-            <div class="thread-preview">{{ email.body|truncatechars:60 }}</div>
+            <div class="thread-subject">{{ email.Subject }}</div>
+            <div class="thread-preview">{{ email.Body|truncatechars:60 }}</div>
           </div>
         {% empty %}
-          <div style="padding:2rem;text-align:center;color:#888780;font-size:13px">
+          <div style="padding:2rem;text-align:center;color:var(--GTMS-text-muted);font-size:13px">
             <i class="ti ti-inbox" style="font-size:32px;display:block;margin-bottom:8px"></i>
             No emails sent yet.
           </div>
@@ -256,13 +216,16 @@
             <div>
               <label>To</label>
               <select name="to_email_select" onchange="handleEmailSelect(this)">
+                <option value="" selected disabled>Select mail options</option>
                 {% for c in emails %}
                   <option value="{{ c }}">{{ c }}</option>
                 {% endfor %}
-                <option value="__manual__">Type manually…</option>
+                <option value="manual">Type manually…</option>
               </select>
-              <input type="email" name="to_email" id="compose-to-input"
-                    style="display:none;margin-top:6px" placeholder="Enter email address">
+              <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
+              <a class="back-to-select" onclick="resetEmailSelect(this.closest('div'));return false">
+                ← Pick from list
+              </a>
             </div>
             <div>
               <label>Subject</label>
@@ -284,49 +247,6 @@
 
     </div>
   </div>
-
-  {# ── new compose modal (for "New email" button — different recipient) ── #}
-  <div class="modal-backdrop" id="compose-modal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>New email</h3>
-        <button class="modal-close" onclick="closeCompose()"><i class="ti ti-x"></i></button>
-      </div>
-      <div class="modal-body">
-        <form id="modal-form" onsubmit="sendModalEmail(event)">
-          {% csrf_token %}
-          <input type="hidden" name="company_type" value="supplier">
-          <input type="hidden" name="company_id"   value="{{ supplier.id }}">
-          <div>
-            <label>To</label>
-            <select name="to_email_select" onchange="handleEmailSelect(this)">
-              {% for c in emails %}
-                <option value="{{ c }}">{{ c }}</option>
-              {% endfor %}
-              <option value="__manual__">Type manually…</option>
-            </select>
-            <input type="email" name="to_email" id="modal-to-input"
-                  style="display:none;margin-top:6px" placeholder="Enter email address">
-          </div>
-          <div>
-            <label>Subject</label>
-            <input type="text" name="subject" placeholder="Email subject">
-          </div>
-          <div>
-            <label>Message</label>
-            <textarea name="content" placeholder="Write your message here…"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <span class="send-status" id="modal-status"></span>
-        <button type="submit" form="modal-form" class="btn-send" id="modal-send-btn">
-          <i class="ti ti-send" aria-hidden="true"></i> Send email
-        </button>
-      </div>
-    </div>
-  </div>
-
 {% endblock %}
 
 {% block extra_script %}
@@ -371,15 +291,29 @@
 
     // ── email select / manual input ──
     function handleEmailSelect(select) {
-      const input = select.nextElementSibling;
-      if (select.value === '__manual__') {
+      const input = select.nextElementSibling;  // the input right after the select
+      const backLink = select.parentElement.querySelector('a');
+
+      if (select.value === 'manual') {
         select.style.display = 'none';
         input.style.display  = 'block';
         input.value = '';
         input.focus();
+
+        if (backLink) backLink.style.display = 'block';
       } else {
-        syncEmailInput(select);
+        input.value = select.value;  // keep input in sync so the form always submits to_email
       }
+    }
+
+    function resetEmailSelect(container) {
+      const select = container.querySelector('select[name="to_email_select"]');
+      const input  = container.querySelector('input[name="to_email"]');
+      const link   = container.querySelector('a');
+      select.style.display = '';
+      select.value = '';
+      input.style.display  = 'none';
+      link.style.display   = 'none';
     }
 
     function syncEmailInput(select) {
@@ -408,24 +342,6 @@
         // reload thread list to show new email
         setTimeout(() => location.reload(), 800);
       }
-    }
-
-    // ── modal compose ──
-    function openCompose()  { document.getElementById('compose-modal').classList.add('open'); }
-    function closeCompose() { document.getElementById('compose-modal').classList.remove('open'); }
-
-    document.getElementById('compose-modal').addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeCompose();
-    });
-
-    function sendModalEmail(event) {
-      event.preventDefault();
-      const form   = document.getElementById('modal-form');
-      const btn    = document.getElementById('modal-send-btn');
-      const status = document.getElementById('modal-status');
-      submitEmailForm(form, btn, status, data => {
-        if (data.success) setTimeout(() => { closeCompose(); location.reload(); }, 800);
-      });
     }
 
     // ── shared fetch helper ──

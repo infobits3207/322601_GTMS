@@ -3,8 +3,8 @@
 {% block extra_head %}
   <style>
     .page-header { margin-bottom: 1.5rem; display:flex; align-items:flex-start; justify-content:space-between; }
-    .page-title  { font-size: 20px; font-weight: 600; color: #2c2c2a; margin: 0 0 4px; }
-    .page-sub    { font-size: 14px; color: #888780; margin: 0; }
+    .page-title  { font-size: 20px; font-weight: 600; color: var(--GTMS-text-primary); margin: 0 0 4px; }
+    .page-sub    { font-size: 14px; color: var(--GTMS-text-muted); margin: 0; }
 
     .card {
       background: #fff; border: 0.5px solid var(--GTMS-secondary-dark);
@@ -25,7 +25,7 @@
       padding: 12px 14px; cursor: pointer;
       justify-content: space-between;
     }
-    .company-header:hover { background: #f7f6f2; }
+    .company-header:hover { background: var(--GTMS-secondary); }
 
     .company-left  { display: flex; align-items: flex-start; gap: 12px; }
     .company-avatar {
@@ -35,8 +35,8 @@
       font-size: 12px; font-weight: 600; flex-shrink: 0;
     }
     .company-avatar.green { background: #eaf3de; color: #3b6d11; }
-    .company-name { font-size: 14px; font-weight: 500; color: #2c2c2a; }
-    .company-meta { font-size: 12px; color: #888780; margin-top: 3px; }
+    .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary); }
+    .company-meta { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 3px; }
 
     .tag {
       display: inline-block; font-size: 11px; padding: 2px 8px;
@@ -44,7 +44,7 @@
     }
     .tag-green { background: #eaf3de; color: #3b6d11; }
 
-    .toggle-icon { font-size: 16px; color: #888780; flex-shrink: 0; transition: transform .2s; margin-top: 2px; }
+    .toggle-icon { font-size: 16px; color: var(--GTMS-text-muted); flex-shrink: 0; transition: transform .2s; margin-top: 2px; }
     .company-row.open .toggle-icon { transform: rotate(180deg); }
 
     /* ── email compose panel ── */
@@ -55,13 +55,13 @@
     .company-row.open .email-panel { display: block; }
 
     .email-panel label {
-      font-size: 12px; font-weight: 500; color: #5f5e5a; display: block; margin-bottom: 4px;
+      font-size: 12px; font-weight: 500; color: var(--GTMS-text-secondary); display: block; margin-bottom: 4px;
     }
     .email-panel input,
     .email-panel textarea,
     .email-panel select {
       width: 100%; border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
-      padding: 8px 10px; font-size: 13px; color: #2c2c2a;
+      padding: 8px 10px; font-size: 13px; color: var(--GTMS-text-primary);
       background: #fff; margin-bottom: 10px;
     }
     .email-panel input:focus,
@@ -88,13 +88,14 @@
     .send-status.success { color: #3b6d11; display: inline; }
     .send-status.error   { color: #a32d2d; display: inline; }
 
-    .empty-note { font-size: 13px; color: #888780; padding: 0.5rem 0; }
+    .empty-note { font-size: 13px; color: var(--GTMS-text-muted); padding: 0.5rem 0; }
 
     .email-input {
       display:none; margin-top:6px
     }
     .back-to-select {
-      display:none; font-size:12px; margin:4px 0px
+      display:none; font-size:12px; 
+      margin:4px 0px; cursor: pointer;
     }
   </style>
 {% endblock %}
@@ -111,7 +112,7 @@
   {# ── Related buyers ── #}
   <div class="card">
     <p class="section-title">Related buyers</p>
-    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">
+    <p style="font-size:12px;color:var(--GTMS-text-muted);margin:-0.5rem 0 0.75rem">
       Buyers who purchase the same products this supplier sells.
     </p>
 
@@ -173,7 +174,7 @@
   {# ── Related suppliers ── #}
   <div class="card">
     <p class="section-title">Related suppliers</p>
-    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">
+    <p style="font-size:12px;color:var(--GTMS-text-muted);margin:-0.5rem 0 0.75rem">
       Suppliers who manufacture products that use this supplier's items as raw material input.
     </p>
 
@@ -215,8 +216,7 @@
                   <option value="manual">Type manually</option>
                 </select>
                 <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
-                <a href="#" class="back-to-select" 
-                  onclick="resetEmailSelect(this.closest('div'));return false">
+                <a class="back-to-select" onclick="resetEmailSelect(this.closest('div'));return false">
                   ← Pick from list
                 </a>
               </div>
@@ -290,7 +290,6 @@
     }
 
     function handleEmailSelect(select) {
-      console.log(">>>>>>>>>>>>>")
       const input = select.nextElementSibling;  // the input right after the select
       const backLink = select.parentElement.querySelector('a');
 
@@ -305,12 +304,6 @@
         input.value = select.value;  // keep input in sync so the form always submits to_email
       }
     }
-
-    // run on page load so input starts pre-filled with the first dropdown value
-    document.querySelectorAll('select[name="to_email_select"]').forEach(select => {
-      const input = select.nextElementSibling;
-      input.value = select.value;  // sync initial value
-    });
 
     function resetEmailSelect(container) {
       const select = container.querySelector('select[name="to_email_select"]');
