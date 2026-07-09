@@ -83,12 +83,6 @@
     }
 
     .form-actions { display: flex; gap: 10px; margin-top: 0.5rem; }
-    .btn-submit {
-      background: var(--GTMS-primary); color: #fff;
-      border: none; border-radius: 8px; padding: 10px 24px;
-      font-size: 14px; font-weight: 500; cursor: pointer;
-    }
-    .btn-submit:hover { opacity: 0.9; }
     .btn-cancel {
       background: none; color: var(--GTMS-text-secondary);
       border: 0.5px solid #d3d1c7; border-radius: 8px;
@@ -329,7 +323,7 @@
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn-submit">
+      <button type="submit" class="btn-custom">
         <i class="ti ti-check"></i> Save supplier
       </button>
       <a href="{% url 'supplier:suppliers_list' %}" class="btn-cancel">Cancel</a>
