@@ -7,7 +7,6 @@ from supplier.models import (
     supplier_details, supplier_contact_details,
     supplier_addresses, supplier_media, Sell_products
 )
-from buyer.models import buyer_details, Purchase_products
 import pandas as pd
 import os
 
@@ -125,7 +124,9 @@ def supplier_detail(request, sp_id):
         'images':       media.exclude(Image='').exclude(Image=None),
         'Products':     products,
         'category_list': _category_list,
+        'product_group_choices': ['FCSL','ICSL','FCCL','ICCL','FCSC','ICSC','DCSC','DCSL'],
     }
+    print(context['product_group_choices'])
     return render(request, 'Edit_supplier.html', context)
 
 
@@ -190,7 +191,6 @@ def edit_supplier(request, sp_id):
         return redirect('supplier:supplier_detail', sp_id)
 
     return redirect('supplier:supplier_detail', sp_id)
-
 
 def fetch_products(request):
     category = request.GET.get('category_name', '').strip()

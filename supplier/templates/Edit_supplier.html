@@ -136,7 +136,7 @@
         </div>
         <div class="form-group">
           <label>Website</label>
-          <input type="url" name="Website_link" value="{{ supplier.Website_link|default:'' }}">
+          <input type="text" name="Website_link" value="{{ supplier.Website_link|default:'' }}">
         </div>
         <div class="form-group">
           <label>Contact person</label>
@@ -242,9 +242,20 @@
               <button type="button" class="btn-remove" onclick="this.closest('.details-block').remove()"><i class="ti ti-x"></i></button>
             </div>
             <div class="form-grid">
-              <div class="form-group"><label>Sector</label><input type="text" name="Sector" value="{{ product.Sector|default:'' }}"></div>
-              <div class="form-group"><label>Division</label><input type="text" name="Division" value="{{ product.Division|default:'' }}"></div>
-              <div class="form-group"><label>Product group</label><input type="text" name="Product_group" value="{{ product.Product_group|default:'' }}"></div>
+              <div class="form-group"><label>Sector</label>
+                <input type="text" name="Sector" value="{{ product.Sector|default:'' }}">
+              </div>
+              <div class="form-group"><label>Division</label>
+                <input type="text" name="Division" value="{{ product.Division|default:'' }}">
+              </div>
+              <div class="form-group"><label>Product group</label>
+                <select name="Product_group">
+                  <option selected disabled>Select product group</option>
+                  {% for group in product_group_choices %}
+                    <option value="{{group}}" {% if product.Product_group == group %} selected {% endif %}>{{group}}</option>
+                  {% endfor %}
+                </select>
+              </div>
               <div class="form-group">
                 <label>Product category</label>
                 <input type="text" name="Product_category" list="category_list" onchange="fetchProductname(this)" value="{{ product.Product_category|default:'' }}">
@@ -423,9 +434,20 @@
             <i class="ti ti-x"></i></button>
         </div>
         <div class="form-grid">
-          <div class="form-group"><label>Sector</label><input type="text" name="Sector"></div>
-          <div class="form-group"><label>Division</label><input type="text" name="Division"></div>
-          <div class="form-group"><label>Product group</label><input type="text" name="Product_group"></div>
+          <div class="form-group"><label>Sector</label>
+            <input type="text" name="Sector">
+          </div>
+          <div class="form-group"><label>Division</label>
+            <input type="text" name="Division">
+          </div>
+          <div class="form-group"><label>Product group</label>
+            <select name="Product_group">
+              <option selected disabled>Select product group</option>
+              {% for group in product_group_choices %}
+                <option value="{{group}}">{{group}}</option>
+              {% endfor %}
+            </select>
+          </div>
           <div class="form-group">
             <label>Product category</label>
             <input type="text" name="Product_category" list="category_list" onchange="fetchProductname(this)">

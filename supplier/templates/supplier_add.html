@@ -130,7 +130,7 @@
         </div>
         <div class="form-group">
           <label for="Website_link">Website</label>
-          <input type="url" id="Website_link" name="Website_link" placeholder="https://example.com">
+          <input type="text" id="Website_link" name="Website_link" placeholder="https://example.com">
         </div>
         <div class="form-group">
           <label for="Contact_person">Contact person</label>
@@ -218,7 +218,12 @@
             </div>
             <div class="form-group">
               <label>Product group</label>
-              <input type="text" name="Product_group">
+              <select name="Product_group">
+                <option selected disabled>Select product group</option>
+                {% for group in product_group_choices %}
+                  <option>{{group}}</option>
+                {% endfor %}
+              </select>
             </div>
 
             <div class="form-group">
@@ -367,7 +372,12 @@
           </div>
           <div class="form-group">
             <label>Product group</label>
-            <input type="text" name="Product_group">
+            <select name="Product_group">
+              <option selected disabled>Select product group</option>
+              {% for group in product_group_choices %}
+                <option>{{group}}</option>
+              {% endfor %}
+            </select>
           </div>
           <div class="form-group">
             <label>Product category</label>

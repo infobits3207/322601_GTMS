@@ -45,7 +45,8 @@ class Sell_products(models.Model):
     Supplier = models.ForeignKey(supplier_details,on_delete=models.CASCADE,related_name='Sell_products')
     Sector = models.CharField(max_length=100,blank=True)
     Division = models.CharField(max_length=100,blank=True)
-    Product_group = models.CharField(max_length=100,blank=True)
+    Product_group = models.CharField(max_length=10,blank=True)
+
     Product_category = models.CharField(max_length=100,blank=True)
     Product = models.CharField(max_length=300,blank=True)
     HSN_code = models.CharField(max_length=10,blank=True)

@@ -29,7 +29,7 @@
   .search-bar-group {
     display: grid; gap: 10px;
     flex: 1; min-width: 320px;
-    grid-template-columns: 2.2fr 1fr 1fr 1fr;
+    grid-template-columns: 2.2fr 1fr 1fr;
   }
   .search-wrap { position: relative; }
   .search-wrap i {
@@ -40,7 +40,7 @@
     pointer-events: none;
     transition: color 0.15s ease;
   }
-  .search-wrap input {
+  .search-wrap input, .search-wrap select {
     width: 100%;
     padding: 9px 12px 9px 34px;
     font-size: 13px;
@@ -56,10 +56,10 @@
   .search-wrap input::placeholder {
     color: #77736a;
   }
-  .search-wrap input:hover {
+  .search-wrap input:hover, .search-wrap select:hover {
     border-color: #D7D1C2;
   }
-  .search-wrap input:focus {
+  .search-wrap input:focus, .search-wrap select:focus {
     background: #ffffff;
     border-color: var(--GTMS-primary-light);
     box-shadow: 0 0 0 3px rgba(31, 42, 68, 0.08);
@@ -114,7 +114,7 @@
   .supplier-row {
     display: grid;
     /* Company | WCPD/IEC | Contact | Products | Added | Actions */
-    grid-template-columns: 2fr 70px 1.4fr 1.6fr 80px 124px;
+    grid-template-columns: 2fr 70px 1.4fr 1.6fr 80px 95px;
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
@@ -220,13 +220,22 @@
         <input type="text" name="search" value="{{ search|default:'' }}" placeholder="Search by company name or product">
       </div>
       <div class="search-wrap">
-        <i class="fa-solid fa-location-dot"></i>
-        <input type="text" name="city" value="{{ city|default:'' }}" placeholder="City">
+        <i class="fa-solid fa-industry"></i>
+        <select name="Product_group">
+          <option selected disabled>Select product group</option>
+          {% for group in product_group_choices %}
+            <option {% if Product_group == group %} selected {% endif %}>{{ group }}</option>
+          {% endfor %}
+        </select>
       </div>
-      <div class="search-wrap">
+      <!-- <div class="search-wrap">
+        <i class="fa-solid fa-location-dot"></i>
+        <input type="text" name="city" val  ue="{{ city|default:'' }}" placeholder="City">
+      </div> -->
+      <!-- <div class="search-wrap">
         <i class="fa-solid fa-map"></i>
         <input type="text" name="state" value="{{ state|default:'' }}" placeholder="State">
-      </div>
+      </div> -->
       <div class="search-wrap">
         <i class="fa-solid fa-globe"></i>
         <input type="text" name="country" value="{{ country|default:'' }}" placeholder="Country">
@@ -236,7 +245,7 @@
       <button type="submit" class="btn-custom">
         <i class="fa-solid fa-magnifying-glass"></i> Search
       </button>
-      {% if search or city or state or country %}
+      {% if search or Product_group or country %}
         <a href="{% url 'supplier:suppliers_list' %}" class="btn-clear">Clear</a>
       {% endif %}
     </div>
@@ -309,10 +318,10 @@
             <a href="{% url 'supplier:related_companies' s.id %}" class="act-btn" title="View related companies">
               <i class="fa-solid fa-users"></i>
             </a>
-            <button class="act-btn del" title="Delete supplier" name="delete"
+            <!-- <button class="act-btn del" title="Delete supplier" name="delete"
                     onclick="confirmDelete(this,{{ s.id }}, '{{ s.Company_name|escapejs }}')">
               <i class="ti ti-trash" aria-hidden="true"></i>
-            </button>
+            </button> -->
             <a href="{% url 'supplier:email_history' s.id %}" class="act-btn" title="Email history">
               <span class="email-history">
                 <i class="fa-solid fa-envelope"></i>

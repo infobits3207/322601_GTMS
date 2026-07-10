@@ -142,8 +142,9 @@ def suppliers_list(request):
     ).order_by('-Created_at')
 
     search = request.GET.get('search', '').strip()
-    city   = request.GET.get('city', '').strip()
-    state  = request.GET.get('state', '').strip()
+    Product_group = request.GET.get('Product_group', '').strip()
+    # city   = request.GET.get('city', '').strip()
+    # state  = request.GET.get('state', '').strip()
     country = request.GET.get('country', '').strip()
 
     if search:
@@ -152,11 +153,14 @@ def suppliers_list(request):
             Q(Sell_products__Product__icontains=search)
         )
 
-    if city:
-        suppliers = suppliers.filter(supplier_addresses__City__icontains=city)
+    if Product_group:
+        suppliers = suppliers.filter(Sell_products__Product_group=Product_group)
 
-    if state:
-        suppliers = suppliers.filter(supplier_addresses__State__icontains=state)
+    # if city:
+    #     suppliers = suppliers.filter(supplier_addresses__City__icontains=city)
+
+    # if state:
+    #     suppliers = suppliers.filter(supplier_addresses__State__icontains=state)
 
     if country:
         suppliers = suppliers.filter(supplier_addresses__Country__icontains=country)
@@ -165,8 +169,12 @@ def suppliers_list(request):
     suppliers = suppliers.distinct()
 
     context = {
-        'search': search, 'city': city, 'state': state,
-        'country': country, 'suppliers': suppliers,
+        'search': search, 
+        'country': country, #'city': city, 'state': state,
+        'Product_group': Product_group,
+        'suppliers': suppliers,
+        'product_group_choices': ['FCSL','ICSL','FCCL','ICCL','FCSC','ICSC','DCSC','DCSL'],
+
     }
     return render(request, 'suppliers_list.html', context)
 
