@@ -13,6 +13,7 @@ urlpatterns = [
 
     path('send-email/', email_view.send_company_email, name='send_company_email'),
     path('<int:sp_id>/email_history/', email_view.email_history, name='email_history'),
+    path('send-bulk-email/', email_view.send_bulk_email, name='send_bulk_email'),
 
     path('supplier_detail/<int:sp_id>', supplier_details_view.supplier_detail, name='supplier_detail'),
     path('edit_supplier/<int:sp_id>', supplier_details_view.edit_supplier, name='edit_supplier'),

@@ -1,189 +1,261 @@
 {% extends 'base_template.html' %}
 
 {% block extra_head %}
-<style>
-  .page-loader {
-    display: none; flex-direction: column; justify-content: center; align-items: center;
-    color: #f3f3f3; gap: 15px; position: fixed; z-index: 1000;
-    top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75);
-  }
-  .loader {
-    border: 6px solid rgba(255,255,255,0.25); border-radius: 50%;
-    border-top-color: #fff; width: 52px; height: 52px;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loader-text { font-size: 14px; color: rgba(255,255,255,0.85); }
+  <style>
+    .page-loader {
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      color: #f3f3f3; gap: 15px; position: fixed; z-index: 1000;
+      top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75);
+    }
+    .loader {
+      border: 6px solid rgba(255,255,255,0.25); border-radius: 50%;
+      border-top-color: #fff; width: 52px; height: 52px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 14px; color: rgba(255,255,255,0.85); }
 
-  .page-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
-  }
-  .page-title { font-size: 20px; font-weight: 500; margin: 0; }
-  .search-section {
-    display: flex; align-items: center; flex-wrap: wrap;
-    gap: 12px; padding: 16px; margin: 20px 0;
-    background: #ffffff; border-radius: 14px;
-    border: 1px solid var(--GTMS-secondary-dark);
-    box-shadow: 0 1px 2px rgba(20, 20, 30, 0.04);
-  }
-  .search-bar-group {
-    display: grid; gap: 10px;
-    flex: 1; min-width: 320px;
-    grid-template-columns: 2.2fr 1fr 1fr;
-  }
-  .search-wrap { position: relative; }
-  .search-wrap i {
-    position: absolute;
-    left: 12px; top: 50%;
-    transform: translateY(-50%);
-    font-size: 13px; color: #77736a;
-    pointer-events: none;
-    transition: color 0.15s ease;
-  }
-  .search-wrap input, .search-wrap select {
-    width: 100%;
-    padding: 9px 12px 9px 34px;
-    font-size: 13px;
-    font-family: inherit;
-    color: #2B2A28;
-    background: var(--GTMS-secondary);
-    border: 1px solid var(--GTMS-secondary-dark);
-    border-radius: 9px;
-    outline: none;
-    box-sizing: border-box;
-    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-  }
-  .search-wrap input::placeholder {
-    color: #77736a;
-  }
-  .search-wrap input:hover, .search-wrap select:hover {
-    border-color: #D7D1C2;
-  }
-  .search-wrap input:focus, .search-wrap select:focus {
-    background: #ffffff;
-    border-color: var(--GTMS-primary-light);
-    box-shadow: 0 0 0 3px rgba(31, 42, 68, 0.08);
-  }
-  .search-wrap input:focus + i,
-  .search-wrap:has(input:focus) i {
-    color: var(--GTMS-primary-light);
-  }
-  .search-actions {
-    display: flex; align-items: center;
-    gap: 10px; flex-shrink: 0;
-  }
-  .btn-clear:hover { color: var(--GTMS-text-primary); text-decoration: underline; }
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
+    }
+    .page-title { font-size: 20px; font-weight: 500; margin: 0; }
+    .search-section {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 12px; padding: 16px; margin: 20px 0;
+      background: #ffffff; border-radius: 14px;
+      border: 1px solid var(--GTMS-secondary-dark);
+      box-shadow: 0 1px 2px rgba(20, 20, 30, 0.04);
+    }
+    .search-bar-group {
+      display: grid; gap: 10px;
+      flex: 1; min-width: 320px;
+      grid-template-columns: 2.2fr 1fr 1fr;
+    }
+    .search-wrap { position: relative; }
+    .search-wrap i {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); font-size: 13px; color: #77736a;
+      pointer-events: none; transition: color 0.15s ease;
+    }
+    .search-wrap input, .search-wrap select {
+      width: 100%; padding: 9px 12px 9px 34px; font-size: 13px;
+      font-family: inherit; color: #2B2A28;
+      background: var(--GTMS-secondary); border: 1px solid var(--GTMS-secondary-dark);
+      border-radius: 9px; outline: none; box-sizing: border-box;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+    .search-wrap input::placeholder { color: #77736a; }
+    .search-wrap input:hover, .search-wrap select:hover { border-color: #D7D1C2; }
+    .search-wrap input:focus, .search-wrap select:focus {
+      background: #ffffff; border-color: var(--GTMS-primary-light);
+      box-shadow: 0 0 0 3px rgba(31, 42, 68, 0.08);
+    }
+    .search-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .btn-clear:hover { color: var(--GTMS-text-primary); text-decoration: underline; }
 
-  .add-wrapper { position: relative; display: inline-block; }
-  .dropdown-menu {
-    display: none; position: absolute; right: 0; top: calc(100% + 6px);
-    background: #fff; border: 0.5px solid #e5e3da; border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,.1); min-width: 170px; z-index: 100; overflow: hidden;
-  }
-  .dropdown-menu.open { display: block; }
-  .dropdown-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-    font-size: 13px; color: #3d3d3a; text-decoration: none;
-    border: none; background: none; width: 100%; cursor: pointer;
-  }
-  .dropdown-item:hover { background: var(--GTMS-secondary); }
-  .dropdown-item i { font-size: 16px; color: var(--GTMS-text-muted); }
+    .add-wrapper { position: relative; display: inline-block; }
+    .dropdown-menu {
+      display: none; position: absolute; right: 0; top: calc(100% + 6px);
+      background: #fff; border: 0.5px solid #e5e3da; border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.1); min-width: 170px; z-index: 100; overflow: hidden;
+    }
+    .dropdown-menu.open { display: block; }
+    .dropdown-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      font-size: 13px; color: #3d3d3a; text-decoration: none;
+      border: none; background: none; width: 100%; cursor: pointer;
+    }
+    .dropdown-item:hover { background: var(--GTMS-secondary); }
+    .dropdown-item i { font-size: 16px; color: var(--GTMS-text-muted); }
 
-  .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
-  .alert-success { background: #eaf3de; color: #3b6d11; }
-  .alert-error   { background: #fcebeb; color: #a32d2d; }
+    .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
+    .alert-success { background: #eaf3de; color: #3b6d11; }
+    .alert-error   { background: #fcebeb; color: #a32d2d; }
 
-  /* ── excel panel ── */
-  .excel-panel {
-    display: none; background: var(--GTMS-secondary); border: 0.5px solid #e5e3da;
-    border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
-  }
-  .excel-panel.open { display: block; }
-  .excel-panel label { font-size: 12px; font-weight: 500; color: var(--GTMS-text-secondary); display: block; margin-bottom: 6px; }
-  .excel-panel .btn-import {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: var(--GTMS-primary); color: #fff; border: none;
-    border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; margin-top: 8px;
-  }
-  .excel-panel .btn-import:hover { opacity: 0.9; }
+    .excel-panel {
+      display: none; background: var(--GTMS-secondary); border: 0.5px solid #e5e3da;
+      border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
+    }
+    .excel-panel.open { display: block; }
+    .excel-panel label { 
+      font-size: 12px; font-weight: 500; 
+      color: var(--GTMS-text-secondary); 
+      display: block; margin-bottom: 6px; 
+    }
+    .excel-panel .btn-import {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--GTMS-primary); color: #fff; border: none;
+      border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; margin-top: 8px;
+    }
+    .excel-panel .btn-import:hover { opacity: 0.9; }
 
-  /* ── supplier list rows ── */
-  .supplier-list { display: flex; flex-direction: column; gap: 6px; }
+    /* ── bulk action bar ── */
+    .bulk-bar {
+      display: none; align-items: center; gap: 12px;
+      background: var(--GTMS-primary); color: #fff;
+      padding: 10px 16px; border-radius: 10px; margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .bulk-bar.visible { display: flex; }
+    .bulk-count { font-weight: 600; }
+    .bulk-actions { display: flex; gap: 8px; margin-left: auto; }
+    .btn-bulk {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.15); color: #fff;
+      border: 1px solid rgba(255,255,255,0.3); border-radius: 7px;
+      padding: 6px 12px; font-size: 12px; cursor: pointer; font-weight: 500;
+    }
+    .btn-bulk:hover { background: rgba(255,255,255,0.25); }
+    .btn-bulk-clear {
+      background: none; border: none; color: rgba(255,255,255,0.7);
+      cursor: pointer; font-size: 18px; padding: 2px 4px; line-height: 1;
+    }
+    .btn-bulk-clear:hover { color: #fff; }
 
-  .list-header,
-  .supplier-row {
-    display: grid;
-    /* Company | WCPD/IEC | Contact | Products | Added | Actions */
-    grid-template-columns: 2fr 70px 1.4fr 1.6fr 80px 95px;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
-  }
+    /* ── supplier list ── */
+    .supplier-list { display: flex; flex-direction: column; gap: 6px; }
 
-  .list-header {
-    border: none;
-    padding: 2px 14px 6px;
-  }
-  .list-header span {
-    font-size: 11px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: .05em; color: var(--GTMS-text-muted);
-  }
+    .list-header,
+    .supplier-row {
+      display: grid;
+      grid-template-columns: 32px 2fr 70px 1.4fr 1.6fr 80px 95px;
+      align-items: center; gap: 12px; 
+      padding: 10px 14px; border-radius: 10px;
+    }
+    .list-header { border: none; padding: 2px 14px 6px; }
+    .list-header span { 
+      font-size: 11px; font-weight: 600; 
+      text-transform: uppercase; 
+      letter-spacing: .05em; color: 
+      var(--GTMS-text-muted); 
+    }
 
-  .supplier-row {
-    background: #fff; border: 0.5px solid #e5e3da; cursor: default;
-  }
-  .supplier-row:hover { border-color: #c5c3ba; }
+    .supplier-row { background: #fff; border: 0.5px solid #e5e3da; cursor: default; transition: border-color .15s; }
+    .supplier-row:hover { border-color: #c5c3ba; }
+    .supplier-row.selected { border-color: var(--GTMS-primary); background: #f0f3f9; }
 
-  /* cells */
-  .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary); }
-  .company-sub  { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; }
+    /* checkbox */
+    .row-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--GTMS-primary); }
+    .header-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--GTMS-primary); }
 
-  .wcpd-code { font-size: 13px; font-weight: 500; color: var(--GTMS-text-primary); }
-  .iec-code  { font-size: 11px; color: var(--GTMS-text-muted); margin-top: 2px; }
+    .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary); }
+    .company-sub  { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; }
+    .wcpd-code { font-size: 13px; font-weight: 500; color: var(--GTMS-text-primary); }
+    .iec-code  { font-size: 11px; color: var(--GTMS-text-muted); margin-top: 2px; }
+    .contact-line { 
+      font-size: 12px; text-overflow: ellipsis;
+      color: var(--GTMS-text-secondary); 
+      white-space: nowrap; overflow: hidden; 
+    }
 
-  .contact-line {
-    font-size: 12px; color: var(--GTMS-text-secondary);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
+    .tags { display: flex; flex-wrap: wrap; gap: 3px; }
+    .tag {
+      display: inline-block; font-size: 11px; padding: 2px 7px;
+      border-radius: 20px; background: #e6f1fb; color: #185fa5;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;
+    }
+    .tag-more { 
+      display: inline-block; font-size: 11px; 
+      padding: 2px 7px; border-radius: 20px; 
+      background: #f0ede6; white-space: nowrap; 
+      color: var(--GTMS-text-muted); 
+    }
+    .date-cell { font-size: 12px; color: var(--GTMS-text-muted); }
+    .action-cell { display: flex; gap: 6px; align-items: center; }
+    .act-btn { 
+      background: none; border: none; 
+      cursor: pointer; border-radius: 6px;  
+      color: var(--GTMS-text-muted); 
+      font-size: 16px; padding: 5px;
+    }
+    .act-btn:hover { background: #f0ede6; color: var(--GTMS-text-primary); }
+    .act-btn.del:hover { background: #fcebeb; color: #a32d2d; }
+    .email-history { display: inline-block; position: relative; }
+    .email-history .fa-clock-rotate-left { 
+      position: absolute; font-size:10px; 
+      right:-3px; bottom:-2px; padding:1px; 
+      background:#fff; border-radius:50%; 
+    }
 
-  .tags { display: flex; flex-wrap: wrap; gap: 3px; }
-  .tag {
-    display: inline-block; font-size: 11px; padding: 2px 7px;
-    border-radius: 20px; background: #e6f1fb; color: #185fa5;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;
-  }
-  .tag-more {
-    display: inline-block; font-size: 11px; padding: 2px 7px;
-    border-radius: 20px; background: #f0ede6; color: var(--GTMS-text-muted); white-space: nowrap;
-  }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--GTMS-text-muted); }
+    .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
 
-  .date-cell { font-size: 12px; color: var(--GTMS-text-muted); }
+    /* ── bulk mail modal ── */
+    .bulk-modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .bulk-modal-backdrop.open { display: flex; }
+    .email-modal {
+      background: #fff; border-radius: 14px; 
+      width: 580px; max-width: 95vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,.15); 
+      display: flex; flex-direction: column; max-height: 90vh;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 0.5px solid #e5e3da; flex-shrink: 0;
+    }
+    .modal-header h3 { font-size: 15px; font-weight: 600; color: #2c2c2a; margin: 0; }
+    .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: #888780; }
+    .modal-close:hover { color: #2c2c2a; }
 
-  .action-cell { display: flex; gap: 6px; align-items: center; }
-  .act-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--GTMS-text-muted); font-size: 16px; padding: 5px; border-radius: 6px;
-  }
-  .act-btn:hover { background: #f0ede6; color: var(--GTMS-text-primary); }
-  .act-btn.del:hover { background: #fcebeb; color: #a32d2d; }
-  .email-history {
-    display: inline-block; position: relative;
-  }
-  .email-history .fa-clock-rotate-left {
-    position: absolute; font-size:10px;
-    right:-3px; bottom:-2px; padding:1px;
-    background:#fff; border-radius:50%;
-  }
+    .modal-body { padding: 1.25rem 1.5rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+    .modal-body label { font-size: 12px; font-weight: 500; color: #5f5e5a; display: block; margin-bottom: 4px; }
+    .modal-body input,
+    .modal-body textarea {
+      width: 100%; border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
+      padding: 8px 10px; font-size: 13px; color: #2c2c2a; box-sizing: border-box;
+    }
+    .modal-body input:focus,
+    .modal-body textarea:focus { 
+      outline: none; border-color: var(--GTMS-primary); 
+      box-shadow: 0 0 0 3px #14213d1a; 
+    }
+    .modal-body textarea { resize: vertical; min-height: 120px; }
 
-  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--GTMS-text-muted); }
-  .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
-</style>
+    /* recipient chips */
+    .recipient-list {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      background: var(--GTMS-secondary); border-radius: 8px; padding: 10px;
+      max-height: 140px; overflow-y: auto;
+      border: 0.5px solid var(--GTMS-secondary-dark);
+    }
+    .recipient-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #e6f1fb; color: #185fa5;
+      border-radius: 20px; font-size: 11px; padding: 3px 8px;
+    }
+    .chip-remove {
+      background: none; border: none; cursor: pointer;
+      color: #185fa5; font-size: 13px; padding: 0; line-height: 1;
+    }
+    .chip-remove:hover { color: #a32d2d; }
+    .recipient-empty { font-size: 12px; color: var(--GTMS-text-muted); }
+
+    .modal-footer {
+      padding: 12px 18px; border-top: 0.5px solid #e5e3da;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .btn-send-bulk {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--GTMS-primary); color: #fff; border: none;
+      border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .btn-send-bulk:hover { opacity: 0.9; }
+    .btn-send-bulk:disabled { opacity: 0.5; cursor: not-allowed; }
+    .send-status { font-size: 12px; }
+    .send-status.success { color: #3b6d11; }
+    .send-status.error   { color: #a32d2d; }
+  </style>
 {% endblock %}
 
 {% block content %}
-
-  {# full-screen loader #}
   <div class="page-loader" id="page_loader">
     <div class="loader"></div>
     <div class="loader-text">Importing suppliers, please wait…</div>
@@ -197,7 +269,6 @@
 
   <div class="page-header">
     <h1 class="page-title">Suppliers</h1>
-
     <div class="add-wrapper">
       <button class="btn-custom" onclick="toggleDropdown()">
         <i class="ti ti-plus" aria-hidden="true"></i> Add supplier
@@ -210,32 +281,24 @@
           <i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Upload Excel
         </button>
       </div>
-    </div>   
+    </div>
   </div>
 
   <form method="get" class="search-section">
     <div class="search-bar-group">
-      <div class="search-wrap search-wrap--main">
+      <div class="search-wrap">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" name="search" value="{{ search|default:'' }}" placeholder="Search by company name or product">
       </div>
       <div class="search-wrap">
         <i class="fa-solid fa-industry"></i>
         <select name="Product_group">
-          <option selected disabled>Select product group</option>
+          <option value="" {% if not Product_group %}selected{% endif %}>All groups</option>
           {% for group in product_group_choices %}
             <option {% if Product_group == group %} selected {% endif %}>{{ group }}</option>
           {% endfor %}
         </select>
       </div>
-      <!-- <div class="search-wrap">
-        <i class="fa-solid fa-location-dot"></i>
-        <input type="text" name="city" val  ue="{{ city|default:'' }}" placeholder="City">
-      </div> -->
-      <!-- <div class="search-wrap">
-        <i class="fa-solid fa-map"></i>
-        <input type="text" name="state" value="{{ state|default:'' }}" placeholder="State">
-      </div> -->
       <div class="search-wrap">
         <i class="fa-solid fa-globe"></i>
         <input type="text" name="country" value="{{ country|default:'' }}" placeholder="Country">
@@ -251,7 +314,7 @@
     </div>
   </form>
 
-  {# excel upload panel #}
+  {# excel panel #}
   <div class="excel-panel" id="excel_panel">
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
@@ -264,9 +327,23 @@
     </form>
   </div>
 
+  {# bulk action bar — shown when rows are selected #}
+  <div class="bulk-bar" id="bulk-bar">
+    <span><span class="bulk-count" id="bulk-count">0</span> supplier(s) selected</span>
+    <div class="bulk-actions">
+      <button class="btn-bulk" onclick="openBulkMail()">
+        <i class="fa-solid fa-envelope"></i> Send email to all
+      </button>
+      <button class="btn-bulk-clear" onclick="clearSelection()" title="Clear selection">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+  </div>
+
   {% if suppliers %}
     <div class="supplier-list">
       <div class="list-header">
+        <input type="checkbox" class="header-check" id="select-all" onclick="toggleSelectAll(this)">
         <span>Company</span>
         <span>WCPD / IEC</span>
         <span>Contact</span>
@@ -276,20 +353,22 @@
       </div>
 
       {% for s in suppliers %}
-        <div class="supplier-row">
-          {# company #}
+        <div class="supplier-row" id="row-{{ s.id }}">
+          <input type="checkbox" class="row-check"
+                data-id="{{ s.id }}"
+                data-name="{{ s.Company_name|escapejs }}"
+                onchange="onRowCheck(this)">
+
           <div>
             <div class="company-name">{{ s.Company_name }}</div>
             {% if s.GST_number %}<div class="company-sub">GST: {{ s.GST_number }}</div>{% endif %}
           </div>
 
-          {# wcpd/iec #}
           <div>
             {% if s.WCPD_code %}<div class="wcpd-code">{{ s.WCPD_code }}</div>{% endif %}
             {% if s.IEC_code  %}<div class="iec-code">IEC: {{ s.IEC_code }}</div>{% endif %}
           </div>
 
-          {# contact #}
           <div>
             {% for c in s.supplier_contact_details.all|slice:":2" %}
               {% if c.Email %}<div class="contact-line">{{ c.Email }}</div>{% endif %}
@@ -297,7 +376,6 @@
             {% endfor %}
           </div>
 
-          {# products #}
           <div class="tags">
             {% for p in s.Sell_products.all|slice:":3" %}
               <span class="tag" title="{{ p.Product }}">{{ p.Product }}</span>
@@ -307,21 +385,15 @@
             {% endif %}
           </div>
 
-          {# date #}
           <div class="date-cell">{{ s.Created_at|date:"d M Y" }}</div>
 
-          {# actions #}
           <div class="action-cell">
             <a href="{% url 'supplier:supplier_detail' s.id %}" class="act-btn" title="Edit">
               <i class="ti ti-edit" aria-hidden="true"></i>
             </a>
-            <a href="{% url 'supplier:related_companies' s.id %}" class="act-btn" title="View related companies">
+            <a href="{% url 'supplier:related_companies' s.id %}" class="act-btn" title="Related companies">
               <i class="fa-solid fa-users"></i>
             </a>
-            <!-- <button class="act-btn del" title="Delete supplier" name="delete"
-                    onclick="confirmDelete(this,{{ s.id }}, '{{ s.Company_name|escapejs }}')">
-              <i class="ti ti-trash" aria-hidden="true"></i>
-            </button> -->
             <a href="{% url 'supplier:email_history' s.id %}" class="act-btn" title="Email history">
               <span class="email-history">
                 <i class="fa-solid fa-envelope"></i>
@@ -340,10 +412,225 @@
     </div>
   {% endif %}
 
-  {% endblock %}
+{% endblock %}
 
-  {% block extra_script %}
+{% block modals %}
+  {# ── bulk mail modal ── #}
+  <div class="bulk-modal-backdrop" id="bulk-modal">
+    <div class="email-modal">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-envelope" style="margin-right:6px"></i> Send email to selected suppliers</h3>
+        <button class="modal-close" onclick="closeBulkMail()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <label>Recipients — all emails on file for each selected supplier</label>
+          <div class="recipient-list" id="recipient-list">
+            <span class="recipient-empty">No suppliers selected.</span>
+          </div>
+        </div>
+
+        <div>
+          <label>Subject</label>
+          <input type="text" id="bulk-subject" placeholder="Email subject">
+        </div>
+
+        <div>
+          <label>Message</label>
+          <textarea id="bulk-body" placeholder="Write your message here…"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <span class="send-status" id="bulk-status"></span>
+        <button class="btn-send-bulk" id="bulk-send-btn" onclick="sendBulkEmail()">
+          <i class="fa-solid fa-paper-plane"></i> Send to all
+        </button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_script %}
   <script>
+    // ── supplier emails map — built from Django context ──
+    // { supplier_id: [email1, email2, ...], ... }
+    const supplierEmails = {
+      {% for s in suppliers %}
+        {{ s.id }}: [
+          {% for c in s.supplier_contact_details.all %}
+            {% if c.Email %}"{{ c.Email|escapejs }}",{% endif %}
+          {% endfor %}
+        ],
+      {% endfor %}
+    };
+
+    const supplierNames = {
+      {% for s in suppliers %}
+        {{ s.id }}: "{{ s.Company_name|escapejs }}",
+      {% endfor %}
+    };
+
+    // ── selection state ──
+    let selectedIds = new Set();
+
+    function onRowCheck(checkbox) {
+      const id   = parseInt(checkbox.dataset.id);
+      const row  = document.getElementById(`row-${id}`);
+      if (checkbox.checked) {
+        selectedIds.add(id);
+        row.classList.add('selected');
+      } else {
+        selectedIds.delete(id);
+        row.classList.remove('selected');
+      }
+      updateBulkBar();
+    }
+
+    function toggleSelectAll(masterCheckbox) {
+      document.querySelectorAll('.row-check').forEach(cb => {
+        cb.checked = masterCheckbox.checked;
+        const id  = parseInt(cb.dataset.id);
+        const row = document.getElementById(`row-${id}`);
+        if (masterCheckbox.checked) {
+          selectedIds.add(id);
+          row.classList.add('selected');
+        } else {
+          selectedIds.delete(id);
+          row.classList.remove('selected');
+        }
+      });
+      updateBulkBar();
+    }
+
+    function clearSelection() {
+      selectedIds.clear();
+      document.querySelectorAll('.row-check').forEach(cb => { cb.checked = false; });
+      document.querySelectorAll('.supplier-row').forEach(r => r.classList.remove('selected'));
+      document.getElementById('select-all').checked = false;
+      updateBulkBar();
+    }
+
+    function updateBulkBar() {
+      const bar = document.getElementById('bulk-bar');
+      document.getElementById('bulk-count').textContent = selectedIds.size;
+      bar.classList.toggle('visible', selectedIds.size > 0);
+    }
+
+    // ── bulk mail modal ──
+    function openBulkMail() {
+      if (selectedIds.size === 0) return;
+
+      const list = document.getElementById('recipient-list');
+      list.innerHTML = '';
+
+      let hasAny = false;
+      selectedIds.forEach(id => {
+        const emails = supplierEmails[id] || [];
+        emails.forEach(email => {
+          if (!email) return;
+          hasAny = true;
+          const chip = document.createElement('span');
+          chip.className = 'recipient-chip';
+          chip.dataset.email = email;
+          chip.dataset.supplierId = id;
+          chip.innerHTML = `
+            <span title="${supplierNames[id]}">${email}</span>
+            <button class="chip-remove" onclick="removeChip(this)" title="Remove">×</button>`;
+          list.appendChild(chip);
+        });
+      });
+
+      if (!hasAny) {
+        list.innerHTML = '<span class="recipient-empty">No email addresses found for selected suppliers.</span>';
+      }
+
+      document.getElementById('bulk-status').textContent = '';
+      document.getElementById('bulk-status').className   = 'send-status';
+      document.getElementById('bulk-modal').classList.add('open');
+    }
+
+    function closeBulkMail() {
+      document.getElementById('bulk-modal').classList.remove('open');
+    }
+
+    // click outside modal to close
+    document.getElementById('bulk-modal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeBulkMail();
+    });
+
+    function removeChip(btn) {
+      btn.closest('.recipient-chip').remove();
+      // if list is now empty, show empty message
+      const list = document.getElementById('recipient-list');
+      if (list.querySelectorAll('.recipient-chip').length === 0) {
+        list.innerHTML = '<span class="recipient-empty">No recipients left.</span>';
+      }
+    }
+
+    function sendBulkEmail() {
+      const subject = document.getElementById('bulk-subject').value.trim();
+      const body    = document.getElementById('bulk-body').value.trim();
+      const status  = document.getElementById('bulk-status');
+      const btn     = document.getElementById('bulk-send-btn');
+
+      const chips  = document.querySelectorAll('#recipient-list .recipient-chip');
+      const emails = Array.from(chips).map(c => c.dataset.email).filter(Boolean);
+
+      if (emails.length === 0) {
+        status.textContent = 'No recipients.';
+        status.className   = 'send-status error';
+        return;
+      }
+      if (!subject) {
+        status.textContent = 'Subject is required.';
+        status.className   = 'send-status error';
+        return;
+      }
+      if (!body) {
+        status.textContent = 'Message is required.';
+        status.className   = 'send-status error';
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.innerHTML   = '<i class="ti ti-loader-2"></i> Sending…';
+      status.textContent = '';
+      status.className   = 'send-status';
+
+      const csrf = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
+
+      fetch("{% url 'supplier:send_bulk_email' %}", {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken':  csrf,
+        },
+        body: JSON.stringify({ emails, subject, body }),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          status.textContent = `✓ Sent to ${data.sent} address(es)${data.failed ? `, ${data.failed} failed` : ''}.`;
+          status.className   = 'send-status success';
+          setTimeout(closeBulkMail, 1800);
+        } else {
+          status.textContent = data.error || 'Failed to send.';
+          status.className   = 'send-status error';
+        }
+      })
+      .catch(() => {
+        status.textContent = 'Network error. Try again.';
+        status.className   = 'send-status error';
+      })
+      .finally(() => {
+        btn.disabled  = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send to all';
+      });
+    }
+
+    // ── dropdown / excel panel ──
     function toggleDropdown() {
       document.getElementById('add_dropdown').classList.toggle('open');
     }
@@ -363,29 +650,17 @@
       }
     });
 
-    function confirmDelete(delete_action,id, name) {
+    function confirmDelete(delete_action, id, name) {
       if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-      
-      const supplier = delete_action.closest('.supplier-row')
-      const supplier_id = id
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
+      const supplier  = delete_action.closest('.supplier-row');
+      const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
       fetch("{% url 'supplier:delete_supplier' %}", {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
-        },
-        body: JSON.stringify({ sp_id: supplier_id })
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+        body: JSON.stringify({ sp_id: id })
       })
       .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          supplier.style.display = 'none';
-        } else {
-          return
-        }
-      });
+      .then(data => { if (data.success) supplier.style.display = 'none'; });
     }
   </script>
 {% endblock %}
