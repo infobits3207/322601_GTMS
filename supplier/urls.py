@@ -1,5 +1,5 @@
 from django.urls import path
-from supplier import add_supllier_and_related_companies_view, views, supplier_details_view, email_view
+from supplier import add_supllier_and_related_companies_view, views, email_view, edit_supplier_view
 
 app_name = 'supplier'
 
@@ -15,6 +15,6 @@ urlpatterns = [
     path('<int:sp_id>/email_history/', email_view.email_history, name='email_history'),
     path('send-bulk-email/', email_view.send_bulk_email, name='send_bulk_email'),
 
-    path('supplier_detail/<int:sp_id>', supplier_details_view.supplier_detail, name='supplier_detail'),
-    path('edit_supplier/<int:sp_id>', supplier_details_view.edit_supplier, name='edit_supplier'),
+    path('supplier_detail/<int:sp_id>', edit_supplier_view.supplier_detail, name='supplier_detail'),
+    path('edit_supplier/<int:sp_id>', edit_supplier_view.edit_supplier, name='edit_supplier'),
 ]

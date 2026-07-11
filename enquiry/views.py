@@ -1,125 +1,101 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
-import pandas as pd
-from django.db.models.functions import Lower
-from supplier.models import supplier_details, supplier_contact_details,supplier_addresses, supplier_media, Sell_products
-from enquiry.models import Enquiry_details, Enquiry_media,Enquiry_email_messages, Enquiry_products
 from django.db.models import Q
 from django.utils import timezone
-import os, json
+from buyer.models import buyer_details
+from enquiry.models import Enquiry_details, Enquiry_products
+import pandas as pd, os
 from django.conf import settings
 
-SUPPLIER_FIELDS = [
-    'Description', 'Website_link', 'GST_number', 'IEC_code',
-    'PAN_number', 'DIN_number', 'CIN_number', 'DUNS_number',
-    'Contact_person', 'WCPD_code', 'Admin_remark',
-]
+# ── load recipe data once ──
+_recipe_df     = pd.read_excel(os.path.join(settings.STATICFILES_DIRS[0], 'recipe_pairs_all_categories.xlsx'))
+_category_list = sorted(_recipe_df['Category'].dropna().unique().tolist())
 
 PRODUCT_FIELDS = [
     'Sector', 'Division', 'Product_group', 'Product_category',
-    'HSN_code', 'Factory_address', 'Warehouse_address', 'Min_order_quantity',
+    'HSN_code', 'Quantity', 'Packaging', 'Currency',
+    'Billing_address', 'Delivery_address',
 ]
 
-ADDRESS_FIELDS = ['Address', 'City', 'State', 'Country']
+ENQUIRY_SCALAR_FIELDS = [
+    'Enquiry_type', 'Admin_remark', 'Description',
+]
+
+EXCEL_COMPANY_FIELDS = [
+    'Company_name', 'Enquiry_type', 'Admin_remark', 'Description',
+]
+
+EXCEL_PRODUCT_FIELDS = PRODUCT_FIELDS + ['Product', 'Target_price']
 
 def _import_excel(file_obj):
     """
-    Parse and import a supplier excel file.
-    Returns (created_count, skipped_count, errors_list).
+    Excel format (same pattern as supplier import):
+      - One row per product.
+      - Company-level fields (Company_name, Enquiry_type, etc.) filled
+        only on the FIRST row for that company; subsequent rows left blank.
+      - Multiple products for one company = multiple rows sharing Company_name.
 
-    Expected columns (all optional except Company_name):
-      Company_name, Description, Website_link, GST_number, IEC_code,
-      PAN_number, DIN_number, CIN_number, DUNS_number, Contact_person,
-      WCPD_code, Admin_remark,
-      Email, Contact_number, FAX,          ← comma-separated per cell
-      Address1, City1, State1, Country1,   ← first address
-      Address2, City2, State2, Country2,   ← second address  (optional)
-      Address3, City3, State3, Country3,   ← third address   (optional)
-      ...                                  ← any number of address sets
-      Product, Sector, Division, Product_group, Product_category,
-      HSN_code, Factory_address, Warehouse_address, Min_order_quantity
+    Optional columns:
+      Company_name*, Enquiry_date, Closing_date, Enquiry_type, Admin_remark,
+      Description, Product*, Sector, Division, Product_group, Product_category,
+      HSN_code, Quantity, Packaging, Target_price, Currency,
+      Billing_address, Delivery_address
     """
     df = pd.read_excel(file_obj)
     df = df.dropna(subset=['Company_name'])
     grouped = df.groupby('Company_name')
-
-    # detect how many address sets exist in this file, e.g. Address1, Address2 ...
-    # works regardless of how many the user has added
-    address_indices = sorted(set(
-        int(col.replace('Address', ''))
-        for col in df.columns
-        if col.startswith('Address') and col.replace('Address', '').isdigit()
-    ))
 
     created, skipped, errors = 0, 0, []
 
     for company_name, group in grouped:
         try:
             with transaction.atomic():
-                row = group.iloc[0]   # all data is on one row per company
+                row = group.iloc[0]
 
-                supplier, was_created = supplier_details.objects.get_or_create(
+                enquiry, was_created = Enquiry_details.objects.get_or_create(
                     Company_name=company_name,
-                    defaults={'Created_at': timezone.localdate()}
+                    defaults={'Enquiry_date': timezone.localdate()}
                 )
                 if not was_created:
                     skipped += 1
                     continue
 
-                # scalar company-level fields
-                for field in SUPPLIER_FIELDS:
-                    if field in group.columns and pd.notna(row[field]):
-                        setattr(supplier, field, str(row[field]).strip())
-                supplier.save()
+                # company-level scalar fields
+                for field in EXCEL_COMPANY_FIELDS:
+                    if field in group.columns and pd.notna(row.get(field)):
+                        setattr(enquiry, field, str(row[field]).strip())
 
-                # contacts (comma-separated in one cell)
-                for col, kwarg in [
-                    ('Email', 'Email'),
-                    ('Contact_number', 'Phone'),
-                    ('FAX', 'FAX'),
-                ]:
-                    if col in group.columns and pd.notna(row.get(col)):
-                        for val in str(row[col]).split(','):
-                            val = val.strip()
-                            if val:
-                                supplier_contact_details.objects.create(
-                                    Supplier=supplier, **{kwarg: val}
-                                )
+                for date_field in ('Enquiry_date', 'Closing_date'):
+                    if date_field in group.columns and pd.notna(row.get(date_field)):
+                        try:
+                            setattr(enquiry, date_field, pd.to_datetime(row[date_field]).date())
+                        except Exception:
+                            pass
 
-                # addresses — Address1/City1/State1/Country1, Address2/City2/...
-                for i in address_indices:
-                    addr_col = f'Address{i}'
-                    if addr_col not in group.columns:
-                        continue
-                    addr_val = str(row[addr_col]).strip() if pd.notna(row.get(addr_col)) else ''
-                    if not addr_val:
-                        continue  # this address slot is empty for this company, skip
+                # auto-link to existing buyer by name
+                buyer = buyer_details.objects.filter(
+                    Company_name__iexact=company_name
+                ).first()
+                if buyer:
+                    enquiry.buyer = buyer
+                enquiry.save()
 
-                    def _get(col):
-                        c = f'{col}{i}'
-                        return str(row[c]).strip() if c in group.columns and pd.notna(row.get(c)) else ''
-
-                    supplier_addresses.objects.create(
-                        Supplier=supplier,
-                        Address=addr_val,
-                        City=_get('City'),
-                        State=_get('State'),
-                        Country=_get('Country'),
-                    )
-
-                # products — one row per product (company can span multiple rows for products)
+                # products — one row per product
                 for _, data in group.iterrows():
-                    if 'Product' not in group.columns or pd.isna(data.get('Product')):
+                    product_name = str(data.get('Product', '')).strip() if pd.notna(data.get('Product')) else ''
+                    if not product_name:
                         continue
-                    product = Sell_products.objects.create(
-                        Supplier=supplier,
-                        Product=str(data['Product']).strip()
-                    )
+
+                    product = Enquiry_products(Supplier=enquiry, Product=product_name)
                     for field in PRODUCT_FIELDS:
                         if field in group.columns and pd.notna(data.get(field)):
                             setattr(product, field, str(data[field]).strip())
+                    if 'Target_price' in group.columns and pd.notna(data.get('Target_price')):
+                        try:
+                            product.Target_price = float(data['Target_price'])
+                        except ValueError:
+                            pass
                     product.save()
 
                 created += 1
@@ -130,49 +106,44 @@ def _import_excel(file_obj):
     return created, skipped, errors
 
 
-def enquiry_list(request):
-    enquiries = Enquiry_details.objects.prefetch_related(
-        'Sell_products', 'supplier_contact_details', 'supplier_addresses'
-    ).order_by('-Created_at')
+# ── views ─────────────────────────────────────────────────
 
-    search = request.GET.get('search', '').strip()
-    city   = request.GET.get('city', '').strip()
-    state  = request.GET.get('state', '').strip()
-    country = request.GET.get('country', '').strip()
+def enquiry_list(request):
+    if request.method == 'POST' and request.FILES.get('enquiry_excel'):
+        created, skipped, errors = _import_excel(request.FILES['enquiry_excel'])
+        if errors:
+            messages.error(request, f"Import finished with errors: {'; '.join(errors)}")
+        else:
+            messages.success(
+                request,
+                f"Imported {created} enquiry(s). {skipped} already existed and were skipped."
+            )
+        return redirect('enquiry:enquiry_list')
+
+    enquiries = Enquiry_details.objects.prefetch_related(
+        'Enquiry_products'
+    ).select_related('buyer').order_by('-Enquiry_date', '-id')
+
+    search       = request.GET.get('search', '').strip()
+    enquiry_type = request.GET.get('enquiry_type', '').strip()
+    date_from    = request.GET.get('date_from', '').strip()
 
     if search:
-        suppliers = suppliers.filter(
+        enquiries = enquiries.filter(
             Q(Company_name__icontains=search) |
-            Q(Sell_products__Product__icontains=search)
+            Q(buyer__Company_name__icontains=search) |
+            Q(Enquiry_products__Product__icontains=search)
         )
+    if enquiry_type:
+        enquiries = enquiries.filter(Enquiry_type=enquiry_type)
+    if date_from:
+        enquiries = enquiries.filter(Enquiry_date__gte=date_from)
 
-    if city:
-        suppliers = suppliers.filter(supplier_addresses__City__icontains=city)
+    enquiries = enquiries.distinct()
 
-    if state:
-        suppliers = suppliers.filter(supplier_addresses__State__icontains=state)
-
-    if country:
-        suppliers = suppliers.filter(supplier_addresses__Country__icontains=country)
-
-    # always call distinct() at the end — any filter across a FK relation can produce duplicates
-    suppliers = suppliers.distinct()
-
-    context = {
-        'search': search, 'city': city, 'state': state,
-        'country': country, 'suppliers': suppliers,
-    }
-    return render(request, 'suppliers_list.html', context)
-
-def delete_supplier(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        sp_id = data.get('sp_id')
-
-        supplier = supplier_details.objects.filter(id=sp_id).first()
-
-        if supplier:
-            supplier.delete()
-            return JsonResponse({'success': True})
-        else:
-            return JsonResponse({'success': False})
+    return render(request, 'enquiry_list.html', {
+        'enquiries':    enquiries,
+        'search':       search,
+        'enquiry_type': enquiry_type,
+        'date_from':    date_from,
+    })

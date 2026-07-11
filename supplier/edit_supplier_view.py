@@ -124,9 +124,7 @@ def supplier_detail(request, sp_id):
         'images':       media.exclude(Image='').exclude(Image=None),
         'Products':     products,
         'category_list': _category_list,
-        'product_group_choices': ['FCSL','ICSL','FCCL','ICCL','FCSC','ICSC','DCSC','DCSL'],
     }
-    print(context['product_group_choices'])
     return render(request, 'Edit_supplier.html', context)
 
 

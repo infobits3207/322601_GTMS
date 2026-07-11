@@ -104,7 +104,6 @@ def supplier_add(request):
     
     context = {
         'category_list': _category_list,
-        'product_group_choices': ['FCSL','ICSL','FCCL','ICCL','FCSC','ICSC','DCSC','DCSL'],
     }
 
     return render(request, 'supplier_add.html',context)

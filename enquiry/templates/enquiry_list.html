@@ -1,0 +1,331 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<style>
+  .page-loader {
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    color: #f3f3f3; gap: 15px; position: fixed; z-index: 1000;
+    top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75);
+  }
+  .loader {
+    border: 6px solid rgba(255,255,255,0.25); border-radius: 50%;
+    border-top-color: #fff; width: 52px; height: 52px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text { font-size: 14px; color: rgba(255,255,255,0.85); }
+
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
+  }
+  .page-title { font-size: 20px; font-weight: 500; margin: 0; }
+
+  .search-section {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 12px; padding: 16px; margin-bottom: 1.25rem;
+    background: #ffffff; border-radius: 14px;
+    border: 1px solid var(--GTMS-secondary-dark);
+    box-shadow: 0 1px 2px rgba(20, 20, 30, 0.04);
+  }
+  .search-bar-group {
+    display: grid; gap: 10px; flex: 1; min-width: 320px;
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+  .search-wrap { position: relative; }
+  .search-wrap i {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); font-size: 13px; color: #77736a;
+    pointer-events: none;
+  }
+  .search-wrap input, .search-wrap select {
+    width: 100%; padding: 9px 12px 9px 34px; font-size: 13px;
+    font-family: inherit; color: #2B2A28;
+    background: var(--GTMS-secondary); border: 1px solid var(--GTMS-secondary-dark);
+    border-radius: 9px; outline: none; box-sizing: border-box;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+  }
+  .search-wrap input::placeholder { color: #77736a; }
+  .search-wrap input:focus, .search-wrap select:focus {
+    background: #fff; border-color: var(--GTMS-primary-light);
+    box-shadow: 0 0 0 3px rgba(31,42,68,.08);
+  }
+  .search-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .btn-clear { font-size: 13px; color: var(--GTMS-text-muted); text-decoration: none; }
+  .btn-clear:hover { color: var(--GTMS-text-primary); text-decoration: underline; }
+
+  .excel-panel {
+    display: none; background: var(--GTMS-secondary); border: 0.5px solid #e5e3da;
+    border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
+  }
+  .excel-panel.open { display: block; }
+  .excel-panel label { font-size: 12px; font-weight: 500; color: var(--GTMS-text-secondary); display: block; margin-bottom: 6px; }
+  .btn-import {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--GTMS-primary); color: #fff; border: none;
+    border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; margin-top: 8px;
+  }
+  .btn-import:hover { opacity: 0.9; }
+
+  /* ── header actions group ── */
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .add-wrapper { position: relative; display: inline-block; }
+  .dropdown-menu {
+    display: none; position: absolute; right: 0; top: calc(100% + 6px);
+    background: #fff; border: 0.5px solid #e5e3da; border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.1); min-width: 170px; z-index: 100; overflow: hidden;
+  }
+  .dropdown-menu.open { display: block; }
+  .dropdown-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    font-size: 13px; color: #3d3d3a; text-decoration: none;
+    border: none; background: none; width: 100%; cursor: pointer;
+  }
+  .dropdown-item:hover { background: var(--GTMS-secondary); }
+  .dropdown-item i { font-size: 16px; color: var(--GTMS-text-muted); }
+
+  /* ── enquiry list ── */
+  .enquiry-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .list-header,
+  .enquiry-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr 80px;
+    align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px;
+  }
+  .list-header { border: none; padding: 2px 14px 6px; }
+  .list-header span {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--GTMS-text-muted);
+  }
+  .enquiry-row {
+    background: #fff; border: 0.5px solid #e5e3da; transition: border-color .15s;
+  }
+  .enquiry-row:hover { border-color: #c5c3ba; }
+
+  .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary); }
+  .company-sub  { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; }
+  .date-cell    { font-size: 12px; color: var(--GTMS-text-muted); }
+
+  .status-badge {
+    display: inline-flex; align-items: center;
+    font-size: 11px; font-weight: 500; padding: 3px 9px;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .status-open       { background: #e6f1fb; color: #185fa5; }
+  .status-inprogress { background: #fef3d9; color: #92530a; }
+  .status-closed     { background: #eaf3de; color: #3b6d11; }
+  .status-onhold     { background: #f0ede6; color: #888780; }
+  .status-default    { background: #f0ede6; color: #888780; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tag {
+    display: inline-block; font-size: 11px; padding: 2px 7px;
+    border-radius: 20px; background: #e6f1fb; color: #185fa5;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;
+  }
+  .tag-more {
+    display: inline-block; font-size: 11px; padding: 2px 7px;
+    border-radius: 20px; background: #f0ede6; color: var(--GTMS-text-muted); white-space: nowrap;
+  }
+
+  .action-cell { display: flex; gap: 6px; align-items: center; }
+  .act-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--GTMS-text-muted); font-size: 16px; padding: 5px; border-radius: 6px;
+  }
+  .act-btn:hover { background: #f0ede6; color: var(--GTMS-text-primary); }
+  .act-btn.del:hover { background: #fcebeb; color: #a32d2d; }
+
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--GTMS-text-muted); }
+  .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-loader" id="page_loader">
+  <div class="loader"></div>
+  <div class="loader-text">Importing enquiries, please wait…</div>
+</div>
+
+{% if messages %}
+  {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="page-header">
+  <h1 class="page-title">Enquiries</h1>
+  <div class="header-actions">
+    <div class="add-wrapper">
+      <button class="btn-custom" onclick="toggleDropdown()">
+        <i class="ti ti-plus"></i> Add enquiry
+      </button>
+      <div class="dropdown-menu" id="add_dropdown">
+        <a href="{% url 'enquiry:add_enquiry' %}" class="dropdown-item">
+          <i class="ti ti-forms"></i> Fill form
+        </a>
+        <button class="dropdown-item" onclick="openExcelPanel()">
+          <i class="ti ti-file-spreadsheet"></i> Upload Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# excel upload panel #}
+<div class="excel-panel" id="excel_panel">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Select Excel file (.xlsx)</label>
+    <input type="file" name="enquiry_excel" class="form-control" accept=".xlsx,.xls">
+    <button type="submit" class="btn-import"
+            onclick="document.getElementById('page_loader').style.display='flex'">
+      <i class="ti ti-upload"></i> Import
+    </button>
+  </form>
+</div>
+
+{# search #}
+<form method="get" class="search-section">
+  <div class="search-bar-group">
+    <div class="search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" name="search" value="{{ search|default:'' }}"
+             placeholder="Search by company or product">
+    </div>
+    <div class="search-wrap">
+      <i class="fa-solid fa-circle-half-stroke"></i>
+      <select name="enquiry_type">
+        <option value="">All types</option>
+        <option {% if enquiry_type == 'New requirement' %}selected{% endif %}>New requirement</option>
+        <option {% if enquiry_type == 'Repeat order' %}selected{% endif %}>Repeat order</option>
+        <option {% if enquiry_type == 'Price enquiry' %}selected{% endif %}>Price enquiry</option>
+        <option {% if enquiry_type == 'Sample request' %}selected{% endif %}>Sample request</option>
+        <option {% if enquiry_type == 'Other' %}selected{% endif %}>Other</option>
+      </select>
+    </div>
+    <div class="search-wrap">
+      <i class="fa-solid fa-calendar"></i>
+      <input type="date" name="date_from" value="{{ date_from|default:'' }}"
+             style="padding-left:34px">
+    </div>
+  </div>
+  <div class="search-actions">
+    <button type="submit" class="btn-custom">
+      <i class="fa-solid fa-magnifying-glass"></i> Search
+    </button>
+    {% if search or enquiry_type or date_from %}
+      <a href="{% url 'enquiry:enquiry_list' %}" class="btn-clear">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+{% if enquiries %}
+  <div class="enquiry-list">
+    <div class="list-header">
+      <span>Company</span>
+      <span>Enquiry date</span>
+      <span>Closing date</span>
+      <span>Type</span>
+      <span>Products</span>
+      <span>Actions</span>
+    </div>
+
+    {% for en in enquiries %}
+      <div class="enquiry-row" id="row-{{ en.id }}">
+
+        <div>
+          <div class="company-name">
+            {% if en.buyer %}{{ en.buyer.Company_name }}
+            {% else %}{{ en.Company_name }}{% endif %}
+          </div>
+          {% if en.buyer and en.buyer.Contact_person %}
+            <div class="company-sub">{{ en.buyer.Contact_person }}</div>
+          {% endif %}
+        </div>
+
+        <div class="date-cell">
+          {{ en.Enquiry_date|date:"d M Y"|default:"—" }}
+        </div>
+
+        <div class="date-cell">
+          {{ en.Closing_date|date:"d M Y"|default:"—" }}
+        </div>
+
+        <div>
+          {% if en.Enquiry_type %}
+            <span class="status-badge status-default">{{ en.Enquiry_type }}</span>
+          {% else %}—{% endif %}
+        </div>
+
+        <div class="tags">
+          {% for p in en.Enquiry_products.all|slice:":3" %}
+            <span class="tag" title="{{ p.Product }}">{{ p.Product }}</span>
+          {% endfor %}
+          {% if en.Enquiry_products.count > 3 %}
+            <span class="tag-more">+{{ en.Enquiry_products.count|add:"-3" }} more</span>
+          {% endif %}
+        </div>
+
+        <div class="action-cell">
+          <a href="{% url 'enquiry:edit_enquiry' en.id %}" class="act-btn" title="Edit">
+            <i class="ti ti-edit"></i>
+          </a>
+          <button class="act-btn del" title="Delete"
+                  onclick="confirmDelete(this, {{ en.id }}, '{{ en.Company_name|default:en.buyer.Company_name|escapejs }}')">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="empty-state">
+    <i class="ti ti-message-2"></i>
+    No enquiries yet. Add one above.
+  </div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  function toggleDropdown() {
+    document.getElementById('add_dropdown').classList.toggle('open');
+  }
+
+  function openExcelPanel() {
+    document.getElementById('add_dropdown').classList.remove('open');
+    const panel = document.getElementById('excel_panel');
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) {
+      panel.querySelector('input[type=file]').focus();
+    }
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.add-wrapper')) {
+      document.getElementById('add_dropdown').classList.remove('open');
+    }
+  });
+
+  function confirmDelete(btn, id, name) {
+    if (!confirm(`Delete enquiry for "${name}"? This cannot be undone.`)) return;
+    const row       = btn.closest('.enquiry-row');
+    const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
+    fetch("{% url 'enquiry:delete_enquiry' %}", {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body:    JSON.stringify({ en_id: id }),
+    })
+    .then(r => r.json())
+    .then(data => { if (data.success) row.style.display = 'none'; });
+  }
+</script>
+{% endblock %}
+EOF
+echo "template done"

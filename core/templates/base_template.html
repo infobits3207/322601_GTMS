@@ -156,7 +156,7 @@
             <i class="ti ti-building-factory-2" aria-hidden="true"></i>
             <span class="label-text">Suppliers</span>
           </a>
-          <a href="#" class="sidebar-link {% if request.resolver_match.url_name == 'enquiries' %}active{% endif %}">
+          <a href="{% url 'enquiry:enquiry_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'enquiry_list' %}active{% endif %}">
             <i class="ti ti-message-2" aria-hidden="true"></i>
             <span class="label-text">Enquiry</span>
           </a>

@@ -1,0 +1,138 @@
+/*
+  forms.css — shared styles for add/edit forms across all modules
+  Used by: supplier_add, enquiry_add, buyer_add, and their edit counterparts
+  Include this in base_template.html or link per-page alongside stylesheet.css
+*/
+
+/* ── page header ── */
+.page-header  { margin-bottom: 1.5rem; }
+.page-title   { font-size: 20px; font-weight: 600; color: var(--GTMS-text-primary, #2c2c2a); margin: 0 0 4px; }
+.page-sub     { font-size: 14px; color: var(--GTMS-text-muted, #888780); margin: 0; }
+
+/* ── card ── */
+.card {
+  background: #fff;
+  border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.section-title {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--GTMS-text-muted, #888780); margin: 0 0 1rem;
+}
+
+/* ── grid layout ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-grid .full  { grid-column: 1 / -1; }
+
+/* ── form group ── */
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label {
+  font-size: 13px; font-weight: 500;
+  color: var(--GTMS-text-secondary, #5f5e5a);
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  border: 0.5px solid #d3d1c7; border-radius: 8px;
+  padding: 8px 11px; font-size: 14px;
+  color: var(--GTMS-text-primary, #2c2c2a);
+  background: #fff; width: 100%;
+  font-family: inherit;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none; border-color: #378add;
+  box-shadow: 0 0 0 3px rgba(55,138,221,.12);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-group input[type="date"] { cursor: pointer; }
+
+/* ── multi-row (email / phone / fax) ── */
+.multi-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+.multi-row input,
+.multi-row select { flex: 1; }
+
+/* ── repeatable detail block (address / product) ── */
+.details-block {
+  border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
+  border-radius: 10px; padding: 1rem; margin-bottom: 0.75rem;
+}
+.address-block {
+  border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
+  border-radius: 10px; padding: 1rem; margin-bottom: 0.75rem;
+}
+.block-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: .75rem;
+}
+.block-label {
+  font-size: 12px; font-weight: 600;
+  color: var(--GTMS-text-muted, #888780);
+  text-transform: uppercase; letter-spacing: .04em;
+}
+
+/* ── file upload zone ── */
+.upload-zone {
+  border: 1.5px dashed #d3d1c7; border-radius: 10px;
+  padding: 1.25rem; text-align: center; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.upload-zone:hover { border-color: #378add; }
+.upload-zone input[type=file] { display: none; }
+.upload-zone i { font-size: 28px; color: #d3d1c7; display: block; margin-bottom: 6px; }
+.upload-zone p { font-size: 13px; color: var(--GTMS-text-muted, #888780); margin: 0; }
+.upload-zone .link { color: #378add; cursor: pointer; }
+.file-list { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+.file-list li {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--GTMS-text-secondary, #5f5e5a);
+  padding: 4px 0; border-bottom: 0.5px solid #f0ede6;
+}
+.file-list li:last-child { border-bottom: none; }
+.file-list li i { color: var(--GTMS-text-muted, #888780); }
+
+/* ── buttons ── */
+.btn-add-row {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; color: #185fa5; background: none;
+  border: none; cursor: pointer; padding: 4px 0;
+}
+.btn-add-row:hover { text-decoration: underline; }
+
+.btn-remove {
+  background: none; border: none; cursor: pointer;
+  color: var(--GTMS-error, #a32d2d);
+  font-size: 18px; padding: 0 4px; flex-shrink: 0;
+}
+
+.form-actions { display: flex; gap: 10px; margin-top: 0.5rem; }
+
+.btn-submit {
+  background: var(--GTMS-primary, #14213d); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 10px 24px; font-size: 14px; font-weight: 500; cursor: pointer;
+}
+.btn-submit:hover { opacity: 0.9; }
+
+.btn-cancel {
+  background: none; color: var(--GTMS-text-secondary, #5f5e5a);
+  border: 0.5px solid #d3d1c7; border-radius: 8px;
+  padding: 10px 20px; font-size: 14px; cursor: pointer;
+  text-decoration: none; display: inline-flex; align-items: center;
+}
+.btn-cancel:hover { background: var(--GTMS-secondary, #f7f6f2); }
+
+/* ── alerts ── */
+.alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
+.alert-success { background: var(--GTMS-success-bg, #eaf3de); color: var(--GTMS-success, #3b6d11); }
+.alert-error   { background: var(--GTMS-error-bg,   #fcebeb); color: var(--GTMS-error,   #a32d2d); }
+.alert-warning { background: var(--GTMS-warning-bg, #fef3d9); color: var(--GTMS-warning, #92530a); }
+
+/* ── responsive ── */
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .full { grid-column: 1; }
+}

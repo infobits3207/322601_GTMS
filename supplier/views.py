@@ -173,7 +173,6 @@ def suppliers_list(request):
         'country': country, #'city': city, 'state': state,
         'Product_group': Product_group,
         'suppliers': suppliers,
-        'product_group_choices': ['FCSL','ICSL','FCCL','ICCL','FCSC','ICSC','DCSC','DCSL'],
 
     }
     return render(request, 'suppliers_list.html', context)
