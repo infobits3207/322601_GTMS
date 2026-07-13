@@ -74,9 +74,7 @@ def _import_excel(file_obj):
                             pass
 
                 # auto-link to existing buyer by name
-                buyer = buyer_details.objects.filter(
-                    Company_name__iexact=company_name
-                ).first()
+                buyer = buyer_details.objects.filter(Company_name=company_name).first()
                 if buyer:
                     enquiry.buyer = buyer
                 enquiry.save()

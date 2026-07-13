@@ -94,11 +94,10 @@ def add_enquiry(request):
     return _render_add(request)
 
 def _render_add(request):
-    return render(request, 'enquiries/enquiry_add.html', {
+    return render(request, 'add_enquiry.html', {
         'buyer_list':            buyer_details.objects.only(
                                      'id', 'Company_name', 'Contact_person'
                                  ).order_by('Company_name'),
         'category_list':         _category_list,
-        'product_group_choices': Sell_products.product_group.choices,
         'today':                 timezone.localdate(),
     })

@@ -7,7 +7,7 @@ app_name = 'enquiry'
 urlpatterns = [
     path('enquiry_list/', views.enquiry_list,name='enquiry_list'),
     path('add_enquiry/', add_enquiry_and_related_cmp_view.add_enquiry, name='add_enquiry'),
-    path('edit_enquiry/<int:sp_id>', edit_enquiry_view.edit_enquiry, name='edit_enquiry'),
+    path('edit_enquiry/<int:en_id>', edit_enquiry_view.edit_enquiry, name='edit_enquiry'),
     
     # path('fetch_products/', add_enquiry_and_related_companies_view.fetch_products, name='fetch_products'),
     # path('related_companies/<int:sp_id>', add_enquiry_and_related_companies_view.related_companies, name='related_companies'),

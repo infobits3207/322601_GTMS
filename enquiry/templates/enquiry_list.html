@@ -274,10 +274,6 @@
           <a href="{% url 'enquiry:edit_enquiry' en.id %}" class="act-btn" title="Edit">
             <i class="ti ti-edit"></i>
           </a>
-          <button class="act-btn del" title="Delete"
-                  onclick="confirmDelete(this, {{ en.id }}, '{{ en.Company_name|default:en.buyer.Company_name|escapejs }}')">
-            <i class="ti ti-trash"></i>
-          </button>
         </div>
       </div>
     {% endfor %}
@@ -312,19 +308,6 @@
       document.getElementById('add_dropdown').classList.remove('open');
     }
   });
-
-  function confirmDelete(btn, id, name) {
-    if (!confirm(`Delete enquiry for "${name}"? This cannot be undone.`)) return;
-    const row       = btn.closest('.enquiry-row');
-    const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
-    fetch("{% url 'enquiry:delete_enquiry' %}", {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-      body:    JSON.stringify({ en_id: id }),
-    })
-    .then(r => r.json())
-    .then(data => { if (data.success) row.style.display = 'none'; });
-  }
 </script>
 {% endblock %}
 EOF
