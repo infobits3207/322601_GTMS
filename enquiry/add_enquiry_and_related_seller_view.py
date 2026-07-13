@@ -49,8 +49,8 @@ def add_enquiry(request):
                     messages.error(request, 'Company name is required.')
                     return _render_add(request)
                 enquiry.Company_name = company_name
-                enquiry.Description  = request.POST.get('Description', '').strip()
 
+            enquiry.Description  = request.POST.get('Description', '').strip()
             enquiry.Enquiry_date = request.POST.get('Enquiry_date') or None
             enquiry.Closing_date = request.POST.get('Closing_date') or None
             for field in ENQUIRY_SCALAR_FIELDS:

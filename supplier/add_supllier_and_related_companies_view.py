@@ -176,6 +176,37 @@ def _related_buyers_direct(supplier_products):
     ).select_related('Buyer').distinct()
     return list(buyer_products)
 
+def _same_product_suppliers(supplier_products, current_supplier_id):
+    """
+    Find other suppliers who sell the exact same products as this supplier.
+    Excludes the current supplier itself.
+    """
+    sell_names = [p.Product.strip() for p in supplier_products if p.Product.strip()]
+    if not sell_names:
+        return []
+
+    # case-insensitive match using icontains across all sell_names
+    from django.db.models import Q
+    query = Q()
+    for name in sell_names:
+        query |= Q(Product__iexact=name)
+
+    same_qs = Sell_products.objects.filter(query).exclude(Supplier__id=current_supplier_id).select_related('Supplier')
+
+    results = {}   # supplier_id -> {Supplier, shared_products}
+    seen    = set()
+    for sp in same_qs:
+        key = (sp.Supplier.id, sp.Product.strip().lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        sid = sp.Supplier.id
+        if sid not in results:
+            results[sid] = {'Supplier': sp.Supplier, 'shared_products': []}
+        results[sid]['shared_products'].append(sp.Product)
+
+    return list(results.values())
+
 def related_companies(request,sp_id):
     supplier = get_object_or_404(supplier_details, id=sp_id)
     contacts  = supplier_contact_details.objects.filter(Supplier=supplier)
@@ -185,6 +216,7 @@ def related_companies(request,sp_id):
 
     related_suppliers = _related_suppliers(products)
     related_buyers_direct   = _related_buyers_direct(products)
+    same_product_suppliers   = _same_product_suppliers(products, supplier.id)
 
     context = {
         'supplier':     supplier,

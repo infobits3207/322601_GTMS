@@ -17,7 +17,6 @@ PRODUCT_FIELDS_RECON = [
     'Billing_address', 'Delivery_address',
 ]
 
-CURRENCY_CHOICES = ['USD', 'EUR', 'INR', 'GBP', 'JPY', 'CNY', 'AED']
 ENQUIRY_TYPE_CHOICES = [
     'New requirement', 'Repeat order', 'Price enquiry', 'Sample request', 'Other'
 ]
@@ -76,8 +75,8 @@ def edit_enquiry(request, en_id):
                     return _render_edit(request, enquiry, products, media)
                 enquiry.buyer        = None
                 enquiry.Company_name = company_name
-                enquiry.Description  = request.POST.get('Description', '').strip()
-
+            
+            enquiry.Description  = request.POST.get('Description', '').strip()
             enquiry.Enquiry_date = request.POST.get('Enquiry_date') or None
             enquiry.Closing_date = request.POST.get('Closing_date') or None
             enquiry.Enquiry_type = request.POST.get('Enquiry_type', '').strip()
@@ -110,7 +109,7 @@ def edit_enquiry(request, en_id):
                 Enquiry_media.objects.filter(id=mid, Enquiry=enquiry).delete()
 
         messages.success(request, 'Enquiry updated successfully.')
-        return redirect('enquiry:enquiry_list')
+        return redirect('enquiry:edit_enquiry',en_id)
 
     return _render_edit(request, enquiry, products, media)
 
@@ -123,6 +122,5 @@ def _render_edit(request, enquiry, products, media):
         'images':               media.exclude(Image='').exclude(Image=None),
         'buyer_list':           buyer_details.objects.only('id', 'Company_name', 'Contact_person').order_by('Company_name'),
         'category_list':        _category_list,
-        'currency_choices':     CURRENCY_CHOICES,
         'enquiry_type_choices': ENQUIRY_TYPE_CHOICES,
     })
