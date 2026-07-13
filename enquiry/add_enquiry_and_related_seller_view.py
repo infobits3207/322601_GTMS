@@ -101,3 +101,86 @@ def _render_add(request):
         'category_list':         _category_list,
         'today':                 timezone.localdate(),
     })
+
+def related_sellers(request, en_id):
+    """
+    For an enquiry, find:
+    1. Direct sellers — suppliers who sell the exact products in the enquiry.
+    2. Indirect/upstream sellers — suppliers who sell raw materials that are
+       inputs to the enquired products (via DGFT SION recipe data).
+    """
+    enquiry  = get_object_or_404(Enquiry_details, id=en_id)
+    products = Enquiry_products.objects.filter(Supplier=enquiry).exclude(Product='')
+
+    enquired_names = [p.Product.strip() for p in products if p.Product.strip()]
+
+    direct_qs = Sell_products.objects.filter(
+        Product__in=enquired_names
+    ).select_related('Supplier').exclude(Product='')
+
+    direct_map = {}   # supplier_id -> {supplier, matched_products}
+    for sp in direct_qs:
+        sid = sp.Supplier.id
+        if sid not in direct_map:
+            direct_map[sid] = {'supplier': sp.Supplier, 'matched_products': []}
+        direct_map[sid]['matched_products'].append(sp.Product)
+
+    direct_sellers = list(direct_map.values())
+
+    # ── 2. Indirect/upstream sellers ──
+    # Step 1: which input items go INTO the enquired products?
+    df = _recipe_df.copy()
+    df['Output Item'] = df['Output Item'].str.strip()
+    df['Input Item']  = df['Input Item'].str.strip()
+
+    mask         = df['Output Item'].isin(enquired_names)
+    recipe_rows  = df[mask][['Output Item', 'Input Item']].drop_duplicates()
+
+    indirect_sellers = []
+    if not recipe_rows.empty:
+        # build lookup: input_item -> list of enquired output products that need it
+        input_to_outputs = (
+            recipe_rows
+            .groupby('Input Item')['Output Item']
+            .apply(list)
+            .to_dict()
+        )
+        raw_material_names = list(input_to_outputs.keys())
+
+        # Step 2: find suppliers who sell those raw materials
+        indirect_qs = Sell_products.objects.filter(
+            Product__in=raw_material_names
+        ).select_related('Supplier').exclude(Product='')
+
+        # exclude suppliers already in direct_sellers
+        direct_ids = set(direct_map.keys())
+
+        indirect_map = {}  # supplier_id -> {supplier, sells_raw_materials, for_enquired_products}
+        seen_pairs   = set()
+        for sp in indirect_qs:
+            if sp.Supplier.id in direct_ids:
+                continue
+            sid  = sp.Supplier.id
+            pair = (sid, sp.Product.strip())
+            if pair in seen_pairs:
+                continue
+            seen_pairs.add(pair)
+            outputs = [str(o) for o in input_to_outputs.get(sp.Product.strip(), [])]
+            if sid not in indirect_map:
+                indirect_map[sid] = {
+                    'supplier':            sp.Supplier,
+                    'sells_raw_materials': [],
+                    'for_enquired_products': set(),
+                }
+            indirect_map[sid]['sells_raw_materials'].append(sp.Product)
+            indirect_map[sid]['for_enquired_products'].update(outputs)
+
+        for v in indirect_map.values():
+            v['for_enquired_products'] = list(v['for_enquired_products'])
+        indirect_sellers = list(indirect_map.values())
+
+    return render(request, 'related_sellers.html', {
+        'enquiry':          enquiry,
+        'direct_sellers':   direct_sellers,
+        'indirect_sellers': indirect_sellers,
+    })

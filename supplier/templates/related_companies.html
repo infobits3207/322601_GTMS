@@ -140,17 +140,21 @@
             <div class="form-row">
               <div>
                 <label>To</label>
-                <select name="to_email">
+                <select name="to_email" onchange="handleEmailSelect(this)">
+                  <option value="" selected disabled>Select mail options</option>
                   {% for c in bp.Buyer.Buyer_contact_details.all %}
                     {% if c.Email %}<option value="{{ c.Email }}">{{ c.Email }}</option>{% endif %}
                   {% endfor %}
+                  <option value="manual">Type manually</option>
                 </select>
+                <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
+                <a class="back-to-select" onclick="resetEmailSelect(this.closest('div'));return false">
+                  ← Pick from list
+                </a>
               </div>
               <div>
                 <label>Subject</label>
-                <input type="text" name="subject"
-                      value="Product enquiry — {{ supplier.Company_name }}"
-                      placeholder="Email subject">
+                <input type="text" name="subject" value="Product enquiry — {{ supplier.Company_name }}" placeholder="Email subject">
               </div>
             </div>
 

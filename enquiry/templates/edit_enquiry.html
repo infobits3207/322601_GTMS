@@ -172,7 +172,7 @@
                  value="{{ enquiry.Company_name|default:'' }}"
                  {% if not enquiry.buyer %}required{% endif %}>
         </div>
-        <div class="form-group">
+        <div class="form-group full">
           <label>Description</label>
           <input type="text" name="Description"
                  value="{{ enquiry.Description|default:'' }}">
@@ -215,10 +215,10 @@
               <label>Product group</label>
               <select name="Product_group">
                 <option value="">— Select —</option>
-                {% for value, label in product_group_choices %}
+                {% for value in product_group_choices %}
                   <option value="{{ value }}"
                     {% if product.Product_group == value %}selected{% endif %}>
-                    {{ label }}
+                    {{ value }}
                   </option>
                 {% endfor %}
               </select>
@@ -429,8 +429,8 @@
           <label>Product group</label>
           <select name="Product_group">
             <option value="">— Select —</option>
-            {% for value, label in product_group_choices %}
-              <option value="{{ value }}">{{ label }}</option>
+            {% for value in product_group_choices %}
+              <option value="{{ value }}">{{ value }}</option>
             {% endfor %}
           </select>
         </div>
