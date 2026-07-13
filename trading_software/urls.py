@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path('supplier/', include('supplier.urls')),
     path('enquiry/', include('enquiry.urls')),
+    path('buyer/', include('buyer.urls')),
 ]
 
 if settings.DEBUG:

@@ -9,7 +9,7 @@
 {% block content %}
   <div class="page-loader" id="page_loader">
     <div class="loader"></div>
-    <div class="loader-text">Importing suppliers, please wait…</div>
+    <div class="loader-text">Importing buyers, please wait…</div>
   </div>
 
   {% if messages %}
@@ -19,13 +19,13 @@
   {% endif %}
 
   <div class="page-header">
-    <h1 class="page-title">Suppliers</h1>
+    <h1 class="page-title">Buyers</h1>
     <div class="add-wrapper">
       <button class="btn-custom" onclick="toggleDropdown()">
-        <i class="ti ti-plus" aria-hidden="true"></i> Add supplier
+        <i class="ti ti-plus" aria-hidden="true"></i> Add Buyer
       </button>
       <div class="dropdown-menu" id="add_dropdown">
-        <a href="{% url 'supplier:supplier_add' %}" class="dropdown-item">
+        <a href="{% url 'buyer:add_buyer' %}" class="dropdown-item">
           <i class="ti ti-forms" aria-hidden="true"></i> Fill form
         </a>
         <button class="dropdown-item" onclick="openExcelPanel()">
@@ -91,77 +91,7 @@
     </div>
   </div>
 
-  {% if suppliers %}
-    <div class="item-list">
-      <div class="list-header">
-        <input type="checkbox" class="header-check" id="select-all" onclick="toggleSelectAll(this)">
-        <span>Company</span>
-        <span>WCPD / IEC</span>
-        <span>Contact</span>
-        <span>Products</span>
-        <span>Added</span>
-        <span>Actions</span>
-      </div>
-
-      {% for s in suppliers %}
-        <div class="item-row" id="row-{{ s.id }}">
-          <input type="checkbox" class="row-check"
-                data-id="{{ s.id }}"
-                data-name="{{ s.Company_name|escapejs }}"
-                onchange="onRowCheck(this)">
-
-          <div>
-            <div class="company-name">{{ s.Company_name }}</div>
-            {% if s.GST_number %}<div class="company-sub">GST: {{ s.GST_number }}</div>{% endif %}
-          </div>
-
-          <div>
-            {% if s.WCPD_code %}<div class="wcpd-code">{{ s.WCPD_code }}</div>{% endif %}
-            {% if s.IEC_code  %}<div class="iec-code">IEC: {{ s.IEC_code }}</div>{% endif %}
-          </div>
-
-          <div>
-            {% for c in s.supplier_contact_details.all|slice:":2" %}
-              {% if c.Email %}<div class="contact-line">{{ c.Email }}</div>{% endif %}
-              {% if c.Phone %}<div class="contact-line">{{ c.Phone }}</div>{% endif %}
-            {% endfor %}
-          </div>
-
-          <div class="tags">
-            {% for p in s.Sell_products.all|slice:":3" %}
-              <span class="tag" title="{{ p.Product }}">{{ p.Product }}</span>
-            {% endfor %}
-            {% if s.Sell_products.count > 3 %}
-              <span class="tag-more">+{{ s.Sell_products.count|add:"-3" }} more</span>
-            {% endif %}
-          </div>
-
-          <div class="date-cell">{{ s.Created_at|date:"d M Y" }}</div>
-
-          <div class="action-cell">
-            <a href="{% url 'supplier:supplier_detail' s.id %}" class="act-btn" title="Edit">
-              <i class="ti ti-edit" aria-hidden="true"></i>
-            </a>
-            <a href="{% url 'supplier:related_companies' s.id %}" class="act-btn" title="Related companies">
-              <i class="fa-solid fa-users"></i>
-            </a>
-            <a href="{% url 'supplier:email_history' s.id %}" class="act-btn" title="Email history">
-              <span class="email-history">
-                <i class="fa-solid fa-envelope"></i>
-                <i class="fa-solid fa-clock-rotate-left"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-
-  {% else %}
-    <div class="empty-state">
-      <i class="ti ti-building-factory-2" aria-hidden="true"></i>
-      No suppliers yet. Add one above.
-    </div>
-  {% endif %}
+  
 
 {% endblock %}
 

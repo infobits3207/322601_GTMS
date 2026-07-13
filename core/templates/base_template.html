@@ -96,7 +96,7 @@
             <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
             <span class="label-text">Dashboard</span>
           </a>
-          <a href="#" class="sidebar-link {% if request.resolver_match.url_name == 'buyers' %}active{% endif %}">
+          <a href="{% url 'buyer:buyer_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'buyer_list' %}active{% endif %}">
             <i class="ti ti-users" aria-hidden="true"></i>
             <span class="label-text">Buyers</span>
           </a>

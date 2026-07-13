@@ -10,7 +10,7 @@ class buyer_details(models.Model):
     PAN_number = models.CharField(max_length=15,blank=True)
     DIN_number = models.CharField(max_length=25,blank=True)
     CIN_number = models.CharField(max_length=30,blank=True)
-    DB_number = models.CharField(max_length=30,blank=True)
+    DUNS_number = models.CharField(max_length=30,blank=True)
     Contact_person = models.CharField(max_length=100,blank=True)
     Payment_terms = models.TextField(blank=True)
     Supplier_preferences = models.TextField(blank=True)

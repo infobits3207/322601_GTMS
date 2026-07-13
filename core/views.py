@@ -1,23 +1,14 @@
-from django.shortcuts import render
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.contrib import messages
-from django.db import transaction
 import pandas as pd
-from supplier.models import supplier_details, supplier_contact_details, supplier_addresses, supplier_media, Sell_products
-from buyer.models import Purchase_products
 from django.utils import timezone
 import os
 from django.conf import settings
-from django.shortcuts import get_object_or_404, render
-from django.http import JsonResponse
-from django.utils import timezone
 from django.views.decorators.http import require_POST
-import json
 
-from supplier.models import supplier_details, supplier_email_messages, supplier_contact_details
+from core.utils import send_notification_email
 from buyer.models import Buyer_email_messages, buyer_details
-from core.utils import send_notification_email   # your existing helper
+from supplier.models import supplier_details, supplier_details, supplier_email_messages
 
 def dashboard(request):
     return render(request,'dashboard.html')
