@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <form method="post" enctype="multipart/form-data" id="supplier-form">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     {# ── 1. Company details ── #}
@@ -66,7 +66,30 @@
       </div>
     </div>
 
-    {# ── 3. Contact info ── #}
+    {# ── 3. Purchase related details ── #}
+    <div class="card">
+      <p class="section-title">Purchase related details</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Payment terms</label>
+          <input type="text" name="Payment_terms" placeholder="e.g. 30 days net, LC at sight, advance 50%">
+        </div>
+        <div class="form-group">
+          <label>Transport preferences</label>
+          <input type="text" name="Transport_preferences" placeholder="e.g. FCL, LCL, Air freight, FOB Mumbai">
+        </div>
+        <div class="form-group full">
+          <label>Supplier preferences</label>
+          <input type="text" name="Supplier_preferences" placeholder="e.g. ISO certified, Indian manufacturer only, min 5 years experience">
+        </div>
+        <div class="form-group full">
+          <label>Monthly requirements</label>
+          <input type="text" name="Monthly_requirements">
+        </div>
+      </div>
+    </div>
+
+    {# ── 4. Contact info ── #}
     <div class="card">
       <p class="section-title">Contact information</p>
 
@@ -107,7 +130,7 @@
       </div>
     </div>
 
-    {# ── 4. Product ── #}
+    {# ── 5. Product ── #}
     <div class="card">
       <p class="section-title">Products</p>
       <div id="product_blocks">
@@ -142,27 +165,23 @@
               {% endfor %}
             </datalist>
 
-            <div class="form-group full">
+            <div class="form-group">
               <label>Product name</label>
               <input type="text" name="Product" placeholder="Pesticides" list="product_list">
             </div>
             <datalist id="product_list"></datalist>
-              
             <div class="form-group">
               <label>HSN code</label>
               <input type="text" name="HSN_code">
             </div>
-            <div class="form-group">
-              <label>Minimum order quantity</label>
-              <input type="text" name="Min_order_quantity" placeholder="10 kg">
+
+            <div class="form-group full">
+              <label>Billing address</label>
+              <textarea name="Billing_address" rows="2"></textarea>
             </div>
             <div class="form-group full">
-              <label>Factory address</label>
-              <textarea name="Factory_address" rows="2"></textarea>
-            </div>
-            <div class="form-group full">
-              <label>Warehouse address</label>
-              <textarea name="Warehouse_address" rows="2"></textarea>
+              <label>Delivery address</label>
+              <textarea name="Delivery_address" rows="2"></textarea>
             </div>
           </div>
         </div>
@@ -172,7 +191,7 @@
       </button>
     </div>
 
-    {# ── 5. Addresses ── #}
+    {# ── 6. Addresses ── #}
     <div class="card">
       <p class="section-title">Addresses</p>
       <div id="address-blocks">
@@ -203,7 +222,7 @@
       </button>
     </div>
 
-    {# ── 6. Documents & images ── #}
+    {# ── 7. Documents & images ── #}
     <div class="card">
       <p class="section-title">Documents &amp; images</p>
       <div class="form-grid">
@@ -289,7 +308,7 @@
             <label>Product category</label>
             <input type="text" name="Product_category">
           </div>
-          <div class="form-group full">
+          <div class="form-group">
             <label>Product name</label>
             <input type="text" name="Product" placeholder="Pesticides">
           </div>
@@ -297,17 +316,14 @@
             <label>HSN code</label>
             <input type="text" name="HSN_code">
           </div>
-          <div class="form-group">
-            <label>Minimum order quantity</label>
-            <input type="text" name="Min_order_quantity" placeholder="10 kg">
+
+          <div class="form-group full">
+            <label>Billing address</label>
+            <textarea name="Billing_address" rows="2"></textarea>
           </div>
           <div class="form-group full">
-            <label>Factory address</label>
-            <textarea name="Factory_address" rows="2"></textarea>
-          </div>
-          <div class="form-group full">
-            <label>Warehouse address</label>
-            <textarea name="Warehouse_address" rows="2"></textarea>
+            <label>Delivery address</label>
+            <textarea name="Delivery_address" rows="2"></textarea>
           </div>
         </div>
       `

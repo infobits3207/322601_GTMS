@@ -5,25 +5,25 @@ class buyer_details(models.Model):
     Company_name = models.CharField(max_length=150,blank=True)
     Description = models.TextField(blank=True)
     Website_link = models.CharField(max_length=100,blank=True)
+    WCPD_code = models.CharField(max_length=10,blank=True)
+    Contact_person = models.CharField(max_length=100,blank=True)
+    Admin_remark = models.TextField(blank=True)
     GST_number = models.CharField(max_length=20,blank=True)
     IEC_code = models.CharField(max_length=15,blank=True)
     PAN_number = models.CharField(max_length=15,blank=True)
     DIN_number = models.CharField(max_length=25,blank=True)
     CIN_number = models.CharField(max_length=30,blank=True)
     DUNS_number = models.CharField(max_length=30,blank=True)
-    Contact_person = models.CharField(max_length=100,blank=True)
     Payment_terms = models.TextField(blank=True)
     Supplier_preferences = models.TextField(blank=True)
     Transport_preferences = models.TextField(blank=True)
     Monthly_requirements = models.TextField(blank=True)
-    Admin_remark = models.TextField(blank=True)
     Created_at = models.DateField(null=True,blank=True)
 
 class Buyer_contact_details(models.Model):
     Buyer = models.ForeignKey(buyer_details,on_delete=models.CASCADE,related_name='Buyer_contact_details')
     Email = models.EmailField(blank=True)
     Phone = models.CharField(max_length=20,blank=True)
-    Note = models.TextField(blank=True)
 
 class Buyer_addresses(models.Model):
     Buyer = models.ForeignKey(buyer_details,on_delete=models.CASCADE,related_name='Buyer_addresses')

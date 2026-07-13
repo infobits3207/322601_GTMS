@@ -96,15 +96,15 @@
             <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
             <span class="label-text">Dashboard</span>
           </a>
-          <a href="{% url 'buyer:buyer_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'buyer_list' %}active{% endif %}">
+          <a href="{% url 'buyer:buyer_list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'buyer' %}active{% endif %}">
             <i class="ti ti-users" aria-hidden="true"></i>
             <span class="label-text">Buyers</span>
           </a>
-          <a href="{% url 'supplier:suppliers_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'suppliers_list' %}active{% endif %}">
+          <a href="{% url 'supplier:suppliers_list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'supplier' %}active{% endif %}">
             <i class="ti ti-building-factory-2" aria-hidden="true"></i>
             <span class="label-text">Suppliers</span>
           </a>
-          <a href="{% url 'enquiry:enquiry_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'enquiry_list' %}active{% endif %}">
+          <a href="{% url 'enquiry:enquiry_list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'enquiry' %}active{% endif %}">
             <i class="ti ti-message-2" aria-hidden="true"></i>
             <span class="label-text">Enquiry</span>
           </a>
@@ -121,6 +121,5 @@
     </div>
     {% block modals %}{% endblock %}
   </body>
-
   {% block extra_script %}{% endblock %}
 </html>
