@@ -1,94 +1,10 @@
 {% extends 'base_template.html' %}
+{% load static %}
 
 {% block extra_head %}
+
+  <link rel="stylesheet" href="{% static 'css/list_page_style.css' %}">
   <style>
-    .page-loader {
-      display: none; flex-direction: column; justify-content: center; align-items: center;
-      color: #f3f3f3; gap: 15px; position: fixed; z-index: 1000;
-      top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75);
-    }
-    .loader {
-      border: 6px solid rgba(255,255,255,0.25); border-radius: 50%;
-      border-top-color: #fff; width: 52px; height: 52px;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loader-text { font-size: 14px; color: rgba(255,255,255,0.85); }
-
-    .page-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
-    }
-    .page-title { font-size: 20px; font-weight: 500; margin: 0; }
-    .search-section {
-      display: flex; align-items: center; flex-wrap: wrap;
-      gap: 12px; padding: 16px; margin: 20px 0;
-      background: #ffffff; border-radius: 14px;
-      border: 1px solid var(--GTMS-secondary-dark);
-      box-shadow: 0 1px 2px rgba(20, 20, 30, 0.04);
-    }
-    .search-bar-group {
-      display: grid; gap: 10px;
-      flex: 1; min-width: 320px;
-      grid-template-columns: 2.2fr 1fr 1fr;
-    }
-    .search-wrap { position: relative; }
-    .search-wrap i {
-      position: absolute; left: 12px; top: 50%;
-      transform: translateY(-50%); font-size: 13px; color: #77736a;
-      pointer-events: none; transition: color 0.15s ease;
-    }
-    .search-wrap input, .search-wrap select {
-      width: 100%; padding: 9px 12px 9px 34px; font-size: 13px;
-      font-family: inherit; color: #2B2A28;
-      background: var(--GTMS-secondary); border: 1px solid var(--GTMS-secondary-dark);
-      border-radius: 9px; outline: none; box-sizing: border-box;
-      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-    }
-    .search-wrap input::placeholder { color: #77736a; }
-    .search-wrap input:hover, .search-wrap select:hover { border-color: #D7D1C2; }
-    .search-wrap input:focus, .search-wrap select:focus {
-      background: #ffffff; border-color: var(--GTMS-primary-light);
-      box-shadow: 0 0 0 3px rgba(31, 42, 68, 0.08);
-    }
-    .search-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-    .btn-clear:hover { color: var(--GTMS-text-primary); text-decoration: underline; }
-
-    .add-wrapper { position: relative; display: inline-block; }
-    .dropdown-menu {
-      display: none; position: absolute; right: 0; top: calc(100% + 6px);
-      background: #fff; border: 0.5px solid #e5e3da; border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,.1); min-width: 170px; z-index: 100; overflow: hidden;
-    }
-    .dropdown-menu.open { display: block; }
-    .dropdown-item {
-      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-      font-size: 13px; color: #3d3d3a; text-decoration: none;
-      border: none; background: none; width: 100%; cursor: pointer;
-    }
-    .dropdown-item:hover { background: var(--GTMS-secondary); }
-    .dropdown-item i { font-size: 16px; color: var(--GTMS-text-muted); }
-
-    .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
-    .alert-success { background: #eaf3de; color: #3b6d11; }
-    .alert-error   { background: #fcebeb; color: #a32d2d; }
-
-    .excel-panel {
-      display: none; background: var(--GTMS-secondary); border: 0.5px solid #e5e3da;
-      border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
-    }
-    .excel-panel.open { display: block; }
-    .excel-panel label { 
-      font-size: 12px; font-weight: 500; 
-      color: var(--GTMS-text-secondary); 
-      display: block; margin-bottom: 6px; 
-    }
-    .excel-panel .btn-import {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: var(--GTMS-primary); color: #fff; border: none;
-      border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; margin-top: 8px;
-    }
-    .excel-panel .btn-import:hover { opacity: 0.9; }
-
     /* ── bulk action bar ── */
     .bulk-bar {
       display: none; align-items: center; gap: 12px;
@@ -112,34 +28,16 @@
     }
     .btn-bulk-clear:hover { color: #fff; }
 
-    /* ── supplier list ── */
-    .supplier-list { display: flex; flex-direction: column; gap: 6px; }
-
-    .list-header,
-    .supplier-row {
-      display: grid;
+    .list-header, .item-row {
       grid-template-columns: 32px 2fr 70px 1.4fr 1.6fr 80px 95px;
-      align-items: center; gap: 12px; 
-      padding: 10px 14px; border-radius: 10px;
     }
-    .list-header { border: none; padding: 2px 14px 6px; }
-    .list-header span { 
-      font-size: 11px; font-weight: 600; 
-      text-transform: uppercase; 
-      letter-spacing: .05em; color: 
-      var(--GTMS-text-muted); 
-    }
-
-    .supplier-row { background: #fff; border: 0.5px solid #e5e3da; cursor: default; transition: border-color .15s; }
-    .supplier-row:hover { border-color: #c5c3ba; }
-    .supplier-row.selected { border-color: var(--GTMS-primary); background: #f0f3f9; }
+    .item-row.selected { border-color: var(--GTMS-primary); background: #f0f3f9; }
 
     /* checkbox */
     .row-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--GTMS-primary); }
     .header-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--GTMS-primary); }
 
-    .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary); }
-    .company-sub  { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; }
+
     .wcpd-code { font-size: 13px; font-weight: 500; color: var(--GTMS-text-primary); }
     .iec-code  { font-size: 11px; color: var(--GTMS-text-muted); margin-top: 2px; }
     .contact-line { 
@@ -160,25 +58,13 @@
       background: #f0ede6; white-space: nowrap; 
       color: var(--GTMS-text-muted); 
     }
-    .date-cell { font-size: 12px; color: var(--GTMS-text-muted); }
-    .action-cell { display: flex; gap: 6px; align-items: center; }
-    .act-btn { 
-      background: none; border: none; 
-      cursor: pointer; border-radius: 6px;  
-      color: var(--GTMS-text-muted); 
-      font-size: 16px; padding: 5px;
-    }
-    .act-btn:hover { background: #f0ede6; color: var(--GTMS-text-primary); }
-    .act-btn.del:hover { background: #fcebeb; color: #a32d2d; }
+    
     .email-history { display: inline-block; position: relative; }
     .email-history .fa-clock-rotate-left { 
       position: absolute; font-size:10px; 
       right:-3px; bottom:-2px; padding:1px; 
       background:#fff; border-radius:50%; 
     }
-
-    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--GTMS-text-muted); }
-    .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
 
     /* ── bulk mail modal ── */
     .bulk-modal-backdrop {
@@ -283,6 +169,19 @@
       </div>
     </div>
   </div>
+  
+  {# excel panel #}
+  <div class="excel-panel" id="excel_panel">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label>Select Excel file (.xlsx)</label>
+      <input type="file" name="supplier_excel" class="form-control" accept=".xlsx,.xls">
+      <button type="submit" class="btn-import"
+              onclick="document.getElementById('page_loader').style.display='flex'">
+        <i class="ti ti-upload" aria-hidden="true"></i> Import
+      </button>
+    </form>
+  </div>
 
   <form method="get" class="search-section">
     <div class="search-bar-group">
@@ -314,19 +213,6 @@
     </div>
   </form>
 
-  {# excel panel #}
-  <div class="excel-panel" id="excel_panel">
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <label>Select Excel file (.xlsx)</label>
-      <input type="file" name="supplier_excel" class="form-control" accept=".xlsx,.xls">
-      <button type="submit" class="btn-import"
-              onclick="document.getElementById('page_loader').style.display='flex'">
-        <i class="ti ti-upload" aria-hidden="true"></i> Import
-      </button>
-    </form>
-  </div>
-
   {# bulk action bar — shown when rows are selected #}
   <div class="bulk-bar" id="bulk-bar">
     <span><span class="bulk-count" id="bulk-count">0</span> supplier(s) selected</span>
@@ -341,7 +227,7 @@
   </div>
 
   {% if suppliers %}
-    <div class="supplier-list">
+    <div class="item-list">
       <div class="list-header">
         <input type="checkbox" class="header-check" id="select-all" onclick="toggleSelectAll(this)">
         <span>Company</span>
@@ -353,7 +239,7 @@
       </div>
 
       {% for s in suppliers %}
-        <div class="supplier-row" id="row-{{ s.id }}">
+        <div class="item-row" id="row-{{ s.id }}">
           <input type="checkbox" class="row-check"
                 data-id="{{ s.id }}"
                 data-name="{{ s.Company_name|escapejs }}"
@@ -507,7 +393,7 @@
     function clearSelection() {
       selectedIds.clear();
       document.querySelectorAll('.row-check').forEach(cb => { cb.checked = false; });
-      document.querySelectorAll('.supplier-row').forEach(r => r.classList.remove('selected'));
+      document.querySelectorAll('.item-row').forEach(r => r.classList.remove('selected'));
       document.getElementById('select-all').checked = false;
       updateBulkBar();
     }
@@ -652,7 +538,7 @@
 
     function confirmDelete(delete_action, id, name) {
       if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-      const supplier  = delete_action.closest('.supplier-row');
+      const supplier  = delete_action.closest('.item-row');
       const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
       fetch("{% url 'supplier:delete_supplier' %}", {
         method: 'POST',

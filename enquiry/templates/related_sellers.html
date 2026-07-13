@@ -2,76 +2,8 @@
 {% load static %}
 
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+  <link rel="stylesheet" href="{% static 'css/related_company_style.css' %}">
   <style>
-    .page-header {
-      margin-bottom: 1.5rem; display: flex;
-      align-items: flex-start; justify-content: space-between;
-    }
-
-    /* ── expandable company rows ── */
-    .company-row {
-      border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
-      border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden;
-    }
-    .company-header {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 14px; cursor: pointer; justify-content: space-between;
-      transition: background .1s;
-    }
-    .company-header:hover { background: #f7f6f2; }
-    .company-left { display: flex; align-items: flex-start; gap: 12px; }
-    .company-avatar {
-      width: 34px; height: 34px; border-radius: 50%;
-      background: #e6f1fb; color: #185fa5;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 600; flex-shrink: 0;
-    }
-    .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary, #2c2c2a); }
-    .company-meta { font-size: 12px; color: var(--GTMS-text-muted, #888780); margin-top: 3px; }
-
-    .tag {
-      display: inline-block; font-size: 11px; padding: 2px 8px;
-      border-radius: 20px; background: #e6f1fb; color: #185fa5; margin: 2px 2px 0 0;
-    }
-    .tag-green { background: #eaf3de; color: #3b6d11; }
-
-    .toggle-icon {
-      font-size: 16px; color: var(--GTMS-text-muted, #888780);
-      flex-shrink: 0; transition: transform .2s; margin-top: 2px;
-    }
-    .company-row.open .toggle-icon { transform: rotate(180deg); }
-
-    /* ── email compose panel ── */
-    .email-panel {
-      display: none;
-      border-top: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
-      padding: 14px; background: #fafaf8;
-    }
-    .company-row.open .email-panel { display: block; }
-
-    .compose-label {
-      font-size: 12px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: .05em; color: var(--GTMS-text-muted, #888780);
-      margin: 0 0 10px;
-    }
-    .compose-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-
-    .send-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
-    .btn-send {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--GTMS-primary, #14213d); color: #fff; border: none;
-      border-radius: 8px; padding: 8px 16px; font-size: 13px;
-      font-weight: 500; cursor: pointer;
-    }
-    .btn-send:hover { opacity: 0.9; }
-    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
-    .send-status { font-size: 12px; }
-    .send-status.success { color: var(--GTMS-success, #3b6d11); }
-    .send-status.error   { color: var(--GTMS-error,   #a32d2d); }
-
-    .empty-note { font-size: 13px; color: var(--GTMS-text-muted, #888780); padding: 0.5rem 0; }
-
     /* ── match reason badge ── */
     .match-reason {
       font-size: 11px; color: var(--GTMS-text-muted, #888780);
@@ -82,14 +14,6 @@
     .section-desc {
       font-size: 12px; color: var(--GTMS-text-muted, #888780);
       margin: -0.5rem 0 0.75rem;
-    }
-
-    .email-input {
-      display:none; margin-top:6px
-    }
-    .back-to-select {
-      display:none; font-size:12px; 
-      margin:4px 0px; cursor: pointer;
     }
   </style>
 {% endblock %}
@@ -104,9 +28,6 @@
       </h1>
       <p class="page-sub" style="margin:0">Related sellers for this enquiry</p>
     </div>
-    <a href="{% url 'enquiry:edit_enquiry' enquiry.id %}" class="btn-cancel">
-      <i class="ti ti-arrow-left" style="margin-right:4px"></i> Back to enquiry
-    </a>
   </div>
 
   {# ── Direct sellers — sell exactly what was enquired ── #}
@@ -143,8 +64,8 @@
             <input type="hidden" name="company_type" value="supplier">
             <input type="hidden" name="company_id"   value="{{ item.supplier.id }}">
 
-            <p class="compose-label">Send email</p>
-            <div class="compose-grid">
+            <p class="email-panel-label">Send email</p>
+            <div class="form-grid">
               <div class="form-group">
                 <label>To</label>
                 <select name="to_email_select" onchange="handleEmailSelect(this)">
@@ -161,20 +82,21 @@
                   ← Pick from list
                 </a>
               </div>
+
               <div class="form-group">
                 <label>Subject</label>
                 <input type="text" name="subject"
                       value="Product enquiry — {% if enquiry.buyer %}{{ enquiry.buyer.Company_name }}{% else %}{{ enquiry.Company_name }}{% endif %}"
                       placeholder="Email subject">
               </div>
-            </div>
-            <div class="form-group" style="margin-bottom:10px">
-              <label>Message</label>
-              <textarea name="content" rows="4"
-                        placeholder="Write your message here…"></textarea>
+
+              <div class="form-group full">
+                <label>Message</label>
+                <textarea name="content" rows="4" placeholder="Write your message here…"></textarea>
+              </div>
             </div>
             <div class="send-row">
-              <button type="submit" class="btn-send">
+              <button type="submit" class="btn-custom">
                 <i class="ti ti-send"></i> Send email
               </button>
               <span class="send-status"></span>
@@ -225,8 +147,8 @@
             <input type="hidden" name="company_type" value="supplier">
             <input type="hidden" name="company_id"   value="{{ item.supplier.id }}">
 
-            <p class="compose-label">Send email</p>
-            <div class="compose-grid">
+            <p class="email-panel-label">Send email</p>
+            <div class="form-grid">
               <div class="form-group">
                 <label>To</label>
                 <select name="to_email_select" onchange="handleEmailSelect(this)">
@@ -243,20 +165,19 @@
                   ← Pick from list
                 </a>
               </div>
+
               <div class="form-group">
                 <label>Subject</label>
-                <input type="text" name="subject"
-                      value="Raw material supply enquiry"
-                      placeholder="Email subject">
+                <input type="text" name="subject" value="Raw material supply enquiry" placeholder="Email subject">
+              </div>
+              
+              <div class="form-group full">
+                <label>Message</label>
+                <textarea name="content" rows="4" placeholder="Write your message here…"></textarea>
               </div>
             </div>
-            <div class="form-group" style="margin-bottom:10px">
-              <label>Message</label>
-              <textarea name="content" rows="4"
-                        placeholder="Write your message here…"></textarea>
-            </div>
             <div class="send-row">
-              <button type="submit" class="btn-send">
+              <button type="submit" class="btn-custom">
                 <i class="ti ti-send"></i> Send email
               </button>
               <span class="send-status"></span>
@@ -339,7 +260,7 @@
       status.textContent = '';
       status.className   = 'send-status';
 
-      fetch("{% url 'supplier:send_company_email' %}", {
+      fetch("{% url 'send_company_email' %}", {
         method:  'POST',
         headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
         body:    data,

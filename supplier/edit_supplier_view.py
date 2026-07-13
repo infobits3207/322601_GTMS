@@ -189,11 +189,3 @@ def edit_supplier(request, sp_id):
         return redirect('supplier:supplier_detail', sp_id)
 
     return redirect('supplier:supplier_detail', sp_id)
-
-def fetch_products(request):
-    category = request.GET.get('category_name', '').strip()
-    if not category:
-        return JsonResponse([], safe=False)
-    filtered = _recipe_df[_recipe_df['Category'] == category]
-    product_list = sorted(filtered['Output Item'].dropna().unique().tolist())
-    return JsonResponse(product_list, safe=False)

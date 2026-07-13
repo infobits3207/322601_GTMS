@@ -362,7 +362,7 @@
       status.textContent = '';
       status.className   = 'send-status';
 
-      fetch("{% url 'supplier:send_company_email' %}", {
+      fetch("{% url 'send_company_email' %}", {
         method:  'POST',
         headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
         body:    data,

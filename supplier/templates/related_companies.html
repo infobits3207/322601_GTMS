@@ -1,102 +1,10 @@
 {% extends 'base_template.html' %}
+{% load static %}
 
 {% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/related_company_style.css' %}">
   <style>
-    .page-header { margin-bottom: 1.5rem; display:flex; align-items:flex-start; justify-content:space-between; }
-    .page-title  { font-size: 20px; font-weight: 600; color: #2c2c2a; margin: 0 0 4px; }
-    .page-sub    { font-size: 14px; color: #888780; margin: 0; }
-
-    .card {
-      background: #fff; border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;
-    }
-    .section-title {
-      font-size: 12px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: .05em; color: var(--GTMS-primary-light); margin: 0 0 1rem;
-    }
-
-    .company-row {
-      border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden;
-    }
-
-    .company-header {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 14px; cursor: pointer;
-      justify-content: space-between;
-    }
-    .company-header:hover { background: #f7f6f2; }
-
-    .company-left  { display: flex; align-items: flex-start; gap: 12px; }
-    .company-avatar {
-      width: 34px; height: 34px; border-radius: 50%;
-      background: #e6f1fb; color: #185fa5;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 600; flex-shrink: 0;
-    }
     .company-avatar.green { background: #eaf3de; color: #3b6d11; }
-    .company-name { font-size: 14px; font-weight: 500; color: #2c2c2a; }
-    .company-meta { font-size: 12px; color: #888780; margin-top: 3px; }
-
-    .tag {
-      display: inline-block; font-size: 11px; padding: 2px 8px;
-      border-radius: 20px; background: #e6f1fb; color: #185fa5; margin: 2px 2px 0 0;
-    }
-    .tag-green { background: #eaf3de; color: #3b6d11; }
-
-    .toggle-icon { font-size: 16px; color: #888780; flex-shrink: 0; transition: transform .2s; margin-top: 2px; }
-    .company-row.open .toggle-icon { transform: rotate(180deg); }
-
-    /* ── email compose panel ── */
-    .email-panel {
-      display: none; border-top: 0.5px solid var(--GTMS-secondary-dark);
-      padding: 14px; background: #fafaf8;
-    }
-    .company-row.open .email-panel { display: block; }
-
-    .email-panel label {
-      font-size: 12px; font-weight: 500; color: #5f5e5a; display: block; margin-bottom: 4px;
-    }
-    .email-panel input,
-    .email-panel textarea,
-    .email-panel select {
-      width: 100%; border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
-      padding: 8px 10px; font-size: 13px; color: #2c2c2a;
-      background: #fff; margin-bottom: 10px;
-    }
-    .email-panel input:focus,
-    .email-panel textarea:focus,
-    .email-panel select:focus {
-      outline: none; border-color: var(--GTMS-primary); box-shadow: 0 0 0 3px #14213d1a;
-    }
-    .email-panel textarea { resize: vertical; min-height: 90px; }
-    .email-panel .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-    .send-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
-    .btn-send {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--GTMS-primary); color: #fff; border: none;
-      border-radius: 8px; padding: 8px 16px; font-size: 13px;
-      font-weight: 500; cursor: pointer;
-    }
-    .btn-send:hover { opacity: 0.9; }
-    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .send-status {
-      font-size: 12px; display: none;
-    }
-    .send-status.success { color: #3b6d11; display: inline; }
-    .send-status.error   { color: #a32d2d; display: inline; }
-
-    .empty-note { font-size: 13px; color: #888780; padding: 0.5rem 0; }
-
-    .email-input {
-      display:none; margin-top:6px
-    }
-    .back-to-select {
-      display:none; font-size:12px; 
-      margin:4px 0px; cursor: pointer;
-    }
   </style>
 {% endblock %}
 
@@ -112,7 +20,7 @@
   {# ── Related buyers ── #}
   <div class="card">
     <p class="section-title">Related buyers</p>
-    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">
+    <p class="section-desc">
       Buyers who purchase the same products this supplier sells.
     </p>
 
@@ -137,8 +45,9 @@
             <input type="hidden" name="company_type" value="buyer">
             <input type="hidden" name="company_id"   value="{{ bp.Buyer.id }}">
 
-            <div class="form-row">
-              <div>
+            <p class="email-panel-label">Send email</p>
+            <div class="form-grid">
+              <div class="form-group">
                 <label>To</label>
                 <select name="to_email" onchange="handleEmailSelect(this)">
                   <option value="" selected disabled>Select mail options</option>
@@ -152,17 +61,20 @@
                   ← Pick from list
                 </a>
               </div>
-              <div>
+
+              <div class="form-group">
                 <label>Subject</label>
                 <input type="text" name="subject" value="Product enquiry — {{ supplier.Company_name }}" placeholder="Email subject">
               </div>
+
+              <div class="form-group full">
+                <label>Message</label>
+                <textarea name="content" placeholder="Write your message here…"></textarea>
+              </div>
             </div>
 
-            <label>Message</label>
-            <textarea name="content" placeholder="Write your message here…"></textarea>
-
             <div class="send-row">
-              <button type="submit" class="btn-send">
+              <button type="submit" class="btn-custom">
                 <i class="ti ti-send" aria-hidden="true"></i> Send email
               </button>
               <span class="send-status"></span>
@@ -178,7 +90,7 @@
   {# ── Related suppliers ── #}
   <div class="card">
     <p class="section-title">Related suppliers</p>
-    <p style="font-size:12px;color:#888780;margin:-0.5rem 0 0.75rem">
+    <p class="section-desc">
       Suppliers who manufacture products that use this supplier's items as raw material input.
     </p>
 
@@ -207,8 +119,9 @@
             <input type="hidden" name="company_type" value="supplier">
             <input type="hidden" name="company_id"   value="{{ item.Supplier.id }}">
 
-            <div class="form-row">
-              <div>
+            <p class="email-panel-label">Send email</p>
+            <div class="form-grid">
+              <div class="form-group">
                 <label>To</label>
                 <select name="to_email_select" onchange="handleEmailSelect(this)">
                   <option value="" selected disabled>Select mail options</option>
@@ -224,18 +137,20 @@
                   ← Pick from list
                 </a>
               </div>
-              <div>
+
+              <div class="form-group">
                 <label>Subject</label>
-                <input type="text" name="subject" placeholder="Email subject"
-                      value="Raw material supply — {{ supplier.Company_name }}">
+                <input type="text" name="subject" placeholder="Email subject" value="Raw material supply — {{ item.Supplier.Company_name }}">
+              </div>
+
+              <div class="form-group full">
+                <label>Message</label>
+                <textarea name="content" placeholder="Write your message here…"></textarea>
               </div>
             </div>
 
-            <label>Message</label>
-            <textarea name="content" placeholder="Write your message here…"></textarea>
-
             <div class="send-row">
-              <button type="submit" class="btn-send">
+              <button type="submit" class="btn-custom">
                 <i class="ti ti-send" aria-hidden="true"></i> Send email
               </button>
               <span class="send-status"></span>
@@ -245,6 +160,80 @@
       </div>
     {% empty %}
       <p class="empty-note">No downstream suppliers found via recipe relationships.</p>
+    {% endfor %}
+  </div>
+
+  {# ── Same product supplier ── #}
+
+  <div class="card">
+    <p class="section-title">Same product suppliers</p>
+    <p class="section-desc">
+      Suppliers who sell the same products this supplier sells.
+    </p>
+
+    {% for sp in same_product_suppliers %}
+      <div class="company-row" id="same-supplier-row-{{ forloop.counter }}">
+        <div class="company-header" onclick="toggleRow('same-supplier-row-{{ forloop.counter }}')">
+          <div class="company-left">
+            <div class="company-avatar">{{ sp.Supplier.Company_name|slice:":2"|upper }}</div>
+            <div>
+              <div class="company-name">{{ sp.Supplier.Company_name }}</div>
+              <div class="company-meta">
+                Sells: 
+                {% for pd in sp.shared_products %}
+                  <span class="tag">{{ pd }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
+        </div>
+
+        <div class="email-panel">
+          <form onsubmit="sendEmail(event, this)">
+            {% csrf_token %}
+            <input type="hidden" name="company_type" value="supplier">
+            <input type="hidden" name="company_id"   value="{{ item.Supplier.id }}">
+
+            <p class="email-panel-label">Send email</p>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>To</label>
+                <select name="to_email_select" onchange="handleEmailSelect(this)">
+                  <option value="" selected disabled>Select mail options</option>
+                  {% for c in sp.Supplier.supplier_contact_details.all %}
+                    {% if c.Email %}
+                      <option value="{{ c.Email }}">{{ c.Email }}</option>
+                    {% endif %}
+                  {% endfor %}
+                  <option value="manual">Type manually</option>
+                </select>
+                <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
+                <a class="back-to-select" onclick="resetEmailSelect(this.closest('div'));return false">
+                  ← Pick from list
+                </a>
+              </div>
+              
+              <div class="form-group">
+                <label>Subject</label>
+                <input type="text" name="subject" placeholder="Email subject" value="Material supply — {{ sp.Supplier.Company_name }}">
+              </div>
+
+              <div class="form-group full">
+                <label>Message</label>
+                <textarea name="content" placeholder="Write your message here…"></textarea>
+              </div>
+            </div>
+
+            <div class="send-row">
+              <button type="submit" class="btn-custom">
+                <i class="ti ti-send" aria-hidden="true"></i> Send email
+              </button>
+              <span class="send-status"></span>
+            </div>
+          </form>
+        </div>
+      </div>
     {% endfor %}
   </div>
 
@@ -267,7 +256,7 @@
       status.className = 'send-status';
       status.textContent = '';
 
-      fetch("{% url 'supplier:send_company_email' %}", {
+      fetch("{% url 'send_company_email' %}", {
         method: 'POST',
         headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
         body: data,

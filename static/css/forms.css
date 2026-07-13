@@ -1,55 +1,3 @@
-/*
-  forms.css — shared styles for add/edit forms across all modules
-  Used by: supplier_add, enquiry_add, buyer_add, and their edit counterparts
-  Include this in base_template.html or link per-page alongside stylesheet.css
-*/
-
-/* ── page header ── */
-.page-header  { margin-bottom: 1.5rem; }
-.page-title   { font-size: 20px; font-weight: 600; color: var(--GTMS-text-primary, #2c2c2a); margin: 0 0 4px; }
-.page-sub     { font-size: 14px; color: var(--GTMS-text-muted, #888780); margin: 0; }
-
-/* ── card ── */
-.card {
-  background: #fff;
-  border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.25rem;
-}
-.section-title {
-  font-size: 12px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: .05em; color: var(--GTMS-text-muted, #888780); margin: 0 0 1rem;
-}
-
-/* ── grid layout ── */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.form-grid .full  { grid-column: 1 / -1; }
-
-/* ── form group ── */
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group label {
-  font-size: 13px; font-weight: 500;
-  color: var(--GTMS-text-secondary, #5f5e5a);
-}
-.form-group input,
-.form-group textarea,
-.form-group select {
-  border: 0.5px solid #d3d1c7; border-radius: 8px;
-  padding: 8px 11px; font-size: 14px;
-  color: var(--GTMS-text-primary, #2c2c2a);
-  background: #fff; width: 100%;
-  font-family: inherit;
-}
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none; border-color: #378add;
-  box-shadow: 0 0 0 3px rgba(55,138,221,.12);
-}
-.form-group textarea { resize: vertical; min-height: 80px; }
-.form-group input[type="date"] { cursor: pointer; }
-
 /* ── multi-row (email / phone / fax) ── */
 .multi-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
 .multi-row input,
@@ -74,6 +22,35 @@
   text-transform: uppercase; letter-spacing: .04em;
 }
 
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px; margin-top: 0.5rem;
+}
+.media-thumb {
+  position: relative; border-radius: 8px; overflow: hidden;
+  border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
+  background: #f7f6f2;
+}
+.media-thumb img { width: 100%; height: 86px; object-fit: cover; display: block; }
+.media-thumb .doc-placeholder {
+  height: 86px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; font-size: 11px; color: #888780;
+}
+.media-thumb .doc-placeholder i { font-size: 24px; color: #b0aea6; }
+.media-name {
+  font-size: 11px; color: #5f5e5a; padding: 3px 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.media-delete {
+  position: absolute; top: 4px; right: 4px;
+  background: rgba(0,0,0,.45); border: none; border-radius: 4px;
+  color: #fff; font-size: 12px; cursor: pointer; padding: 2px 5px; line-height: 1;
+}
+.media-delete:hover { background: rgba(163,45,45,.8); }
+
+
 /* ── file upload zone ── */
 .upload-zone {
   border: 1.5px dashed #d3d1c7; border-radius: 10px;
@@ -83,16 +60,16 @@
 .upload-zone:hover { border-color: #378add; }
 .upload-zone input[type=file] { display: none; }
 .upload-zone i { font-size: 28px; color: #d3d1c7; display: block; margin-bottom: 6px; }
-.upload-zone p { font-size: 13px; color: var(--GTMS-text-muted, #888780); margin: 0; }
+.upload-zone p { font-size: 13px; color: var(--GTMS-text-muted); margin: 0; }
 .upload-zone .link { color: #378add; cursor: pointer; }
 .file-list { list-style: none; padding: 0; margin: 0.5rem 0 0; }
 .file-list li {
   display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--GTMS-text-secondary, #5f5e5a);
+  font-size: 13px; color: var(--GTMS-text-secondary);
   padding: 4px 0; border-bottom: 0.5px solid #f0ede6;
 }
 .file-list li:last-child { border-bottom: none; }
-.file-list li i { color: var(--GTMS-text-muted, #888780); }
+.file-list li i { color: var(--GTMS-text-muted); }
 
 /* ── buttons ── */
 .btn-add-row {
@@ -104,35 +81,52 @@
 
 .btn-remove {
   background: none; border: none; cursor: pointer;
-  color: var(--GTMS-error, #a32d2d);
+  color: #a32d2d;
   font-size: 18px; padding: 0 4px; flex-shrink: 0;
 }
 
 .form-actions { display: flex; gap: 10px; margin-top: 0.5rem; }
 
 .btn-submit {
-  background: var(--GTMS-primary, #14213d); color: #fff;
+  background: var(--GTMS-primary); color: #fff;
   border: none; border-radius: 8px;
   padding: 10px 24px; font-size: 14px; font-weight: 500; cursor: pointer;
 }
 .btn-submit:hover { opacity: 0.9; }
 
 .btn-cancel {
-  background: none; color: var(--GTMS-text-secondary, #5f5e5a);
+  background: none; color: var(--GTMS-text-secondary);
   border: 0.5px solid #d3d1c7; border-radius: 8px;
   padding: 10px 20px; font-size: 14px; cursor: pointer;
   text-decoration: none; display: inline-flex; align-items: center;
 }
-.btn-cancel:hover { background: var(--GTMS-secondary, #f7f6f2); }
+.btn-cancel:hover { background: var(--GTMS-secondary); }
 
 /* ── alerts ── */
 .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
-.alert-success { background: var(--GTMS-success-bg, #eaf3de); color: var(--GTMS-success, #3b6d11); }
-.alert-error   { background: var(--GTMS-error-bg,   #fcebeb); color: var(--GTMS-error,   #a32d2d); }
-.alert-warning { background: var(--GTMS-warning-bg, #fef3d9); color: var(--GTMS-warning, #92530a); }
+.alert-success { background: #eaf3de; color: #3b6d11; }
+.alert-error   { background: #fcebeb; color: #a32d2d; }
+.alert-warning { background: #fef3d9; color: #92530a; }
 
 /* ── responsive ── */
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }
   .form-grid .full { grid-column: 1; }
 }
+
+/* For enquiry pages */
+.buyer-toggle {
+  display: flex; gap: 0; margin-bottom: 1rem;
+  border: 0.5px solid #d3d1c7; border-radius: 8px; overflow: hidden; width: fit-content;
+}
+.buyer-toggle button {
+  padding: 8px 18px; font-size: 13px; font-weight: 500;
+  border: none; background: #fff; color: var(--GTMS-text-secondary);
+  cursor: pointer; transition: background .15s, color .15s;
+}
+.buyer-toggle button.active {
+  background: var(--GTMS-primary); color: #fff;
+}
+.buyer-toggle button:first-child { border-right: 0.5px solid #d3d1c7; }
+.buyer-panel { display: none; }
+.buyer-panel.visible { display: block; }

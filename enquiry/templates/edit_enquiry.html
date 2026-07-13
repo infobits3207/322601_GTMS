@@ -2,541 +2,512 @@
 {% load static %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/forms.css' %}">
-<style>
-  /* ── buyer toggle ── */
-  .buyer-toggle {
-    display: flex; gap: 0; margin-bottom: 1rem;
-    border: 0.5px solid #d3d1c7; border-radius: 8px;
-    overflow: hidden; width: fit-content;
-  }
-  .buyer-toggle button {
-    padding: 8px 18px; font-size: 13px; font-weight: 500;
-    border: none; background: #fff;
-    color: var(--GTMS-text-secondary, #5f5e5a);
-    cursor: pointer; transition: background .15s, color .15s;
-  }
-  .buyer-toggle button.active {
-    background: var(--GTMS-primary, #14213d); color: #fff;
-  }
-  .buyer-toggle button:first-child { border-right: 0.5px solid #d3d1c7; }
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+  <style>
+    /* ── buyer toggle ── */
+    .buyer-toggle {
+      display: flex; gap: 0; margin-bottom: 1rem;
+      border: 0.5px solid #d3d1c7; border-radius: 8px;
+      overflow: hidden; width: fit-content;
+    }
+    .buyer-toggle button {
+      padding: 8px 18px; font-size: 13px; font-weight: 500;
+      border: none; background: #fff;
+      color: var(--GTMS-text-secondary, #5f5e5a);
+      cursor: pointer; transition: background .15s, color .15s;
+    }
+    .buyer-toggle button.active {
+      background: var(--GTMS-primary, #14213d); color: #fff;
+    }
+    .buyer-toggle button:first-child { border-right: 0.5px solid #d3d1c7; }
 
-  .buyer-panel { display: none; }
-  .buyer-panel.visible { display: block; }
-
-  /* ── media grid ── */
-  .media-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 10px; margin-top: 0.5rem;
-  }
-  .media-thumb {
-    position: relative; border-radius: 8px; overflow: hidden;
-    border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
-    background: #f7f6f2;
-  }
-  .media-thumb img { width: 100%; height: 86px; object-fit: cover; display: block; }
-  .media-thumb .doc-placeholder {
-    height: 86px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 4px; font-size: 11px; color: #888780;
-  }
-  .media-thumb .doc-placeholder i { font-size: 24px; color: #b0aea6; }
-  .media-name {
-    font-size: 11px; color: #5f5e5a; padding: 3px 6px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .media-delete {
-    position: absolute; top: 4px; right: 4px;
-    background: rgba(0,0,0,.45); border: none; border-radius: 4px;
-    color: #fff; font-size: 12px; cursor: pointer; padding: 2px 5px; line-height: 1;
-  }
-  .media-delete:hover { background: rgba(163,45,45,.8); }
-</style>
+    .buyer-panel { display: none; }
+    .buyer-panel.visible { display: block; }
+  </style>
 {% endblock %}
 
 {% block content %}
 
-{% if messages %}
-  {% for msg in messages %}
-    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
-  {% endfor %}
-{% endif %}
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
 
-<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem">
-  <div>
-    <h1 class="page-title">Edit enquiry</h1>
-    <p class="page-sub">
-      {% if enquiry.buyer %}{{ enquiry.buyer.Company_name }}
-      {% else %}{{ enquiry.Company_name }}{% endif %}
-    </p>
-  </div>
-</div>
-
-<form method="post" enctype="multipart/form-data"
-      action="{% url 'enquiry:edit_enquiry' enquiry.id %}">
-  {% csrf_token %}
-
-  {# ── 1. Enquiry details ── #}
-  <div class="card">
-    <p class="section-title">Enquiry details</p>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Enquiry date</label>
-        <input type="date" name="Enquiry_date"
-               value="{{ enquiry.Enquiry_date|date:'Y-m-d'|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label>Closing date</label>
-        <input type="date" name="Closing_date"
-               value="{{ enquiry.Closing_date|date:'Y-m-d'|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label>Enquiry type</label>
-        <select name="Enquiry_type">
-          <option value="">— Select —</option>
-          {% for opt in enquiry_type_choices %}
-            <option value="{{ opt }}"
-              {% if enquiry.Enquiry_type == opt %}selected{% endif %}>
-              {{ opt }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Admin remark</label>
-        <input type="text" name="Admin_remark"
-               value="{{ enquiry.Admin_remark|default:'' }}">
-      </div>
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem">
+    <div>
+      <h1 class="page-title">Edit enquiry</h1>
+      <p class="page-sub">
+        {% if enquiry.buyer %}{{ enquiry.buyer.Company_name }}
+        {% else %}{{ enquiry.Company_name }}{% endif %}
+      </p>
     </div>
   </div>
 
-  {# ── 2. Buyer / company ── #}
-  <div class="card">
-    <p class="section-title">Buyer / company</p>
+  <form method="post" enctype="multipart/form-data"
+        action="{% url 'enquiry:edit_enquiry' enquiry.id %}">
+    {% csrf_token %}
 
-    <div class="buyer-toggle">
-      <button type="button" id="btn-existing"
-              class="{% if enquiry.buyer %}active{% endif %}"
-              onclick="switchBuyerMode('existing')">
-        <i class="ti ti-users"></i> Existing buyer
-      </button>
-      <button type="button" id="btn-manual"
-              class="{% if not enquiry.buyer %}active{% endif %}"
-              onclick="switchBuyerMode('manual')">
-        <i class="ti ti-pencil"></i> Type manually
-      </button>
-    </div>
-
-    {# existing buyer panel #}
-    <div class="buyer-panel {% if enquiry.buyer %}visible{% endif %}"
-         id="panel-existing">
-      <div class="form-group">
-        <label>Select buyer</label>
-        <select name="buyer_id" id="buyer-select" onchange="onBuyerSelect(this)">
-          <option value="">— Select existing buyer —</option>
-          {% for b in buyer_list %}
-            <option value="{{ b.id }}"
-                    data-name="{{ b.Company_name|escapejs }}"
-                    data-person="{{ b.Contact_person|default:''|escapejs }}"
-                    {% if enquiry.buyer_id == b.id %}selected{% endif %}>
-              {{ b.Company_name }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-      <div id="buyer-preview"
-           style="display:{% if enquiry.buyer %}block{% else %}none{% endif %};margin-top:.75rem">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Company name</label>
-            <input type="text" id="preview-name" readonly style="background:#f7f6f2"
-                   value="{{ enquiry.buyer.Company_name|default:'' }}">
-          </div>
-          <div class="form-group">
-            <label>Contact person</label>
-            <input type="text" id="preview-person" readonly style="background:#f7f6f2"
-                   value="{{ enquiry.buyer.Contact_person|default:'' }}">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {# manual panel #}
-    <div class="buyer-panel {% if not enquiry.buyer %}visible{% endif %}"
-         id="panel-manual">
+    {# ── 1. Enquiry details ── #}
+    <div class="card">
+      <p class="section-title">Enquiry details</p>
       <div class="form-grid">
-        <div class="form-group full">
-          <label>Company name <span style="color:#a32d2d">*</span></label>
-          <input type="text" name="Company_name"
-                 value="{{ enquiry.Company_name|default:'' }}"
-                 {% if not enquiry.buyer %}required{% endif %}>
+        <div class="form-group">
+          <label>Enquiry date</label>
+          <input type="date" name="Enquiry_date"
+                value="{{ enquiry.Enquiry_date|date:'Y-m-d'|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label>Closing date</label>
+          <input type="date" name="Closing_date"
+                value="{{ enquiry.Closing_date|date:'Y-m-d'|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label>Enquiry type</label>
+          <select name="Enquiry_type">
+            <option value="">— Select —</option>
+            {% for opt in enquiry_type_choices %}
+              <option value="{{ opt }}"
+                {% if enquiry.Enquiry_type == opt %}selected{% endif %}>
+                {{ opt }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Admin remark</label>
+          <input type="text" name="Admin_remark"
+                value="{{ enquiry.Admin_remark|default:'' }}">
         </div>
       </div>
     </div>
 
-    <input type="hidden" name="buyer_mode" id="buyer-mode-input"
-           value="{% if enquiry.buyer %}existing{% else %}manual{% endif %}">
-  </div>
+    {# ── 2. Buyer / company ── #}
+    <div class="card">
+      <p class="section-title">Buyer / company</p>
 
-  <div class="card">
-    <p class="section-title">Enquiry description</p>
-    <div class="form-group full">
-      <textarea name="Description" rows="2">{{ enquiry.Description|default:'' }}</textarea>
-    </div>
-  </div>
+      <div class="buyer-toggle">
+        <button type="button" id="btn-existing"
+                class="{% if enquiry.buyer %}active{% endif %}"
+                onclick="switchBuyerMode('existing')">
+          <i class="ti ti-users"></i> Existing buyer
+        </button>
+        <button type="button" id="btn-manual"
+                class="{% if not enquiry.buyer %}active{% endif %}"
+                onclick="switchBuyerMode('manual')">
+          <i class="ti ti-pencil"></i> Type manually
+        </button>
+      </div>
 
-  {# ── 3. Products ── #}
-  <div class="card">
-    <p class="section-title">Products</p>
-    <datalist id="category-list">
-      {% for ct in category_list %}<option value="{{ ct }}">{% endfor %}
-    </datalist>
-    <datalist id="product-list"></datalist>
-
-    <div id="product-blocks">
-      {% for product in products %}
-        <div class="details-block">
-          <div class="block-header">
-            <div class="block-label">{{ product.Product|default:"Product" }}</div>
-            <button type="button" class="btn-remove"
-                    onclick="this.closest('.details-block').remove()">
-              <i class="ti ti-x"></i>
-            </button>
-          </div>
+      {# existing buyer panel #}
+      <div class="buyer-panel {% if enquiry.buyer %}visible{% endif %}"
+          id="panel-existing">
+        <div class="form-group">
+          <label>Select buyer</label>
+          <select name="buyer_id" id="buyer-select" onchange="onBuyerSelect(this)">
+            <option value="">— Select existing buyer —</option>
+            {% for b in buyer_list %}
+              <option value="{{ b.id }}"
+                      data-name="{{ b.Company_name|escapejs }}"
+                      data-person="{{ b.Contact_person|default:''|escapejs }}"
+                      {% if enquiry.buyer_id == b.id %}selected{% endif %}>
+                {{ b.Company_name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div id="buyer-preview"
+            style="display:{% if enquiry.buyer %}block{% else %}none{% endif %};margin-top:.75rem">
           <div class="form-grid">
             <div class="form-group">
-              <label>Sector</label>
-              <input type="text" name="Sector" value="{{ product.Sector|default:'' }}">
+              <label>Company name</label>
+              <input type="text" id="preview-name" readonly style="background:#f7f6f2"
+                    value="{{ enquiry.buyer.Company_name|default:'' }}">
             </div>
             <div class="form-group">
-              <label>Division</label>
-              <input type="text" name="Division" value="{{ product.Division|default:'' }}">
-            </div>
-            <div class="form-group">
-              <label>Product group</label>
-              <select name="Product_group">
-                <option value="">— Select —</option>
-                {% for value in product_group_choices %}
-                  <option value="{{ value }}"
-                    {% if product.Product_group == value %}selected{% endif %}>
-                    {{ value }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Product category</label>
-              <input type="text" name="Product_category"
-                     list="category-list"
-                     onchange="fetchProductNames(this)"
-                     value="{{ product.Product_category|default:'' }}">
-            </div>
-            <div class="form-group full">
-              <label>Product name <span style="color:#a32d2d">*</span></label>
-              <input type="text" name="Product" list="product-list"
-                     required value="{{ product.Product|default:'' }}">
-            </div>
-            <div class="form-group">
-              <label>HSN code</label>
-              <input type="text" name="HSN_code" value="{{ product.HSN_code|default:'' }}">
-            </div>
-            <div class="form-group">
-              <label>Quantity</label>
-              <input type="text" name="Quantity" value="{{ product.Quantity|default:'' }}"
-                     placeholder="e.g. 500 kg">
-            </div>
-            <div class="form-group">
-              <label>Packaging</label>
-              <input type="text" name="Packaging" value="{{ product.Packaging|default:'' }}">
-            </div>
-            <div class="form-group">
-              <label>Target price</label>
-              <input type="number" name="Target_price"
-                     value="{{ product.Target_price|default:'' }}"
-                     step="0.01" min="0">
-            </div>
-            <div class="form-group">
-              <label>Currency</label>
-              <select name="Currency">
-                <option value="">— Select —</option>
-                {% for cur in currency_choices %}
-                  <option value="{{ cur }}"
-                    {% if product.Currency == cur %}selected{% endif %}>
-                    {{ cur }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="form-group full">
-              <label>Billing address</label>
-              <textarea name="Billing_address" rows="2">{{ product.Billing_address|default:'' }}</textarea>
-            </div>
-            <div class="form-group full">
-              <label>Delivery address</label>
-              <textarea name="Delivery_address" rows="2">{{ product.Delivery_address|default:'' }}</textarea>
+              <label>Contact person</label>
+              <input type="text" id="preview-person" readonly style="background:#f7f6f2"
+                    value="{{ enquiry.buyer.Contact_person|default:'' }}">
             </div>
           </div>
         </div>
-      {% empty %}
-        {# show one blank block if no products exist yet #}
-        <div class="details-block">
-          <div class="block-header">
-            <div class="block-label">Product</div>
-          </div>
-          <div class="form-grid">
-            <div class="form-group"><label>Sector</label><input type="text" name="Sector"></div>
-            <div class="form-group"><label>Division</label><input type="text" name="Division"></div>
-            <div class="form-group">
-              <label>Product group</label>
-              <select name="Product_group">
-                <option value="">— Select —</option>
-                {% for value in product_group_choices %}
-                  <option value="{{ value }}">{{ value }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Product category</label>
-              <input type="text" name="Product_category"
-                    list="category-list" onchange="fetchProductNames(this)">
-            </div>
-            <div class="form-group full">
-              <label>Product name <span style="color:#a32d2d">*</span></label>
-              <input type="text" name="Product" list="product-list" required>
-            </div>
-            <div class="form-group"><label>HSN code</label><input type="text" name="HSN_code"></div>
-            <div class="form-group"><label>Quantity</label><input type="text" name="Quantity" placeholder="e.g. 500 kg"></div>
-            <div class="form-group"><label>Packaging</label><input type="text" name="Packaging"></div>
-            <div class="form-group"><label>Target price</label><input type="number" name="Target_price" step="0.01" min="0"></div>
-            <div class="form-group">
-              <label>Currency</label>
-              <select name="Currency">
-                <option value="">— Select —</option>
-                {% for cur in currency_choices %}
-                  <option value="{{ cur }}">{{ cur }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="form-group full">
-              <label>Billing address</label>
-              <textarea name="Billing_address" rows="2"></textarea>
-            </div>
-            <div class="form-group full">
-              <label>Delivery address</label>
-              <textarea name="Delivery_address" rows="2"></textarea>
-            </div>
+      </div>
+
+      {# manual panel #}
+      <div class="buyer-panel {% if not enquiry.buyer %}visible{% endif %}"
+          id="panel-manual">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Company name <span style="color:#a32d2d">*</span></label>
+            <input type="text" name="Company_name"
+                  value="{{ enquiry.Company_name|default:'' }}"
+                  {% if not enquiry.buyer %}required{% endif %}>
           </div>
         </div>
-      {% endfor %}
+      </div>
+
+      <input type="hidden" name="buyer_mode" id="buyer-mode-input"
+            value="{% if enquiry.buyer %}existing{% else %}manual{% endif %}">
     </div>
 
-    <button type="button" class="btn-add-row" onclick="addProductBlock()">
-      <i class="ti ti-plus"></i> Add another product
-    </button>
-  </div>
+    <div class="card">
+      <p class="section-title">Enquiry description</p>
+      <div class="form-group full">
+        <textarea name="Description" rows="2">{{ enquiry.Description|default:'' }}</textarea>
+      </div>
+    </div>
 
-  {# ── 4. Documents & images ── #}
-  <div class="card">
-    <p class="section-title">Documents &amp; images</p>
+    {# ── 3. Products ── #}
+    <div class="card">
+      <p class="section-title">Products</p>
+      <datalist id="category-list">
+        {% for ct in category_list %}<option value="{{ ct }}">{% endfor %}
+      </datalist>
+      <datalist id="product-list"></datalist>
 
-    {% if documents %}
-      <p style="font-size:13px;font-weight:500;color:#5f5e5a;margin:0 0 8px">Existing documents</p>
-      <div class="media-grid" style="margin-bottom:1rem">
-        {% for m in documents %}
-          <div class="media-thumb">
-            <div class="doc-placeholder">
-              <i class="ti ti-file-description"></i>
+      <div id="product-blocks">
+        {% for product in products %}
+          <div class="details-block">
+            <div class="block-header">
+              <div class="block-label">{{ product.Product|default:"Product" }}</div>
+              <button type="button" class="btn-remove"
+                      onclick="this.closest('.details-block').remove()">
+                <i class="ti ti-x"></i>
+              </button>
             </div>
-            <div class="media-name">{{ m.Document.name|cut:"Enquiry_documents/" }}</div>
-            <button type="button" class="media-delete"
-                    onclick="markDelete(this, {{ m.id }})">
-              <i class="ti ti-x"></i>
-            </button>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Sector</label>
+                <input type="text" name="Sector" value="{{ product.Sector|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>Division</label>
+                <input type="text" name="Division" value="{{ product.Division|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>Product group</label>
+                <select name="Product_group">
+                  <option value="">— Select —</option>
+                  {% for value in product_group_choices %}
+                    <option value="{{ value }}"
+                      {% if product.Product_group == value %}selected{% endif %}>
+                      {{ value }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Product category</label>
+                <input type="text" name="Product_category"
+                      list="category-list"
+                      onchange="fetchProductNames(this)"
+                      value="{{ product.Product_category|default:'' }}">
+              </div>
+              <div class="form-group full">
+                <label>Product name <span style="color:#a32d2d">*</span></label>
+                <input type="text" name="Product" list="product-list"
+                      required value="{{ product.Product|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>HSN code</label>
+                <input type="text" name="HSN_code" value="{{ product.HSN_code|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>Quantity</label>
+                <input type="text" name="Quantity" value="{{ product.Quantity|default:'' }}"
+                      placeholder="e.g. 500 kg">
+              </div>
+              <div class="form-group">
+                <label>Packaging</label>
+                <input type="text" name="Packaging" value="{{ product.Packaging|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>Target price</label>
+                <input type="number" name="Target_price"
+                      value="{{ product.Target_price|default:'' }}"
+                      step="0.01" min="0">
+              </div>
+              <div class="form-group">
+                <label>Currency</label>
+                <select name="Currency">
+                  <option value="">— Select —</option>
+                  {% for cur in currency_choices %}
+                    <option value="{{ cur }}"
+                      {% if product.Currency == cur %}selected{% endif %}>
+                      {{ cur }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group full">
+                <label>Billing address</label>
+                <textarea name="Billing_address" rows="2">{{ product.Billing_address|default:'' }}</textarea>
+              </div>
+              <div class="form-group full">
+                <label>Delivery address</label>
+                <textarea name="Delivery_address" rows="2">{{ product.Delivery_address|default:'' }}</textarea>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          {# show one blank block if no products exist yet #}
+          <div class="details-block">
+            <div class="block-header">
+              <div class="block-label">Product</div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group"><label>Sector</label><input type="text" name="Sector"></div>
+              <div class="form-group"><label>Division</label><input type="text" name="Division"></div>
+              <div class="form-group">
+                <label>Product group</label>
+                <select name="Product_group">
+                  <option value="">— Select —</option>
+                  {% for value in product_group_choices %}
+                    <option value="{{ value }}">{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Product category</label>
+                <input type="text" name="Product_category"
+                      list="category-list" onchange="fetchProductNames(this)">
+              </div>
+              <div class="form-group full">
+                <label>Product name <span style="color:#a32d2d">*</span></label>
+                <input type="text" name="Product" list="product-list" required>
+              </div>
+              <div class="form-group"><label>HSN code</label><input type="text" name="HSN_code"></div>
+              <div class="form-group"><label>Quantity</label><input type="text" name="Quantity" placeholder="e.g. 500 kg"></div>
+              <div class="form-group"><label>Packaging</label><input type="text" name="Packaging"></div>
+              <div class="form-group"><label>Target price</label><input type="number" name="Target_price" step="0.01" min="0"></div>
+              <div class="form-group">
+                <label>Currency</label>
+                <select name="Currency">
+                  <option value="">— Select —</option>
+                  {% for cur in currency_choices %}
+                    <option value="{{ cur }}">{{ cur }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group full">
+                <label>Billing address</label>
+                <textarea name="Billing_address" rows="2"></textarea>
+              </div>
+              <div class="form-group full">
+                <label>Delivery address</label>
+                <textarea name="Delivery_address" rows="2"></textarea>
+              </div>
+            </div>
           </div>
         {% endfor %}
       </div>
-    {% endif %}
 
-    {% if images %}
-      <p style="font-size:13px;font-weight:500;color:#5f5e5a;margin:0 0 8px">Existing images</p>
-      <div class="media-grid" style="margin-bottom:1rem">
-        {% for m in images %}
-          <div class="media-thumb">
-            <img src="{{ m.Image.url }}" alt="">
-            <button type="button" class="media-delete"
-                    onclick="markDelete(this, {{ m.id }})">
-              <i class="ti ti-x"></i>
-            </button>
+      <button type="button" class="btn-add-row" onclick="addProductBlock()">
+        <i class="ti ti-plus"></i> Add another product
+      </button>
+    </div>
+
+    {# ── 4. Documents & images ── #}
+    <div class="card">
+      <p class="section-title">Documents &amp; images</p>
+
+      {% if documents %}
+        <p style="font-size:13px;font-weight:500;color:#5f5e5a;margin:0 0 8px">Existing documents</p>
+        <div class="media-grid" style="margin-bottom:1rem">
+          {% for m in documents %}
+            <div class="media-thumb">
+              <div class="doc-placeholder">
+                <i class="ti ti-file-description"></i>
+              </div>
+              <div class="media-name">{{ m.Document.name|cut:"Enquiry_documents/" }}</div>
+              <button type="button" class="media-delete"
+                      onclick="markDelete(this, {{ m.id }})">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if images %}
+        <p style="font-size:13px;font-weight:500;color:#5f5e5a;margin:0 0 8px">Existing images</p>
+        <div class="media-grid" style="margin-bottom:1rem">
+          {% for m in images %}
+            <div class="media-thumb">
+              <img src="{{ m.Image.url }}" alt="">
+              <button type="button" class="media-delete"
+                      onclick="markDelete(this, {{ m.id }})">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div id="delete-media-inputs"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Add documents</label>
+          <div class="upload-zone" onclick="document.getElementById('doc-input').click()">
+            <i class="ti ti-file-upload"></i>
+            <p><span class="link">Browse files</span> or drag &amp; drop</p>
+            <input type="file" id="doc-input" name="documents" multiple
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv">
           </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <div id="delete-media-inputs"></div>
-
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Add documents</label>
-        <div class="upload-zone" onclick="document.getElementById('doc-input').click()">
-          <i class="ti ti-file-upload"></i>
-          <p><span class="link">Browse files</span> or drag &amp; drop</p>
-          <input type="file" id="doc-input" name="documents" multiple
-                 accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv">
+          <ul class="file-list" id="doc-list"></ul>
         </div>
-        <ul class="file-list" id="doc-list"></ul>
-      </div>
-      <div class="form-group">
-        <label>Add images</label>
-        <div class="upload-zone" onclick="document.getElementById('img-input').click()">
-          <i class="ti ti-photo-up"></i>
-          <p><span class="link">Browse files</span> or drag &amp; drop</p>
-          <input type="file" id="img-input" name="images" multiple
-                 accept=".jpg,.jpeg,.png,.gif,.webp">
+        <div class="form-group">
+          <label>Add images</label>
+          <div class="upload-zone" onclick="document.getElementById('img-input').click()">
+            <i class="ti ti-photo-up"></i>
+            <p><span class="link">Browse files</span> or drag &amp; drop</p>
+            <input type="file" id="img-input" name="images" multiple
+                  accept=".jpg,.jpeg,.png,.gif,.webp">
+          </div>
+          <ul class="file-list" id="img-list"></ul>
         </div>
-        <ul class="file-list" id="img-list"></ul>
       </div>
     </div>
-  </div>
 
-  <div class="form-actions">
-    <button type="submit" class="btn-submit">
-      <i class="ti ti-check"></i> Save changes
-    </button>
-    <a href="{% url 'enquiry:enquiry_list' %}" class="btn-cancel">Cancel</a>
-  </div>
-</form>
+    <div class="form-actions">
+      <button type="submit" class="btn-submit">
+        <i class="ti ti-check"></i> Save changes
+      </button>
+      <a href="{% url 'enquiry:enquiry_list' %}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
 
 {% endblock %}
 
 {% block extra_script %}
-<script>
-  // ── buyer toggle ──
-  function switchBuyerMode(mode) {
-    const isExisting = mode === 'existing';
-    document.getElementById('panel-existing').classList.toggle('visible', isExisting);
-    document.getElementById('panel-manual').classList.toggle('visible', !isExisting);
-    document.getElementById('btn-existing').classList.toggle('active', isExisting);
-    document.getElementById('btn-manual').classList.toggle('active', !isExisting);
-    document.getElementById('buyer-mode-input').value = mode;
-    const manualName = document.querySelector('#panel-manual input[name="Company_name"]');
-    if (manualName) manualName.required = !isExisting;
-  }
-
-  function onBuyerSelect(select) {
-    const opt     = select.options[select.selectedIndex];
-    const preview = document.getElementById('buyer-preview');
-    if (!select.value) { preview.style.display = 'none'; return; }
-    document.getElementById('preview-name').value   = opt.dataset.name   || '';
-    document.getElementById('preview-person').value = opt.dataset.person || '';
-    preview.style.display = 'block';
-  }
-
-  // ── product category → name ──
-  const categoryList = [{% for ct in category_list %}"{{ ct }}",{% endfor %}];
-
-  function fetchProductNames(inputEl) {
-    const category = inputEl.value.trim();
-    if (!categoryList.includes(category)) {
-      document.getElementById('product-list').innerHTML = '';
-      return;
+  <script>
+    // ── buyer toggle ──
+    function switchBuyerMode(mode) {
+      const isExisting = mode === 'existing';
+      document.getElementById('panel-existing').classList.toggle('visible', isExisting);
+      document.getElementById('panel-manual').classList.toggle('visible', !isExisting);
+      document.getElementById('btn-existing').classList.toggle('active', isExisting);
+      document.getElementById('btn-manual').classList.toggle('active', !isExisting);
+      document.getElementById('buyer-mode-input').value = mode;
+      const manualName = document.querySelector('#panel-manual input[name="Company_name"]');
+      if (manualName) manualName.required = !isExisting;
     }
-    fetch(`/supplier/fetch_products/?category_name=${encodeURIComponent(category)}`)
-      .then(r => r.json())
-      .then(data => {
-        const dl = document.getElementById('product-list');
-        dl.innerHTML = '';
-        data.forEach(p => {
-          const o = document.createElement('option');
-          o.value = p; dl.appendChild(o);
+
+    function onBuyerSelect(select) {
+      const opt     = select.options[select.selectedIndex];
+      const preview = document.getElementById('buyer-preview');
+      if (!select.value) { preview.style.display = 'none'; return; }
+      document.getElementById('preview-name').value   = opt.dataset.name   || '';
+      document.getElementById('preview-person').value = opt.dataset.person || '';
+      preview.style.display = 'block';
+    }
+
+    // ── product category → name ──
+    const categoryList = [{% for ct in category_list %}"{{ ct }}",{% endfor %}];
+
+    function fetchProductNames(inputEl) {
+      const category = inputEl.value.trim();
+      if (!categoryList.includes(category)) {
+        document.getElementById('product-list').innerHTML = '';
+        return;
+      }
+      fetch(`/fetch_products/?category_name=${encodeURIComponent(category)}`)
+        .then(r => r.json())
+        .then(data => {
+          const dl = document.getElementById('product-list');
+          dl.innerHTML = '';
+          data.forEach(p => {
+            const o = document.createElement('option');
+            o.value = p; dl.appendChild(o);
+          });
+        });
+    }
+
+    // ── add product block ──
+    let productCount = {{ products|length }};
+    function addProductBlock() {
+      productCount++;
+      const block = document.createElement('div');
+      block.className = 'details-block';
+      block.innerHTML = `
+        <div class="block-header">
+          <div class="block-label">Product ${productCount}</div>
+          <button type="button" class="btn-remove"
+                  onclick="this.closest('.details-block').remove()">
+            <i class="ti ti-x"></i></button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label>Sector</label><input type="text" name="Sector"></div>
+          <div class="form-group"><label>Division</label><input type="text" name="Division"></div>
+          <div class="form-group">
+            <label>Product group</label>
+            <select name="Product_group">
+              <option value="">— Select —</option>
+              {% for value in product_group_choices %}
+                <option value="{{ value }}">{{ value }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Product category</label>
+            <input type="text" name="Product_category"
+                  list="category-list" onchange="fetchProductNames(this)">
+          </div>
+          <div class="form-group full">
+            <label>Product name <span style="color:#a32d2d">*</span></label>
+            <input type="text" name="Product" list="product-list" required>
+          </div>
+          <div class="form-group"><label>HSN code</label><input type="text" name="HSN_code"></div>
+          <div class="form-group"><label>Quantity</label><input type="text" name="Quantity" placeholder="e.g. 500 kg"></div>
+          <div class="form-group"><label>Packaging</label><input type="text" name="Packaging"></div>
+          <div class="form-group"><label>Target price</label><input type="number" name="Target_price" step="0.01" min="0"></div>
+          <div class="form-group">
+            <label>Currency</label>
+            <select name="Currency">
+              <option value="">— Select —</option>
+              {% for cur in currency_choices %}
+                <option value="{{ cur }}">{{ cur }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Billing address</label>
+            <textarea name="Billing_address" rows="2"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Delivery address</label>
+            <textarea name="Delivery_address" rows="2"></textarea>
+          </div>
+        </div>`;
+      document.getElementById('product-blocks').appendChild(block);
+      block.querySelector('input[name="Product"]').focus();
+    }
+
+    // ── media delete ──
+    function markDelete(btn, mediaId) {
+      btn.closest('.media-thumb').style.opacity = '0.3';
+      btn.disabled = true;
+      const inp = document.createElement('input');
+      inp.type = 'hidden'; inp.name = 'delete_media'; inp.value = mediaId;
+      document.getElementById('delete-media-inputs').appendChild(inp);
+    }
+
+    // ── file preview ──
+    function showFiles(inputId, listId) {
+      const input = document.getElementById(inputId);
+      const list  = document.getElementById(listId);
+      input.addEventListener('change', () => {
+        list.innerHTML = '';
+        Array.from(input.files).forEach(f => {
+          const li = document.createElement('li');
+          li.innerHTML = `<i class="ti ti-file"></i>${f.name}
+            <span style="margin-left:auto;color:#888780">${(f.size/1024).toFixed(1)} KB</span>`;
+          list.appendChild(li);
         });
       });
-  }
-
-  // ── add product block ──
-  let productCount = {{ products|length }};
-  function addProductBlock() {
-    productCount++;
-    const block = document.createElement('div');
-    block.className = 'details-block';
-    block.innerHTML = `
-      <div class="block-header">
-        <div class="block-label">Product ${productCount}</div>
-        <button type="button" class="btn-remove"
-                onclick="this.closest('.details-block').remove()">
-          <i class="ti ti-x"></i></button>
-      </div>
-      <div class="form-grid">
-        <div class="form-group"><label>Sector</label><input type="text" name="Sector"></div>
-        <div class="form-group"><label>Division</label><input type="text" name="Division"></div>
-        <div class="form-group">
-          <label>Product group</label>
-          <select name="Product_group">
-            <option value="">— Select —</option>
-            {% for value in product_group_choices %}
-              <option value="{{ value }}">{{ value }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Product category</label>
-          <input type="text" name="Product_category"
-                 list="category-list" onchange="fetchProductNames(this)">
-        </div>
-        <div class="form-group full">
-          <label>Product name <span style="color:#a32d2d">*</span></label>
-          <input type="text" name="Product" list="product-list" required>
-        </div>
-        <div class="form-group"><label>HSN code</label><input type="text" name="HSN_code"></div>
-        <div class="form-group"><label>Quantity</label><input type="text" name="Quantity" placeholder="e.g. 500 kg"></div>
-        <div class="form-group"><label>Packaging</label><input type="text" name="Packaging"></div>
-        <div class="form-group"><label>Target price</label><input type="number" name="Target_price" step="0.01" min="0"></div>
-        <div class="form-group">
-          <label>Currency</label>
-          <select name="Currency">
-            <option value="">— Select —</option>
-            {% for cur in currency_choices %}
-              <option value="{{ cur }}">{{ cur }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group full">
-          <label>Billing address</label>
-          <textarea name="Billing_address" rows="2"></textarea>
-        </div>
-        <div class="form-group full">
-          <label>Delivery address</label>
-          <textarea name="Delivery_address" rows="2"></textarea>
-        </div>
-      </div>`;
-    document.getElementById('product-blocks').appendChild(block);
-    block.querySelector('input[name="Product"]').focus();
-  }
-
-  // ── media delete ──
-  function markDelete(btn, mediaId) {
-    btn.closest('.media-thumb').style.opacity = '0.3';
-    btn.disabled = true;
-    const inp = document.createElement('input');
-    inp.type = 'hidden'; inp.name = 'delete_media'; inp.value = mediaId;
-    document.getElementById('delete-media-inputs').appendChild(inp);
-  }
-
-  // ── file preview ──
-  function showFiles(inputId, listId) {
-    const input = document.getElementById(inputId);
-    const list  = document.getElementById(listId);
-    input.addEventListener('change', () => {
-      list.innerHTML = '';
-      Array.from(input.files).forEach(f => {
-        const li = document.createElement('li');
-        li.innerHTML = `<i class="ti ti-file"></i>${f.name}
-          <span style="margin-left:auto;color:#888780">${(f.size/1024).toFixed(1)} KB</span>`;
-        list.appendChild(li);
-      });
-    });
-  }
-  showFiles('doc-input', 'doc-list');
-  showFiles('img-input', 'img-list');
-</script>
+    }
+    showFiles('doc-input', 'doc-list');
+    showFiles('img-input', 'img-list');
+  </script>
 {% endblock %}

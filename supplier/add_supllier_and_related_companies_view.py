@@ -108,20 +108,6 @@ def supplier_add(request):
 
     return render(request, 'supplier_add.html',context)
 
-def fetch_products(request):
-    category = request.GET.get('category_name')
-    print(category)
-
-    df = _recipe_df[_recipe_df['Category'] == category]
-    print(df.head())
-
-    # The correct way to get unique values across both columns combined
-    Product_list = pd.unique(df[['Output Item', 'Input Item']].values.ravel())
-
-    print(Product_list)
-    return JsonResponse(list(Product_list),safe=False)
-
-
 def _related_suppliers(supplier_products):
     sell_names = [p.Product.strip().upper() for p in supplier_products if p.Product.strip()]
     if not sell_names or _recipe_df.empty:
@@ -230,6 +216,7 @@ def related_companies(request,sp_id):
         'Products':     products,
         'related_buyers_direct':   related_buyers_direct,
         'related_suppliers': related_suppliers,
+        'same_product_suppliers': same_product_suppliers,
         'category_list': _category_list,
     }
     return render(request,'related_companies.html',context)

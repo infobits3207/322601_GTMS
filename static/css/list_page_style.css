@@ -1,0 +1,124 @@
+    .page-loader {
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      color: #f3f3f3; gap: 15px; position: fixed; z-index: 1000;
+      top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75);
+    }
+    .loader {
+      border: 6px solid rgba(255,255,255,0.25); border-radius: 50%;
+      border-top-color: #fff; width: 52px; height: 52px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 14px; color: rgba(255,255,255,0.85); }
+
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
+    }
+    .page-title { font-size: 20px; font-weight: 500; margin: 0; }
+
+    .search-section {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 12px; padding: 16px; margin-bottom: 1.25rem;
+      background: #ffffff; border-radius: 14px;
+      border: 1px solid var(--GTMS-secondary-dark);
+      box-shadow: 0 1px 2px rgba(20, 20, 30, 0.04);
+    }
+    .search-bar-group {
+      display: grid; gap: 10px; flex: 1; min-width: 320px;
+      grid-template-columns: 2.2fr 1fr 1fr;
+    }
+    .search-wrap { position: relative; }
+    .search-wrap i {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); font-size: 13px; color: #77736a;
+      pointer-events: none; transition: color 0.15s ease;
+    }
+    .search-wrap input, .search-wrap select {
+      width: 100%; padding: 9px 12px 9px 34px; font-size: 13px;
+      font-family: inherit; color: #2B2A28;
+      background: var(--GTMS-secondary); border: 1px solid var(--GTMS-secondary-dark);
+      border-radius: 9px; outline: none; box-sizing: border-box;
+      transition: border-color .15s, background .15s, box-shadow .15s;
+    }
+    .search-wrap input::placeholder { color: #77736a; }
+    .search-wrap input:hover, .search-wrap select:hover { border-color: #D7D1C2; }
+    .search-wrap input:focus, .search-wrap select:focus {
+      background: #fff; border-color: var(--GTMS-primary-light);
+      box-shadow: 0 0 0 3px rgba(31,42,68,.08);
+    }
+    .search-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .btn-clear { font-size: 13px; color: var(--GTMS-text-muted); text-decoration: none; }
+    .btn-clear:hover { color: var(--GTMS-text-primary); text-decoration: underline; }
+
+    .add-wrapper { position: relative; display: inline-block; }
+
+    .dropdown-menu {
+      display: none; position: absolute; right: 0; top: calc(100% + 6px);
+      background: #fff; border: 0.5px solid #e5e3da; border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.1); min-width: 170px; z-index: 100; overflow: hidden;
+    }
+    .dropdown-menu.open { display: block; }
+    .dropdown-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      font-size: 13px; color: #3d3d3a; text-decoration: none;
+      border: none; background: none; width: 100%; cursor: pointer;
+    }
+    .dropdown-item:hover { background: var(--GTMS-secondary); }
+    .dropdown-item i { font-size: 16px; color: var(--GTMS-text-muted); }
+
+    .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
+    .alert-success { background: #eaf3de; color: #3b6d11; }
+    .alert-error   { background: #fcebeb; color: #a32d2d; }
+
+    .excel-panel {
+      display: none; background: var(--GTMS-secondary); border: 0.5px solid #e5e3da;
+      border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
+    }
+    .excel-panel.open { display: block; }
+    .excel-panel label { 
+      font-size: 12px; font-weight: 500; 
+      color: var(--GTMS-text-secondary); 
+      display: block; margin-bottom: 6px; 
+    }
+    .excel-panel .btn-import {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--GTMS-primary); color: #fff; border: none;
+      border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; margin-top: 8px;
+    }
+    .excel-panel .btn-import:hover { opacity: 0.9; }
+
+    .item-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .list-header,
+    .item-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr 80px;
+      align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px;
+    }
+    .list-header { border: none; padding: 2px 14px 6px; }
+    .list-header span {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .05em; color: var(--GTMS-text-muted);
+    }
+    .item-row {
+      background: #fff; border: 0.5px solid #e5e3da; transition: border-color .15s;
+    }
+    .item-row:hover { border-color: #c5c3ba; }
+
+    .company-name { font-size: 14px; font-weight: 500; color: var(--GTMS-text-primary); }
+    .company-sub  { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; }
+    .date-cell { font-size: 12px; color: var(--GTMS-text-muted); }
+
+    .action-cell { display: flex; gap: 6px; align-items: center; }
+    .act-btn { 
+      background: none; border: none; 
+      cursor: pointer; border-radius: 6px;  
+      color: var(--GTMS-text-muted); 
+      font-size: 16px; padding: 5px;
+    }
+    .act-btn:hover { background: #f0ede6; color: var(--GTMS-text-primary); }
+    .act-btn.del:hover { background: #fcebeb; color: #a32d2d; }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--GTMS-text-muted); }
+    .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
+
