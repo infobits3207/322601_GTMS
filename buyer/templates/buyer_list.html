@@ -40,7 +40,7 @@
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <label>Select Excel file (.xlsx)</label>
-      <input type="file" name="supplier_excel" class="form-control" accept=".xlsx,.xls">
+      <input type="file" name="buyer_excel" class="form-control" accept=".xlsx,.xls">
       <button type="submit" class="btn-import"
               onclick="document.getElementById('page_loader').style.display='flex'">
         <i class="ti ti-upload" aria-hidden="true"></i> Import
@@ -73,14 +73,14 @@
         <i class="fa-solid fa-magnifying-glass"></i> Search
       </button>
       {% if search or Product_group or country %}
-        <a href="{% url 'supplier:suppliers_list' %}" class="btn-clear">Clear</a>
+        <a href="{% url 'buyer:buyer_list' %}" class="btn-clear">Clear</a>
       {% endif %}
     </div>
   </form>
 
   {# bulk action bar — shown when rows are selected #}
   <div class="bulk-bar" id="bulk-bar">
-    <span><span class="bulk-count" id="bulk-count">0</span> supplier(s) selected</span>
+    <span><span class="bulk-count" id="bulk-count">0</span> Buyer(s) selected</span>
     <div class="bulk-actions">
       <button class="btn-bulk" onclick="openBulkMail()">
         <i class="fa-solid fa-envelope"></i> Send email to all
@@ -91,7 +91,76 @@
     </div>
   </div>
 
-  
+  {% if buyers %}
+    <div class="item-list">
+      <div class="list-header">
+        <input type="checkbox" class="header-check" id="select-all" onclick="toggleSelectAll(this)">
+        <span>Company</span>
+        <span>WCPD / IEC</span>
+        <span>Contact</span>
+        <span>Products</span>
+        <span>Added</span>
+        <span>Actions</span>
+      </div>
+
+      {% for b in buyers %}
+        <div class="item-row" id="row-{{ b.id }}">
+          <input type="checkbox" class="row-check"
+                data-id="{{ b.id }}"
+                data-name="{{ b.Company_name|escapejs }}"
+                onchange="onRowCheck(this)">
+
+          <div>
+            <div class="company-name">{{ b.Company_name }}</div>
+            {% if b.GST_number %}<div class="company-sub">GST: {{ b.GST_number }}</div>{% endif %}
+          </div>
+
+          <div>
+            {% if b.WCPD_code %}<div class="wcpd-code">{{ b.WCPD_code }}</div>{% endif %}
+            {% if b.IEC_code  %}<div class="iec-code">IEC: {{ b.IEC_code }}</div>{% endif %}
+          </div>
+
+          <div>
+            {% for c in b.Buyer_contact_details.all|slice:":2" %}
+              {% if c.Email %}<div class="contact-line">{{ c.Email }}</div>{% endif %}
+              {% if c.Phone %}<div class="contact-line">{{ c.Phone }}</div>{% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="tags">
+            {% for p in b.Purchase_products.all|slice:":3" %}
+              <span class="tag" title="{{ p.Product }}">{{ p.Product }}</span>
+            {% endfor %}
+            {% if b.Purchase_products.count > 3 %}
+              <span class="tag-more">+{{ b.Purchase_products.count|add:"-3" }} more</span>
+            {% endif %}
+          </div>
+
+          <div class="date-cell">{{ b.Created_at|date:"d M Y" }}</div>
+
+          <div class="action-cell">
+            <a href="#" class="act-btn" title="Edit">
+              <i class="ti ti-edit" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="act-btn" title="Related companies">
+              <i class="fa-solid fa-users"></i>
+            </a>
+            <a href="#" class="act-btn" title="Email history">
+              <span class="email-history">
+                <i class="fa-solid fa-envelope"></i>
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <i class="ti ti-building-factory-2" aria-hidden="true"></i>
+      No buyers yet. Add one above.
+    </div>
+  {% endif %}
 
 {% endblock %}
 
@@ -100,15 +169,15 @@
   <div class="bulk-modal-backdrop" id="bulk-modal">
     <div class="email-modal">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-envelope" style="margin-right:6px"></i> Send email to selected suppliers</h3>
+        <h3><i class="fa-solid fa-envelope" style="margin-right:6px"></i> Send email to selected buyers</h3>
         <button class="modal-close" onclick="closeBulkMail()"><i class="ti ti-x"></i></button>
       </div>
 
       <div class="modal-body">
         <div>
-          <label>Recipients — all emails on file for each selected supplier</label>
+          <label>Recipients — all emails on file for each selected buyers</label>
           <div class="recipient-list" id="recipient-list">
-            <span class="recipient-empty">No suppliers selected.</span>
+            <span class="recipient-empty">No buyers selected.</span>
           </div>
         </div>
 
@@ -135,21 +204,21 @@
 
 {% block extra_script %}
   <script>
-    // ── supplier emails map — built from Django context ──
-    // { supplier_id: [email1, email2, ...], ... }
-    const supplierEmails = {
-      {% for s in suppliers %}
-        {{ s.id }}: [
-          {% for c in s.supplier_contact_details.all %}
+    // ── buyers emails map — built from Django context ──
+    // { buyer_id: [email1, email2, ...], ... }
+    const buyerEmails = {
+      {% for b in buyers %}
+        {{ b.id }}: [
+          {% for c in b.Buyer_contact_details.all %}
             {% if c.Email %}"{{ c.Email|escapejs }}",{% endif %}
           {% endfor %}
         ],
       {% endfor %}
     };
 
-    const supplierNames = {
-      {% for s in suppliers %}
-        {{ s.id }}: "{{ s.Company_name|escapejs }}",
+    const buyerNames = {
+      {% for b in buyers %}
+        {{ b.id }}: "{{ b.Company_name|escapejs }}",
       {% endfor %}
     };
 
@@ -208,23 +277,24 @@
 
       let hasAny = false;
       selectedIds.forEach(id => {
-        const emails = supplierEmails[id] || [];
+        const emails = buyerEmails[id] || [];
+        console.log(emails)
         emails.forEach(email => {
           if (!email) return;
           hasAny = true;
           const chip = document.createElement('span');
           chip.className = 'recipient-chip';
           chip.dataset.email = email;
-          chip.dataset.supplierId = id;
+          chip.dataset.bueyrId = id;
           chip.innerHTML = `
-            <span title="${supplierNames[id]}">${email}</span>
+            <span title="${buyerNames[id]}">${email}</span>
             <button class="chip-remove" onclick="removeChip(this)" title="Remove">×</button>`;
           list.appendChild(chip);
         });
       });
 
       if (!hasAny) {
-        list.innerHTML = '<span class="recipient-empty">No email addresses found for selected suppliers.</span>';
+        list.innerHTML = '<span class="recipient-empty">No email addresses found for selected buyers.</span>';
       }
 
       document.getElementById('bulk-status').textContent = '';
@@ -282,7 +352,7 @@
 
       const csrf = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
 
-      fetch("{% url 'supplier:send_bulk_email' %}", {
+      fetch("{% url 'buyer:send_bulk_email' %}", {
         method:  'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -331,17 +401,5 @@
       }
     });
 
-    function confirmDelete(delete_action, id, name) {
-      if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-      const supplier  = delete_action.closest('.item-row');
-      const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? '';
-      fetch("{% url 'supplier:delete_supplier' %}", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-        body: JSON.stringify({ sp_id: id })
-      })
-      .then(r => r.json())
-      .then(data => { if (data.success) supplier.style.display = 'none'; });
-    }
   </script>
 {% endblock %}

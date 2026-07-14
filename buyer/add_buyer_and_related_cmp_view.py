@@ -22,7 +22,6 @@ _recipe_df = pd.read_excel(
 _category_list = sorted(_recipe_df['Category'].dropna().unique().tolist())
 
 def add_buyer(request):
-    print(">>>>>>>>>>>>>>>")
     if request.method == 'POST':
         company_name = request.POST.get('Company_name', '').strip()
         if not company_name:

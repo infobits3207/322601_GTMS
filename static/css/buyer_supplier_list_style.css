@@ -21,7 +21,7 @@
 .btn-bulk-clear:hover { color: #fff; }
 
 .list-header, .item-row {
-  grid-template-columns: 32px 2fr 70px 1.4fr 1.6fr 80px 95px;
+  grid-template-columns: 20px 2fr 70px 1.5fr 1.6fr 80px 95px;
 }
 .item-row.selected { border-color: var(--GTMS-primary); background: #f0f3f9; }
 

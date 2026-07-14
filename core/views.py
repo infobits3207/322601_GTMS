@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 
 from core.utils import send_notification_email
 from buyer.models import Buyer_email_messages, buyer_details
-from supplier.models import supplier_details, supplier_details, supplier_email_messages
+from supplier.models import supplier_details, supplier_email_messages
 
 def dashboard(request):
     return render(request,'dashboard.html')
