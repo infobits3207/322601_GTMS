@@ -4,20 +4,25 @@
 {% block extra_head %}
   <link rel="stylesheet" href="{% static 'css/list_page_style.css' %}">
   <style>
-    .list-header, .item-row {
-      grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr 80px;
+    .search-wrap {
+      display: flex; align-items: flex-end;
     }
-
+    .search-wrap i { top: 67%; }
+    .date-range-wrap input { padding-left: 12px !important; }
     .status-badge {
       display: inline-flex; align-items: center;
       font-size: 11px; font-weight: 500; padding: 3px 9px;
       border-radius: 20px; white-space: nowrap;
     }
-    .status-open       { background: #e6f1fb; color: #185fa5; }
-    .status-inprogress { background: #fef3d9; color: #92530a; }
-    .status-closed     { background: #eaf3de; color: #3b6d11; }
-    .status-onhold     { background: #f0ede6; color: #888780; }
-    .status-default    { background: #f0ede6; color: #888780; }
+    .search-actions { margin-top: 20px; }
+
+    .list-header, .item-row {
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr 80px;
+    }
+
+    .status-open       { background: #eaf3de; color: #3b6d11; }
+    .status-closed     { background: #fbe7e6; color: #a03a32; }
+    .status-unknown     { background: #f0ede6; color: #888780; }
 
     .tags { display: flex; flex-wrap: wrap; gap: 3px; }
     .tag {
@@ -32,6 +37,18 @@
 
     .empty-state { text-align: center; padding: 3rem 1rem; color: var(--GTMS-text-muted); }
     .empty-state i { font-size: 36px; display: block; margin-bottom: 0.75rem; }
+
+    .date-range-wrap {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .date-range-wrap .search-wrap { flex: 1; }
+    .date-range-wrap .range-sep {
+      font-size: 12px; color: var(--GTMS-text-muted); flex-shrink: 0;
+    }
+    .filter-group-label {
+      font-size: 11px; color: var(--GTMS-text-muted);
+      margin-bottom: 4px; display: block;
+    }
   </style>
 {% endblock %}
 
@@ -118,28 +135,40 @@
         <input type="text" name="search" value="{{ search|default:'' }}"
               placeholder="Search by company or product">
       </div>
-      <div class="search-wrap">
-        <i class="fa-solid fa-circle-half-stroke"></i>
-        <select name="enquiry_type">
-          <option value="">All types</option>
-          <option {% if enquiry_type == 'New requirement' %}selected{% endif %}>New requirement</option>
-          <option {% if enquiry_type == 'Repeat order' %}selected{% endif %}>Repeat order</option>
-          <option {% if enquiry_type == 'Price enquiry' %}selected{% endif %}>Price enquiry</option>
-          <option {% if enquiry_type == 'Sample request' %}selected{% endif %}>Sample request</option>
-          <option {% if enquiry_type == 'Other' %}selected{% endif %}>Other</option>
-        </select>
+
+      <div>
+        <span class="filter-group-label"> <i class="fa-solid fa-calendar"></i> Enquiry date</span>
+        <div class="date-range-wrap">
+          <div class="search-wrap">
+            <input type="date" name="enquiry_date_from" value="{{ enquiry_date_from|default:'' }}"
+                  style="padding-left:34px">
+          </div>
+          <span class="range-sep">–</span>
+          <div class="search-wrap">
+            <input type="date" name="enquiry_date_to" value="{{ enquiry_date_to|default:'' }}">
+          </div>
+        </div>
       </div>
-      <div class="search-wrap">
-        <i class="fa-solid fa-calendar"></i>
-        <input type="date" name="date_from" value="{{ date_from|default:'' }}"
-              style="padding-left:34px">
+
+      <div>
+        <span class="filter-group-label"> <i class="fa-solid fa-calendar"></i> Closing date</span>
+        <div class="date-range-wrap">
+          <div class="search-wrap">
+            <input type="date" name="closing_date_from" value="{{ closing_date_from|default:'' }}"
+                  style="padding-left:34px">
+          </div>
+          <span class="range-sep">–</span>
+          <div class="search-wrap">
+            <input type="date" name="closing_date_to" value="{{ closing_date_to|default:'' }}">
+          </div>
+        </div>
       </div>
     </div>
     <div class="search-actions">
       <button type="submit" class="btn-custom">
         <i class="fa-solid fa-magnifying-glass"></i> Search
       </button>
-      {% if search or enquiry_type or date_from %}
+      {% if search or enquiry_date_from or enquiry_date_to or closing_date_from or closing_date_to %}
         <a href="{% url 'enquiry:enquiry_list' %}" class="btn-clear">Clear</a>
       {% endif %}
     </div>
@@ -178,9 +207,13 @@
           </div>
 
           <div>
-            {% if en.Enquiry_type %}
-              <span class="status-badge status-default">{{ en.Enquiry_type }}</span>
-            {% else %}—{% endif %}
+            {% if en.Closing_date < now %}
+              <span class="status-badge status-open">Open</span>
+            {% elif en.Closing_date > now %}
+              <span class="status-badge status-closed">Closed</span>
+            {% else %}
+              <span class="status-badge status-unknown">—</span>
+            {% endif %}
           </div>
 
           <div class="tags">

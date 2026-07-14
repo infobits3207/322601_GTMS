@@ -122,9 +122,11 @@ def enquiry_list(request):
         'Enquiry_products'
     ).select_related('buyer').order_by('-Enquiry_date', '-id')
 
-    search       = request.GET.get('search', '').strip()
-    enquiry_type = request.GET.get('enquiry_type', '').strip()
-    date_from    = request.GET.get('date_from', '').strip()
+    search             = request.GET.get('search', '').strip()
+    enquiry_date_from  = request.GET.get('enquiry_date_from', '').strip()
+    enquiry_date_to    = request.GET.get('enquiry_date_to', '').strip()
+    closing_date_from  = request.GET.get('closing_date_from', '').strip()
+    closing_date_to    = request.GET.get('closing_date_to', '').strip()
 
     if search:
         enquiries = enquiries.filter(
@@ -132,16 +134,22 @@ def enquiry_list(request):
             Q(buyer__Company_name__icontains=search) |
             Q(Enquiry_products__Product__icontains=search)
         )
-    if enquiry_type:
-        enquiries = enquiries.filter(Enquiry_type=enquiry_type)
-    if date_from:
-        enquiries = enquiries.filter(Enquiry_date__gte=date_from)
+    if enquiry_date_from:
+        enquiries = enquiries.filter(Enquiry_date__gte=enquiry_date_from)
+    if enquiry_date_to:
+        enquiries = enquiries.filter(Enquiry_date__lte=enquiry_date_to)
+    if closing_date_from:
+        enquiries = enquiries.filter(Closing_date__gte=closing_date_from)
+    if closing_date_to:
+        enquiries = enquiries.filter(Closing_date__lte=closing_date_to)
 
     enquiries = enquiries.distinct()
 
     return render(request, 'enquiry_list.html', {
         'enquiries':    enquiries,
-        'search':       search,
-        'enquiry_type': enquiry_type,
-        'date_from':    date_from,
+        'search':            search,
+        'enquiry_date_from': enquiry_date_from,
+        'enquiry_date_to':   enquiry_date_to,
+        'closing_date_from': closing_date_from,
+        'closing_date_to':   closing_date_to,
     })
