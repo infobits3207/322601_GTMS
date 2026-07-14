@@ -10,6 +10,8 @@ urlpatterns = [
     path('related_sellers/<int:bu_id>', add_buyer_and_related_cmp_view.related_sellers, name='related_sellers'),
 
     path('send_bulk_email/', email_view.send_bulk_email, name='send_bulk_email'),
+    path('email_history/<int:bu_id>/', email_view.email_history, name='email_history'),
+
 
     path('buyer_detail/<int:bu_id>', edit_buyer_view.buyer_detail, name='buyer_detail'),
     path('edit_buyer/<int:bu_id>', edit_buyer_view.edit_buyer, name='edit_buyer'),

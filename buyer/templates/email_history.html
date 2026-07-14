@@ -133,7 +133,7 @@
   <div class="page-header">
     <div>
       <h1 class="page-title">Email History</h1>
-      <p class="page-sub">{{ supplier.Company_name }}</p>
+      <p class="page-sub">{{ buyer.Company_name }}</p>
     </div>
   </div>
 
@@ -196,8 +196,8 @@
         <h4>Send email</h4>
         <form id="compose-form" onsubmit="sendEmail(event)">
           {% csrf_token %}
-          <input type="hidden" name="company_type" value="supplier">
-          <input type="hidden" name="company_id"   value="{{ supplier.id }}">
+          <input type="hidden" name="company_type" value="buyer">
+          <input type="hidden" name="company_id"   value="{{ buyer.id }}">
 
           <div class="compose-grid">
             <div>

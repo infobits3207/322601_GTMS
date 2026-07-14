@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .note-item {
+        display: flex; gap: 12px; padding: 10px 14px;
+        border-bottom: 0.5px solid #f0ede6; align-items: flex-start;
+      }
+      .note-item:last-child { border-bottom: none; }
+      .note-num {
+        width: 22px; height: 22px; border-radius: 50%;
+        background: #e6f1fb; color: #185fa5;
+        font-size: 11px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-top: 1px;
+      }
+      .note-text {
+        font-size: 13px; color: var(--GTMS-text-secondary, #5f5e5a);
+        line-height: 1.5;
+      }
+      .note-text strong { color: var(--GTMS-text-primary, #2c2c2a); }
+      .note-text code {
+        background: #f0ede6; padding: 1px 5px; border-radius: 4px;
+        font-size: 12px; color: #a32d2d; font-family: monospace;
+      }
+
+      .notes-footer {
+        padding: 10px 14px; background: #f7f6f2;
+        border-top: 0.5px solid #f0ede6;
+        font-size: 11px; color: var(--GTMS-text-muted, #888780);
+        display: flex; align-items: center; gap: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="note-item">
+      <div class="note-num">1</div>
+      <div class="note-text">Each row should contain <strong>only one product</strong>. If a company has multiple products, create separate rows with the same company details and different product-related information.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">2</div>
+      <div class="note-text">Leave a cell <strong>blank</strong> if you do not have a value for that field.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">3</div>
+      <div class="note-text">For multiple phone numbers, fax numbers, or email addresses, separate values using a <code>,</code> (comma) <strong>only</strong>. Do <strong>not</strong> use semicolons <code>;</code> or any other separator — the import will fail.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">4</div>
+      <div class="note-text">Do <strong>not</strong> insert commas within a single value (e.g. a single phone number). Commas are treated as separators between multiple entries.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">5</div>
+      <div class="note-text">If a company spans <strong>multiple rows</strong>, all company-level fields must be identical across every row. Only the product-related fields should differ.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">6</div>
+      <div class="note-text">For <strong>multiple addresses</strong>, use columns <code>Address1 / City1 / State1 / Country1</code> for the first address, <code>Address2 / City2 / State2 / Country2</code> for the second, and so on.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">7</div>
+      <div class="note-text">Verify that all information is <strong>accurate and properly formatted</strong> before importing. Date fields must be in <code>DD-MM-YYYY</code> or <code>YYYY-MM-DD</code> format.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">8</div>
+      <div class="note-text">If any field contains invalid data, the <strong>company name and field(s) with errors</strong> will be shown after import. Correct the data and upload the file again.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">9</div>
+      <div class="note-text">After a successful import, records can be <strong>filtered and edited</strong> from within the application.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-num">10</div>
+      <div class="note-text"><strong>Do not modify column headers.</strong> The import process relies on exact header names as provided in the template.</div>
+    </div>
+    {% if extra_notes %}
+      {% for note in extra_notes %}
+        <div class="note-item" style="background:#fffbf0">
+          <div class="note-num" style="background:#fef3d9;color:#92530a">★</div>
+          <div class="note-text">{{ note }}</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+    <div class="notes-footer">
+      <i class="ti ti-help-circle"></i>
+      Download the template above — it already has example rows showing the correct format for each column.
+    </div>
+  </body>
+</html>

@@ -37,15 +37,47 @@
   
   {# excel panel #}
   <div class="excel-panel" id="excel_panel">
+    {# template download #}
+    <div class="template-strip">
+      <div class="template-strip-left">
+        <div class="template-icon"><i class="ti ti-table-down"></i></div>
+        <div class="template-text">
+          <p class="t-title">Download Buyer Import Template</p>
+          <p class="t-sub">Pre-formatted Excel file with all required columns and example data</p>
+        </div>
+      </div>
+      <a href="{% static 'templates/buyer_import_template.xlsx' %}"
+        download class="btn-custom">
+        <i class="ti ti-download"></i> Download Template
+      </a>
+    </div>
+
+    {# file upload #}
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      <label>Select Excel file (.xlsx)</label>
+      <label class="upload-label">Select your filled Excel file (.xlsx)</label>
       <input type="file" name="buyer_excel" class="form-control" accept=".xlsx,.xls">
-      <button type="submit" class="btn-import"
+      <button type="submit" class="btn-custom mt-3"
               onclick="document.getElementById('page_loader').style.display='flex'">
-        <i class="ti ti-upload" aria-hidden="true"></i> Import
+        <i class="ti ti-upload"></i> Import Buyers
       </button>
     </form>
+
+    {# notes ── shared across all three, customise the extra note at the bottom #}
+    <div class="import-notes">
+      <div class="notes-toggle" id="buyer-notes-toggle"
+          onclick="toggleNotes('buyer')">
+        <div class="notes-toggle-left">
+          <i class="ti ti-info-circle"></i>
+          <span class="notes-toggle-title">Import Instructions</span>
+          <span class="notes-toggle-sub">— click to expand</span>
+        </div>
+        <i class="ti ti-chevron-down notes-chevron"></i>
+      </div>
+      <div class="notes-body" id="buyer-notes-body">
+        {% include 'import_notes.html' with extra_notes=buyer_extra_notes %}
+      </div>
+    </div>
   </div>
 
   <form method="get" class="search-section">
@@ -145,7 +177,7 @@
             <a href="{% url 'buyer:related_sellers' b.id %}" class="act-btn" title="Related companies">
               <i class="fa-solid fa-users"></i>
             </a>
-            <a href="#" class="act-btn" title="Email history">
+            <a href="{% url 'buyer:email_history' b.id %}" class="act-btn" title="Email history">
               <span class="email-history">
                 <i class="fa-solid fa-envelope"></i>
                 <i class="fa-solid fa-clock-rotate-left"></i>
@@ -379,6 +411,13 @@
         btn.disabled  = false;
         btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send to all';
       });
+    }
+
+    function toggleNotes(prefix) {
+      const toggle = document.getElementById(`${prefix}-notes-toggle`);
+      const body   = document.getElementById(`${prefix}-notes-body`);
+      toggle.classList.toggle('open');
+      body.classList.toggle('open');
     }
 
     // ── dropdown / excel panel ──
