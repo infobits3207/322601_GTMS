@@ -74,7 +74,7 @@ def add_enquiry(request):
                 product_name = product_name.strip()
                 if not product_name:
                     continue
-                product = Enquiry_products(Supplier=enquiry, Product=product_name)
+                product = Enquiry_products(Enquiry=enquiry, Product=product_name)
                 for field in PRODUCT_FIELDS:
                     vals = field_lists[field]
                     val  = vals[i].strip() if i < len(vals) else ''
@@ -110,7 +110,7 @@ def related_sellers(request, en_id):
        inputs to the enquired products (via DGFT SION recipe data).
     """
     enquiry  = get_object_or_404(Enquiry_details, id=en_id)
-    products = Enquiry_products.objects.filter(Supplier=enquiry).exclude(Product='')
+    products = Enquiry_products.objects.filter(Enquiry=enquiry).exclude(Product='')
 
     enquired_names = [p.Product.strip() for p in products if p.Product.strip()]
 

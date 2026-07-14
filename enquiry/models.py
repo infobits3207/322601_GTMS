@@ -24,7 +24,7 @@ class Enquiry_email_messages(models.Model):
     Time = models.DateTimeField(blank=True,null=True)
 
 class Enquiry_products(models.Model):
-    Supplier = models.ForeignKey(Enquiry_details,on_delete=models.CASCADE,related_name='Enquiry_products')
+    Enquiry = models.ForeignKey(Enquiry_details,on_delete=models.CASCADE,related_name='Enquiry_products')
     Sector = models.CharField(max_length=100,blank=True)
     Division = models.CharField(max_length=100,blank=True)
     Product_group = models.CharField(max_length=100,blank=True)

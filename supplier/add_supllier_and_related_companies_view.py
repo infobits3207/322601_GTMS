@@ -9,7 +9,6 @@ from django.utils import timezone
 import os
 from django.conf import settings
 
-
 SUPPLIER_FIELDS = [
     'Description', 'Website_link', 'GST_number', 'IEC_code',
     'PAN_number', 'DIN_number', 'CIN_number', 'DUNS_number',
@@ -195,9 +194,6 @@ def _same_product_suppliers(supplier_products, current_supplier_id):
 
 def related_companies(request,sp_id):
     supplier = get_object_or_404(supplier_details, id=sp_id)
-    contacts  = supplier_contact_details.objects.filter(Supplier=supplier)
-    addresses = supplier_addresses.objects.filter(Supplier=supplier)
-    media     = supplier_media.objects.filter(Supplier=supplier)
     products  = Sell_products.objects.filter(Supplier=supplier).exclude(Product='')
 
     related_suppliers = _related_suppliers(products)
@@ -206,17 +202,8 @@ def related_companies(request,sp_id):
 
     context = {
         'supplier':     supplier,
-        'Emails':       contacts.exclude(Email='').values_list('Email', flat=True),
-        'Phone_numbers':contacts.exclude(Phone='').values_list('Phone', flat=True),
-        'FAX_numbers':  contacts.exclude(FAX='').values_list('FAX', flat=True),
-        'addresses':    addresses,
-        'media':        media,
-        'documents':    media.exclude(Document='').exclude(Document=None),
-        'images':       media.exclude(Image='').exclude(Image=None),
-        'Products':     products,
         'related_buyers_direct':   related_buyers_direct,
         'related_suppliers': related_suppliers,
         'same_product_suppliers': same_product_suppliers,
-        'category_list': _category_list,
     }
     return render(request,'related_companies.html',context)

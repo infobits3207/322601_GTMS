@@ -85,7 +85,7 @@ def _import_excel(file_obj):
                     if not product_name:
                         continue
 
-                    product = Enquiry_products(Supplier=enquiry, Product=product_name)
+                    product = Enquiry_products(Enquiry=enquiry, Product=product_name)
                     for field in PRODUCT_FIELDS:
                         if field in group.columns and pd.notna(data.get(field)):
                             setattr(product, field, str(data[field]).strip())

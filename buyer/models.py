@@ -24,6 +24,7 @@ class Buyer_contact_details(models.Model):
     Buyer = models.ForeignKey(buyer_details,on_delete=models.CASCADE,related_name='Buyer_contact_details')
     Email = models.EmailField(blank=True)
     Phone = models.CharField(max_length=20,blank=True)
+    FAX = models.CharField(max_length=30,blank=True)
 
 class Buyer_addresses(models.Model):
     Buyer = models.ForeignKey(buyer_details,on_delete=models.CASCADE,related_name='Buyer_addresses')

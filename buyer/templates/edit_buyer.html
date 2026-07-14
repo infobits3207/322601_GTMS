@@ -1,0 +1,468 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ buyer.Company_name }}</h1>
+      <p class="page-sub">Edit buyer details</p>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" action="{% url 'buyer:edit_buyer' buyer.id %}">
+    {% csrf_token %}
+
+    {# ── 1. Company details ── #}
+    <div class="card">
+      <p class="section-title">Company details</p>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Company name <span style="color:#a32d2d">*</span></label>
+          <input type="text" name="Company_name" required value="{{ buyer.Company_name|default:'' }}">
+        </div>
+        <div class="form-group full">
+          <label>Description</label>
+          <textarea name="Description">{{ buyer.Description|default:'' }}</textarea>
+        </div>
+        <div class="form-group">
+          <label>Website</label>
+          <input type="text" name="Website_link" value="{{ buyer.Website_link|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label>Contact person</label>
+          <input type="text" name="Contact_person" value="{{ buyer.Contact_person|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label>WCPD code</label>
+          <input type="text" name="WCPD_code" value="{{ buyer.WCPD_code|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label>Admin remark</label>
+          <input type="text" name="Admin_remark" value="{{ buyer.Admin_remark|default:'' }}">
+        </div>
+      </div>
+    </div>
+
+    {# ── 2. Registrations ── #}
+    <div class="card">
+      <p class="section-title">Registrations &amp; codes</p>
+      <div class="form-grid">
+        <div class="form-group"><label>GST number</label><input type="text" name="GST_number" value="{{ buyer.GST_number|default:'' }}"></div>
+        <div class="form-group"><label>IEC code</label><input type="text" name="IEC_code" value="{{ buyer.IEC_code|default:'' }}"></div>
+        <div class="form-group"><label>PAN number</label><input type="text" name="PAN_number" value="{{ buyer.PAN_number|default:'' }}"></div>
+        <div class="form-group"><label>DIN number</label><input type="text" name="DIN_number" value="{{ buyer.DIN_number|default:'' }}"></div>
+        <div class="form-group"><label>CIN number</label><input type="text" name="CIN_number" value="{{ buyer.CIN_number|default:'' }}"></div>
+        <div class="form-group"><label>DUNS number</label><input type="text" name="DUNS_number" value="{{ buyer.DUNS_number|default:'' }}"></div>
+      </div>
+    </div>
+
+    {# ── 3. Purchase related details ── #}
+    <div class="card">
+      <p class="section-title">Purchase related details</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Payment terms</label>
+          <input type="text" name="Payment_terms" value="{{ buyer.Payment_terms }}" placeholder="e.g. 30 days net, LC at sight, advance 50%">
+        </div>
+        <div class="form-group">
+          <label>Transport preferences</label>
+          <input type="text" name="Transport_preferences" value="{{ buyer.Transport_preferences }}" placeholder="e.g. FCL, LCL, Air freight, FOB Mumbai">
+        </div>
+        <div class="form-group full">
+          <label>Supplier preferences</label>
+          <input type="text" name="Supplier_preferences" value="{{ buyer.Supplier_preferences }}" placeholder="e.g. ISO certified, Indian manufacturer only, min 5 years experience">
+        </div>
+        <div class="form-group full">
+          <label>Monthly requirements</label>
+          <input type="text" name="Monthly_requirements" value="{{ buyer.Monthly_requirements }}">
+        </div>
+      </div>
+    </div>
+
+    {# ── 4. Contact information ── #}
+    <div class="card">
+      <p class="section-title">Contact information</p>
+
+      <div class="form-group" style="margin-bottom:1rem">
+        <label>Email addresses</label>
+        <div id="email-rows">
+          {% for email in Emails %}
+            <div class="multi-row">
+              <input type="email" name="Email" value="{{ email }}">
+              <button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+          {% empty %}
+            <div class="multi-row">
+              <input type="email" name="Email" placeholder="email@example.com">
+            </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn-add-row" onclick="addContactRow('email-rows','Email','email@example.com','email')">
+          <i class="ti ti-plus"></i> Add email
+        </button>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1rem">
+        <label>Phone numbers</label>
+        <div id="phone-rows">
+          {% for phone in Phone_numbers %}
+            <div class="multi-row">
+              <input type="tel" name="Phone" value="{{ phone }}">
+              <button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+          {% empty %}
+            <div class="multi-row">
+              <input type="tel" name="Phone" placeholder="+91 98765 43210">
+            </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn-add-row" onclick="addContactRow('phone-rows','Phone','+91','tel')">
+          <i class="ti ti-plus"></i> Add phone
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label>FAX numbers</label>
+        <div id="fax-rows">
+          {% for fax in FAX_numbers %}
+            <div class="multi-row">
+              <input type="text" name="FAX" value="{{ fax }}">
+              <button type="button" class="btn-remove" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+          {% empty %}
+            <div class="multi-row">
+              <input type="text" name="FAX" placeholder="FAX number">
+            </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn-add-row" onclick="addContactRow('fax-rows','FAX','FAX number','text')">
+          <i class="ti ti-plus"></i> Add FAX
+        </button>
+      </div>
+    </div>
+
+    {# ── 5. Products ── #}
+    <div class="card">
+      <p class="section-title">Products</p>
+      <datalist id="category_list">{% for ct in category_list %}<option value="{{ ct }}">{% endfor %}</datalist>
+      <datalist id="product_list"></datalist>
+
+      <div id="product-blocks">
+        {% for product in Products %}
+          <div class="details-block">
+            <div class="block-header">
+              <div class="block-label">{{ product.Product|default:"Product" }}</div>
+              <button type="button" class="btn-remove" onclick="this.closest('.details-block').remove()"><i class="ti ti-x"></i></button>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Sector</label>
+                <input type="text" name="Sector" value="{{ product.Sector|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>Division</label>
+                <input type="text" name="Division" value="{{ product.Division|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>Product group</label>
+                <select name="Product_group">
+                  <option selected disabled>Select product group</option>
+                  {% for group in product_group_choices %}
+                    <option value="{{group}}" {% if product.Product_group == group %} selected {% endif %}>{{group}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Product category</label>
+                <input type="text" name="Product_category" list="category_list" onchange="fetchProductname(this)" value="{{ product.Product_category|default:'' }}">
+              </div>
+              <div class="form-group full">
+                <label>Product name <span style="color:#a32d2d">*</span></label>
+                <input type="text" name="Product" list="product_list" required value="{{ product.Product|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label>HSN code</label>
+                <input type="text" name="HSN_code" value="{{ product.HSN_code|default:'' }}">
+              </div>
+              <div class="form-group full">
+                <label>Billing address</label>
+                <textarea name="Billing_address" rows="2">{{ product.Billing_address|default:'' }}</textarea>
+              </div>
+              <div class="form-group full">
+                <label>Delivery address</label>
+                <textarea name="Delivery_address" rows="2">{{ product.Delivery_address|default:'' }}</textarea>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn-add-row" onclick="addProductBlock()">
+        <i class="ti ti-plus"></i> Add another product
+      </button>
+    </div>
+
+    {# ── 6. Addresses ── #}
+    <div class="card">
+      <p class="section-title">Addresses</p>
+      <div id="address-blocks">
+        {% for address in addresses %}
+          <div class="details-block">
+            <div class="block-header">
+              <div class="block-label">Address</div>
+              <button type="button" class="btn-remove" onclick="this.closest('.details-block').remove()"><i class="ti ti-x"></i></button>
+            </div>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label>Street / full address</label>
+                <textarea name="Address" rows="2">{{ address.Address|default:'' }}</textarea>
+              </div>
+              <div class="form-group"><label>City</label><input type="text" name="City" value="{{ address.City|default:'' }}"></div>
+              <div class="form-group"><label>State</label><input type="text" name="State" value="{{ address.State|default:'' }}"></div>
+              <div class="form-group"><label>Country</label><input type="text" name="Country" value="{{ address.Country|default:'India' }}"></div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="details-block">
+            <div class="block-header"><div class="block-label">Address 1</div></div>
+            <div class="form-grid">
+              <div class="form-group full"><label>Street / full address</label><textarea name="Address" rows="2"></textarea></div>
+              <div class="form-group"><label>City</label><input type="text" name="City"></div>
+              <div class="form-group"><label>State</label><input type="text" name="State"></div>
+              <div class="form-group"><label>Country</label><input type="text" name="Country" value="India"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn-add-row" onclick="addAddressBlock()">
+        <i class="ti ti-plus"></i> Add another address
+      </button>
+    </div>
+
+    {# ── 7. Documents & images ── #}
+    <div class="card">
+      <p class="section-title">Documents &amp; images</p>
+
+      {# existing documents #}
+      {% if documents %}
+        <p style="font-size:13px;font-weight:500;color:var(--GTMS-text-secondary);margin:0 0 8px">Existing documents</p>
+        <div class="media-grid" style="margin-bottom:1rem">
+          {% for m in documents %}
+            <div class="media-thumb">
+              <div class="doc-placeholder">
+                <i class="ti ti-file-description"></i>
+                {{ m.Document.name|cut:"buyer_documents/" }}
+              </div>
+              <button type="button" class="media-delete" title="Remove"
+                      onclick="markDelete(this, {{ m.id }})">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# existing images #}
+      {% if images %}
+        <p style="font-size:13px;font-weight:500;color:var(--GTMS-text-secondary);margin:0 0 8px">Existing images</p>
+        <div class="media-grid" style="margin-bottom:1rem">
+          {% for m in images %}
+            <div class="media-thumb">
+              <img src="{{ m.Image.url }}" alt="buyer image">
+              <button type="button" class="media-delete" title="Remove"
+                      onclick="markDelete(this, {{ m.id }})">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# hidden inputs for deletions — populated by JS #}
+      <div id="delete-media-inputs"></div>
+
+      {# upload new #}
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Add documents</label>
+          <div class="upload-zone" onclick="document.getElementById('doc-input').click()">
+            <i class="ti ti-file-upload"></i>
+            <p><span class="link">Browse files</span> or drag &amp; drop</p>
+            <input type="file" id="doc-input" name="documents" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv">
+          </div>
+          <ul class="file-list" id="doc-list"></ul>
+        </div>
+        <div class="form-group">
+          <label>Add images</label>
+          <div class="upload-zone" onclick="document.getElementById('img-input').click()">
+            <i class="ti ti-photo-up"></i>
+            <p><span class="link">Browse files</span> or drag &amp; drop</p>
+            <input type="file" id="img-input" name="images" multiple accept=".jpg,.jpeg,.png,.gif,.webp">
+          </div>
+          <ul class="file-list" id="img-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-custom"><i class="ti ti-check"></i> Save changes</button>
+      <a href="{% url 'buyer:buyer_list' %}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
+  {% endblock %}
+
+  {% block extra_script %}
+  <script>
+    // ── contact rows ──
+    function addContactRow(containerId, name, placeholder, type) {
+      const div = document.createElement('div');
+      div.className = 'multi-row';
+      div.innerHTML = `
+        <input type="${type}" name="${name}" placeholder="${placeholder}">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">
+          <i class="ti ti-x"></i></button>`;
+      document.getElementById(containerId).appendChild(div);
+      div.querySelector('input').focus();
+    }
+
+    // ── address block ──
+    function addAddressBlock() {
+      const block = document.createElement('div');
+      block.className = 'details-block';
+      block.innerHTML = `
+        <div class="block-header">
+          <div class="block-label">New address</div>
+          <button type="button" class="btn-remove" onclick="this.closest('.details-block').remove()">
+            <i class="ti ti-x"></i></button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Street / full address</label>
+            <textarea name="Address" rows="2" placeholder="Building, street, area..."></textarea>
+          </div>
+          <div class="form-group"><label>City</label><input type="text" name="City"></div>
+          <div class="form-group"><label>State</label><input type="text" name="State"></div>
+          <div class="form-group"><label>Country</label><input type="text" name="Country" value="India"></div>
+        </div>`;
+      document.getElementById('address-blocks').appendChild(block);
+      block.querySelector('textarea').focus();
+    }
+
+    // ── product block ──
+    function addProductBlock() {
+      const block = document.createElement('div');
+      block.className = 'details-block';
+      block.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+          <div class="block-label">Another product</div>
+          <button type="button" class="btn-remove" onclick="this.closest('.details-block').remove()" aria-label="Remove address">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Sector</label>
+            <input type="text" name="Sector">
+          </div>
+          <div class="form-group">
+            <label>Division</label>
+            <input type="text" name="Division">
+          </div>
+          <div class="form-group">
+            <label>Product group</label>
+            <select name="Product_group">
+              <option selected disabled>Select product group</option>
+              {% for group in product_group_choices %}
+                <option>{{group}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Product category</label>
+            <input type="text" name="Product_category">
+          </div>
+          <div class="form-group">
+            <label>Product name</label>
+            <input type="text" name="Product" placeholder="Pesticides">
+          </div>
+          <div class="form-group">
+            <label>HSN code</label>
+            <input type="text" name="HSN_code">
+          </div>
+
+          <div class="form-group full">
+            <label>Billing address</label>
+            <textarea name="Billing_address" rows="2"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Delivery address</label>
+            <textarea name="Delivery_address" rows="2"></textarea>
+          </div>
+        </div>
+      `;
+      document.getElementById('product-blocks').appendChild(block);
+      block.querySelector('input[name="Product_category"]').focus();
+    }
+
+    // ── fetch product names from API ──
+    const categoryList = [{% for ct in category_list %}"{{ ct }}",{% endfor %}];
+
+    function fetchProductname(inputEl) {
+      const category = inputEl.value.trim();
+      if (!categoryList.includes(category)) {
+        document.getElementById('product_list').innerHTML = '';
+        return;
+      }
+      fetch(`/fetch_products/?category_name=${encodeURIComponent(category)}`)
+        .then(r => r.json())
+        .then(data => {
+          const dl = document.getElementById('product_list');
+          dl.innerHTML = '';
+          data.forEach(p => {
+            const o = document.createElement('option');
+            o.value = p;
+            dl.appendChild(o);
+          });
+        })
+        .catch(err => console.error('Failed to fetch products:', err));
+    }
+
+    // ── media delete — mark for deletion via hidden input ──
+    function markDelete(btn, mediaId) {
+      const thumb = btn.closest('.media-thumb');
+      thumb.style.opacity = '0.35';
+      btn.disabled = true;
+      const input = document.createElement('input');
+      input.type  = 'hidden';
+      input.name  = 'delete_media';
+      input.value = mediaId;
+      document.getElementById('delete-media-inputs').appendChild(input);
+    }
+
+    // ── file list preview ──
+    function showFiles(inputId, listId) {
+      const input = document.getElementById(inputId);
+      const list  = document.getElementById(listId);
+      input.addEventListener('change', () => {
+        list.innerHTML = '';
+        Array.from(input.files).forEach(f => {
+          const li = document.createElement('li');
+          li.innerHTML = `<i class="ti ti-file"></i>${f.name}
+            <span style="margin-left:auto;color:var(--GTMS-text-muted)">${(f.size/1024).toFixed(1)} KB</span>`;
+          list.appendChild(li);
+        });
+      });
+    }
+    showFiles('doc-input', 'doc-list');
+    showFiles('img-input', 'img-list');
+  </script>
+{% endblock %}

@@ -139,10 +139,10 @@
           <div class="date-cell">{{ b.Created_at|date:"d M Y" }}</div>
 
           <div class="action-cell">
-            <a href="#" class="act-btn" title="Edit">
+            <a href="{% url 'buyer:buyer_detail' b.id %}" class="act-btn" title="Edit">
               <i class="ti ti-edit" aria-hidden="true"></i>
             </a>
-            <a href="#" class="act-btn" title="Related companies">
+            <a href="{% url 'buyer:related_sellers' b.id %}" class="act-btn" title="Related companies">
               <i class="fa-solid fa-users"></i>
             </a>
             <a href="#" class="act-btn" title="Email history">

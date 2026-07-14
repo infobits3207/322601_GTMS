@@ -26,7 +26,7 @@ def _reconcile_products(enquiry, submitted):
     submitted = list of dicts with product fields.
     Reconcile by Product name as identity key.
     """
-    existing     = Enquiry_products.objects.filter(Supplier=enquiry)
+    existing     = Enquiry_products.objects.filter(Enquiry=enquiry)
     existing_map = {p.Product.strip(): p for p in existing}
     submitted_keys = set()
 
@@ -35,7 +35,7 @@ def _reconcile_products(enquiry, submitted):
         if not name:
             continue
         submitted_keys.add(name)
-        obj = existing_map.get(name) or Enquiry_products(Supplier=enquiry, Product=name)
+        obj = existing_map.get(name) or Enquiry_products(Enquiry=enquiry, Product=name)
         for field in PRODUCT_FIELDS_RECON:
             setattr(obj, field, data.get(field, '').strip())
         raw_price = data.get('Target_price', '').strip()
@@ -55,7 +55,7 @@ def _reconcile_products(enquiry, submitted):
 
 def edit_enquiry(request, en_id):
     enquiry  = get_object_or_404(Enquiry_details, id=en_id)
-    products = Enquiry_products.objects.filter(Supplier=enquiry)
+    products = Enquiry_products.objects.filter(Enquiry=enquiry)
     media    = Enquiry_media.objects.filter(Enquiry=enquiry)
 
     if request.method == 'POST':
