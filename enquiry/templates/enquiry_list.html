@@ -4,22 +4,32 @@
 {% block extra_head %}
   <link rel="stylesheet" href="{% static 'css/list_page_style.css' %}">
   <style>
+    .search-bar-group {
+      grid-template-columns: 2.5fr 1fr 1fr 0.3fr;
+    }
     .search-wrap {
       display: flex; align-items: flex-end;
     }
     .search-wrap i { top: 67%; }
-    .date-range-wrap input { padding-left: 12px !important; }
-    .status-badge {
-      display: inline-flex; align-items: center;
-      font-size: 11px; font-weight: 500; padding: 3px 9px;
-      border-radius: 20px; white-space: nowrap;
+    .date-range-wrap input { padding-left: 12px !important; } 
+    
+    .date-filter-icon {
+      margin-top: 21px;
+      padding: 9px; color: var(--GTMS-text-secondary);
     }
+    .date-filter-icon:hover { color: var(--GTMS-text-primary); }
+
     .search-actions { margin-top: 20px; }
 
     .list-header, .item-row {
       grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr 80px;
     }
-
+    
+    .status-badge {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 500; padding: 3px 9px;
+      border-radius: 20px; white-space: nowrap;
+    }
     .status-open       { background: #eaf3de; color: #3b6d11; }
     .status-closed     { background: #fbe7e6; color: #a03a32; }
     .status-unknown     { background: #f0ede6; color: #888780; }
@@ -47,7 +57,8 @@
     }
     .filter-group-label {
       font-size: 11px; color: var(--GTMS-text-muted);
-      margin-bottom: 4px; display: block;
+      margin-bottom: 6px; display: flex; gap: 4px;
+      justify-content: center; align-items: center;
     }
   </style>
 {% endblock %}
@@ -137,7 +148,7 @@
       </div>
 
       <div>
-        <span class="filter-group-label"> <i class="fa-solid fa-calendar"></i> Enquiry date</span>
+        <span class="filter-group-label"> <i class="fa-solid fa-calendar"></i> Enquiry date range</span>
         <div class="date-range-wrap">
           <div class="search-wrap">
             <input type="date" name="enquiry_date_from" value="{{ enquiry_date_from|default:'' }}"
@@ -151,7 +162,7 @@
       </div>
 
       <div>
-        <span class="filter-group-label"> <i class="fa-solid fa-calendar"></i> Closing date</span>
+        <span class="filter-group-label"> <i class="fa-solid fa-calendar"></i> Closing date range</span>
         <div class="date-range-wrap">
           <div class="search-wrap">
             <input type="date" name="closing_date_from" value="{{ closing_date_from|default:'' }}"
@@ -162,6 +173,17 @@
             <input type="date" name="closing_date_to" value="{{ closing_date_to|default:'' }}">
           </div>
         </div>
+      </div>
+
+      <div>
+        <input type="hidden" name="sort" value="{% if request.GET.sort == 'asc' %}desc{% else %}asc{% endif %}">
+        <button type="submit" class="date-filter-icon">
+          {% if request.GET.sort == 'asc' %}
+            <i class="fa-solid fa-arrow-down-short-wide" title="Sorted: earliest first — click for latest first"></i>
+          {% else %}
+            <i class="fa-solid fa-arrow-down-wide-short" title="Sorted: latest first — click for earliest first"></i>
+          {% endif %}
+        </button>
       </div>
     </div>
     <div class="search-actions">
@@ -207,9 +229,9 @@
           </div>
 
           <div>
-            {% if en.Closing_date < now %}
+            {% if en.Closing_date > today %}
               <span class="status-badge status-open">Open</span>
-            {% elif en.Closing_date > now %}
+            {% elif en.Closing_date < today %}
               <span class="status-badge status-closed">Closed</span>
             {% else %}
               <span class="status-badge status-unknown">—</span>

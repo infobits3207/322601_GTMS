@@ -31,10 +31,9 @@
 .page-title  { font-size: 20px; font-weight: 600; color: #2c2c2a; margin: 0 0 4px; }
 .page-sub    { font-size: 14px; color: #888780; margin: 0; }
 
-
 .card {
   background: #fff;
-  border: 0.5px solid var(--GTMS-secondary-dark, #e5e3da);
+  border: 0.5px solid var(--GTMS-secondary-dark);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.25rem;
@@ -61,9 +60,9 @@
 .form-group input,
 .form-group textarea,
 .form-group select {
-   width: 100%; border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
-   padding: 8px 10px; font-size: 13px; color: var(--GTMS-text-primary);
-   background: #fff; margin-bottom: 10px;
+  width: 100%; border: 0.5px solid var(--GTMS-secondary-dark); border-radius: 8px;
+  padding: 8px 10px; font-size: 13px; color: var(--GTMS-text-primary);
+  background: #fff; margin-bottom: 10px;
 }
 .form-group input:focus,
 .form-group textarea:focus,

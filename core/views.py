@@ -9,9 +9,17 @@ from django.views.decorators.http import require_POST
 from core.utils import send_notification_email
 from buyer.models import Buyer_email_messages, buyer_details
 from supplier.models import supplier_details, supplier_email_messages
+from enquiry.models import Enquiry_details
 
 def dashboard(request):
-    return render(request,'dashboard.html')
+    
+    return render(request,'dashboard.html',{
+        'Total_buyers': buyer_details.objects.all().count(),
+        'Total_suppliers': supplier_details.objects.all().count(),
+        'Total_enquiries': Enquiry_details.objects.all().count(),
+        'Active_enquiries': Enquiry_details.objects.filter(Closing_date__gt=timezone.localdate()).count(),
+        'Closing_today': Enquiry_details.objects.filter(Closing_date=timezone.localdate()).count(),
+    })
 
 _recipe_df = pd.read_excel(
     os.path.join(settings.STATICFILES_DIRS[0], 'recipe_pairs_all_categories.xlsx')

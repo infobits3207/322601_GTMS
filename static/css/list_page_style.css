@@ -33,7 +33,7 @@
   transform: translateY(-50%); font-size: 13px; color: #77736a;
   pointer-events: none; transition: color 0.15s ease;
 }
-.search-wrap input, .search-wrap select {
+.search-wrap input, .search-wrap select, .date-filter-icon {
   width: 100%; padding: 9px 12px 9px 34px; font-size: 13px;
   font-family: inherit; color: #2B2A28;
   background: var(--GTMS-secondary); border: 1px solid var(--GTMS-secondary-dark);

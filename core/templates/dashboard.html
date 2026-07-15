@@ -1,1 +1,65 @@
 {% extends 'base_template.html' %}
+
+{% block extra_head %}
+  <style>
+    .static-cards {
+      padding: 10px 20px;
+      display: grid; gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1.1fr;
+    }
+    .card {
+      display: flex; gap: 10px; padding: 1rem;
+      flex-direction: row; text-decoration: none;
+    }
+    .card-icon {
+      display: flex; justify-content: center;
+      align-items: center; color: white;
+      background: var(--GTMS-primary);
+      height: 40px; width: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--GTMS-extra);
+    }
+    .section-title { font-size: 10px; margin-bottom: 10px;}
+    .static-value{}
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="static-cards">
+    <a class="card">
+      <div class="card-icon"><i class="fa-solid fa-cart-plus"></i></div>
+      <div>
+        <div class="section-title">Total buyers</div>
+        <div class="static-value">{{ Total_buyers }}</div>
+      </div>  
+    </a>
+    <a class="card">
+      <div class="card-icon"><i class="fa-solid fa-truck-field"></i></div>
+      <div>
+        <div class="section-title">Total suppliers</div>
+        <div class="static-value">{{ Total_suppliers|default:0 }}</div>
+      </div>  
+    </a>
+    <a class="card">
+      <div class="card-icon"><i class="fa-solid fa-clipboard-question"></i></div>
+      <div>
+        <div class="section-title">Total enquiries</div>
+        <div class="static-value">{{ Total_enquiries|default:0 }}</div>
+      </div>  
+    </a>
+    <a class="card">
+      <div class="card-icon"><i class="fa-solid fa-business-time"></i></div>
+      <div>
+        <div class="section-title">Active enquiries</div>
+        <div class="static-value">{{ Active_enquiries|default:0 }}</div>
+      </div>  
+    </a>
+    <a class="card">
+      <div class="card-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div>
+        <div class="section-title">Enquiry closing today</div>
+        <div class="static-value">{{ Closing_today|default:0 }}</div>
+      </div>  
+    </a>
+  </div>
+{% endblock %}

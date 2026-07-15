@@ -118,9 +118,13 @@ def enquiry_list(request):
             )
         return redirect('enquiry:enquiry_list')
 
-    enquiries = Enquiry_details.objects.prefetch_related(
-        'Enquiry_products'
-    ).select_related('buyer').order_by('-Enquiry_date', '-id')
+    enquiries = Enquiry_details.objects.prefetch_related('Enquiry_products').select_related('buyer')
+    
+    sort = request.GET.get('sort', 'asc')
+    if sort == 'asc':
+        enquiries = enquiries.order_by('Closing_date')
+    else:
+        enquiries = enquiries.order_by('-Closing_date')
 
     search             = request.GET.get('search', '').strip()
     enquiry_date_from  = request.GET.get('enquiry_date_from', '').strip()
@@ -146,10 +150,11 @@ def enquiry_list(request):
     enquiries = enquiries.distinct()
 
     return render(request, 'enquiry_list.html', {
-        'enquiries':    enquiries,
+        'enquiries':         enquiries,
         'search':            search,
         'enquiry_date_from': enquiry_date_from,
         'enquiry_date_to':   enquiry_date_to,
         'closing_date_from': closing_date_from,
         'closing_date_to':   closing_date_to,
+        'today':             timezone.localdate()
     })
