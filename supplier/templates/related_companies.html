@@ -39,48 +39,7 @@
           <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
         </div>
 
-        <div class="email-panel">
-          <form onsubmit="sendEmail(event, this)">
-            {% csrf_token %}
-            <input type="hidden" name="company_type" value="buyer">
-            <input type="hidden" name="company_id"   value="{{ bp.Buyer.id }}">
-
-            <p class="email-panel-label">Send email</p>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>To</label>
-                <select name="to_email" onchange="handleEmailSelect(this)">
-                  <option value="" selected disabled>Select mail options</option>
-                  {% for c in bp.Buyer.Buyer_contact_details.all %}
-                    {% if c.Email %}<option value="{{ c.Email }}">{{ c.Email }}</option>{% endif %}
-                  {% endfor %}
-                  <option value="manual">Type manually</option>
-                </select>
-                <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
-                <a class="back-to-select" onclick="resetEmailSelect(this.closest('div'));return false">
-                  ← Pick from list
-                </a>
-              </div>
-
-              <div class="form-group">
-                <label>Subject</label>
-                <input type="text" name="subject" value="Product enquiry — {{ supplier.Company_name }}" placeholder="Email subject">
-              </div>
-
-              <div class="form-group full">
-                <label>Message</label>
-                <textarea name="content" placeholder="Write your message here…"></textarea>
-              </div>
-            </div>
-
-            <div class="send-row">
-              <button type="submit" class="btn-custom">
-                <i class="ti ti-send" aria-hidden="true"></i> Send email
-              </button>
-              <span class="send-status"></span>
-            </div>
-          </form>
-        </div>
+        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
       </div>
     {% empty %}
       <p class="empty-note">No buyers currently purchase the same products.</p>
@@ -113,50 +72,7 @@
           <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
         </div>
 
-        <div class="email-panel">
-          <form onsubmit="sendEmail(event, this)">
-            {% csrf_token %}
-            <input type="hidden" name="company_type" value="supplier">
-            <input type="hidden" name="company_id"   value="{{ item.Supplier.id }}">
-
-            <p class="email-panel-label">Send email</p>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>To</label>
-                <select name="to_email_select" onchange="handleEmailSelect(this)">
-                  <option value="" selected disabled>Select mail options</option>
-                  {% for c in item.Supplier.supplier_contact_details.all %}
-                    {% if c.Email %}
-                      <option value="{{ c.Email }}">{{ c.Email }}</option>
-                    {% endif %}
-                  {% endfor %}
-                  <option value="manual">Type manually</option>
-                </select>
-                <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
-                <a class="back-to-select" onclick="resetEmailSelect(this.closest('div'));return false">
-                  ← Pick from list
-                </a>
-              </div>
-
-              <div class="form-group">
-                <label>Subject</label>
-                <input type="text" name="subject" placeholder="Email subject" value="Raw material supply — {{ item.Supplier.Company_name }}">
-              </div>
-
-              <div class="form-group full">
-                <label>Message</label>
-                <textarea name="content" placeholder="Write your message here…"></textarea>
-              </div>
-            </div>
-
-            <div class="send-row">
-              <button type="submit" class="btn-custom">
-                <i class="ti ti-send" aria-hidden="true"></i> Send email
-              </button>
-              <span class="send-status"></span>
-            </div>
-          </form>
-        </div>
+        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
       </div>
     {% empty %}
       <p class="empty-note">No downstream suppliers found via recipe relationships.</p>
@@ -188,51 +104,7 @@
           </div>
           <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
         </div>
-
-        <div class="email-panel">
-          <form onsubmit="sendEmail(event, this)">
-            {% csrf_token %}
-            <input type="hidden" name="company_type" value="supplier">
-            <input type="hidden" name="company_id"   value="{{ item.Supplier.id }}">
-
-            <p class="email-panel-label">Send email</p>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>To</label>
-                <select name="to_email_select" onchange="handleEmailSelect(this)">
-                  <option value="" selected disabled>Select mail options</option>
-                  {% for c in sp.Supplier.supplier_contact_details.all %}
-                    {% if c.Email %}
-                      <option value="{{ c.Email }}">{{ c.Email }}</option>
-                    {% endif %}
-                  {% endfor %}
-                  <option value="manual">Type manually</option>
-                </select>
-                <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
-                <a class="back-to-select" onclick="resetEmailSelect(this.closest('div'));return false">
-                  ← Pick from list
-                </a>
-              </div>
-              
-              <div class="form-group">
-                <label>Subject</label>
-                <input type="text" name="subject" placeholder="Email subject" value="Material supply — {{ sp.Supplier.Company_name }}">
-              </div>
-
-              <div class="form-group full">
-                <label>Message</label>
-                <textarea name="content" placeholder="Write your message here…"></textarea>
-              </div>
-            </div>
-
-            <div class="send-row">
-              <button type="submit" class="btn-custom">
-                <i class="ti ti-send" aria-hidden="true"></i> Send email
-              </button>
-              <span class="send-status"></span>
-            </div>
-          </form>
-        </div>
+        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
       </div>
     {% endfor %}
   </div>
@@ -243,69 +115,6 @@
   <script>
     function toggleRow(id) {
       document.getElementById(id).classList.toggle('open');
-    }
-
-    function sendEmail(event, form) {
-      event.preventDefault();
-      const btn    = form.querySelector('.btn-send');
-      const status = form.querySelector('.send-status');
-      const data   = new FormData(form);
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="ti ti-loader-2" aria-hidden="true"></i> Sending…';
-      status.className = 'send-status';
-      status.textContent = '';
-
-      fetch("{% url 'send_company_email' %}", {
-        method: 'POST',
-        headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
-        body: data,
-      })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          status.textContent = '✓ Email sent';
-          status.className = 'send-status success';
-          form.querySelector('textarea[name="content"]').value = '';
-        } else {
-          status.textContent = res.error || 'Failed to send.';
-          status.className = 'send-status error';
-        }
-      })
-      .catch(() => {
-        status.textContent = 'Network error. Try again.';
-        status.className = 'send-status error';
-      })
-      .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="ti ti-send" aria-hidden="true"></i> Send email';
-      });
-    }
-
-    function handleEmailSelect(select) {
-      const input = select.nextElementSibling;  // the input right after the select
-      const backLink = select.parentElement.querySelector('a');
-
-      if (select.value === 'manual') {
-        select.style.display = 'none';
-        input.style.display  = 'block';
-        input.value = '';
-        input.focus();
-
-        if (backLink) backLink.style.display = 'block';
-      } else {
-        input.value = select.value;  // keep input in sync so the form always submits to_email
-      }
-    }
-
-    function resetEmailSelect(container) {
-      const select = container.querySelector('select[name="to_email_select"]');
-      const input  = container.querySelector('input[name="to_email"]');
-      const link   = container.querySelector('a');
-      select.style.display = '';
-      select.value = '';
-      input.style.display  = 'none';
-      link.style.display   = 'none';
     }
   </script>
 {% endblock %}

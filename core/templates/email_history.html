@@ -1,125 +1,8 @@
 {% extends 'base_template.html' %}
+{% load static %}
 
 {% block extra_head %}
-  <style>
-    /* ── layout: sidebar thread list + main panel ── */
-    .email-layout {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 1rem;
-      height: calc(100vh - 140px);
-      min-height: 500px;
-    }
-
-    /* ── thread list ── */
-    .thread-list {
-      background: #fff; border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 12px; overflow: hidden;
-      display: flex; flex-direction: column;
-    }
-    .thread-search {
-      padding: 12px; border-bottom: 0.5px solid var(--GTMS-secondary-dark);
-    }
-    .thread-search input {
-      width: 100%; border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 8px; padding: 7px 10px; font-size: 13px; color: var(--GTMS-text-primary);
-    }
-    .thread-search input:focus { outline: none; border-color: var(--GTMS-primary); }
-
-    .thread-items { overflow-y: auto; flex: 1; }
-
-    .thread-item {
-      padding: 12px 14px; border-bottom: 0.5px solid #f0ede6;
-      cursor: pointer; transition: background 0.1s;
-    }
-    .thread-item:hover   { background: var(--GTMS-secondary); }
-    .thread-item.active  { background: #e6f1fb; border-left: 3px solid var(--GTMS-primary); }
-    .thread-item:last-child { border-bottom: none; }
-
-    .thread-top  { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-    .thread-name { font-size: 13px; font-weight: 500; color: var(--GTMS-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .thread-time { font-size: 11px; color: var(--GTMS-text-muted); white-space: nowrap; flex-shrink: 0; }
-    .thread-subject { font-size: 12px; color: #434241; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .thread-preview { font-size: 12px; color: var(--GTMS-text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    /* ── main panel ── */
-    .email-main {
-      background: #fff; border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
-    }
-
-    /* empty state */
-    .email-empty {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      color: var(--GTMS-text-muted); gap: 8px;
-    }
-    .email-empty i { font-size: 40px; }
-    .email-empty p { font-size: 14px; }
-
-    /* detail view */
-    .email-detail { flex: 1; overflow-y: auto; padding: 1.5rem; display: none; flex-direction: column; gap: 1rem; }
-    .email-detail.visible { display: flex; }
-
-    .detail-header { border-bottom: 0.5px solid #f0ede6; padding-bottom: 1rem; }
-    .detail-subject { font-size: 18px; font-weight: 600; color: var(--GTMS-text-primary); margin-bottom: 8px; }
-    .detail-meta    { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--GTMS-text-muted); }
-    .detail-meta span { display: flex; align-items: center; gap: 4px; }
-    .detail-meta i    { font-size: 13px; }
-
-    .email-bubble {
-      background: var(--GTMS-secondary); border-radius: 10px; padding: 1rem;
-      font-size: 13px; color: var(--GTMS-text-primary); line-height: 1.6;
-      white-space: pre-wrap; word-break: break-word;
-    }
-
-    /* compose panel at bottom of detail */
-    .compose-panel {
-      border-top: 0.5px solid var(--GTMS-secondary-dark);
-      padding: 1rem 1.5rem; background: #fafaf8;
-    }
-    .compose-panel h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--GTMS-text-muted); margin: 0 0 10px; }
-
-    .compose-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .compose-panel label { font-size: 12px; font-weight: 500; color: var(--GTMS-text-secondary); display: block; margin-bottom: 4px; }
-    .compose-panel input,
-    .compose-panel select,
-    .compose-panel textarea {
-      width: 100%; border: 0.5px solid var(--GTMS-secondary-dark);
-      border-radius: 8px; padding: 7px 10px; font-size: 13px; color: var(--GTMS-text-primary); background: #fff;
-    }
-    .compose-panel input:focus,
-    .compose-panel select:focus,
-    .compose-panel textarea:focus {
-      outline: none; border-color: var(--GTMS-primary); box-shadow: 0 0 0 3px #14213d1a;
-    }
-    .compose-panel textarea { resize: vertical; min-height: 80px; margin-bottom: 10px; }
-
-    .compose-actions { display: flex; align-items: center; justify-content: space-between; }
-    .btn-custom:disabled { opacity: 0.5; cursor: not-allowed; }
-    .send-status { font-size: 12px; }
-    .send-status.success { color: #3b6d11; }
-    .send-status.error   { color: #a32d2d; }
-
-    .email-input {
-      display:none; margin-top:6px
-    }
-    .back-to-select {
-      display:none; font-size:12px; 
-      margin:4px 0px; cursor: pointer;
-    }
-
-    .alert { padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 1rem; }
-    .alert-success { background: #eaf3de; color: #3b6d11; }
-    .alert-error   { background: #fcebeb; color: #a32d2d; }
-
-    @media (max-width: 768px) {
-      .email-layout { grid-template-columns: 1fr; height: auto; }
-      .thread-list  { height: 300px; }
-      .email-main   { min-height: 400px; }
-      .compose-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="{% static 'css/email_history_style.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -193,20 +76,30 @@
 
       {# reply / new compose panel always visible at bottom #}
       <div class="compose-panel">
-        <h4>Send email</h4>
+        <div class="section-title">Send email</div>
+
         <form id="compose-form" onsubmit="sendEmail(event)">
           {% csrf_token %}
           <input type="hidden" name="company_type" value="buyer">
           <input type="hidden" name="company_id"   value="{{ buyer.id }}">
 
-          <div class="compose-grid">
-            <div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>From</label>
+              <select name="from_email">
+                <option value="" selected disabled>Select mail</option>
+                {% for key, acc in email_accounts.items %}
+                  <option value="{{ key }}">{{ acc.EMAIL_HOST_USER }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
               <label>To</label>
               <select name="to_email_select" onchange="handleEmailSelect(this)">
                 <option value="" selected disabled>Select mail options</option>
-                {% for c in emails %}
-                  <option value="{{ c }}">{{ c }}</option>
-                {% endfor %}
+                  {% for c in emails %}
+                    <option value="{{ c }}">{{ c }}</option>
+                  {% endfor %}
                 <option value="manual">Type manually…</option>
               </select>
               <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
@@ -214,14 +107,17 @@
                 ← Pick from list
               </a>
             </div>
-            <div>
+            
+            <div class="form-group full">
               <label>Subject</label>
               <input type="text" name="subject" id="compose-subject" placeholder="Email subject">
             </div>
+            
+            <div class="form-group full">
+              <label>Message</label>
+              <textarea name="content" id="compose-body" placeholder="Write your message here…"></textarea>
+            </div>
           </div>
-
-          <label>Message</label>
-          <textarea name="content" id="compose-body" placeholder="Write your message here…"></textarea>
 
           <div class="compose-actions">
             <button type="submit" class="btn-custom" id="compose-send-btn">
@@ -344,8 +240,8 @@
         data.set('to_email', select.value);
       }
 
-      if (!data.get('to_email') || !data.get('subject') || !data.get('content')) {
-        status.textContent  = 'To, subject and message are required.';
+      if (!data.get('from_email') || !data.get('to_email') || !data.get('subject') || !data.get('content')) {
+        status.textContent  = 'From, To, subject and message are required.';
         status.className    = 'send-status error';
         return;
       }

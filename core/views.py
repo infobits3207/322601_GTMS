@@ -52,12 +52,18 @@ def send_company_email(request):
     content      = request.POST.get('content', '').strip()
     company_type = request.POST.get('company_type', '')
     company_id   = request.POST.get('company_id', '')
+    from_email_key   = request.POST.get('from_email','').strip()
 
+    account = settings.EMAIL_ACCOUNTS.get(from_email_key)
+
+    if not from_email_key:
+        return JsonResponse({'success': False, 'error': 'Please select sender(from) email id'})
+    
     if not to_email or not subject or not content:
         return JsonResponse({'success': False, 'error': 'To, subject and message are all required.'})
 
     # send the email
-    sent = send_notification_email(to_email, subject, content)
+    sent = send_notification_email(to_email, subject, content, account)
     if not sent:
         return JsonResponse({'success': False, 'error': 'Email could not be sent. Check server logs.'})
 

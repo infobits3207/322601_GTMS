@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import json
+from django.conf import settings
+
 from buyer.models import buyer_details, Buyer_contact_details, Buyer_email_messages
 
 @require_POST
@@ -13,10 +15,15 @@ def send_bulk_email(request):
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Invalid request.'})
 
+    from_email = data.get('from',[])
     emails  = data.get('emails', [])
     subject = data.get('subject', '').strip()
     body    = data.get('body', '').strip()
 
+    account = settings.EMAIL_ACCOUNTS.get(from_email)
+
+    if not from_email:
+        return JsonResponse({'success': False, 'error': 'Sender(from) id is required.'})
     if not emails:
         return JsonResponse({'success': False, 'error': 'No recipients provided.'})
     if not subject:
@@ -40,8 +47,8 @@ def send_bulk_email(request):
         email = email.strip()
         if not email:
             continue
-
-        ok = send_notification_email(email, subject, body)
+        
+        ok = send_notification_email(email, subject, body, account)
         if ok:
             sent += 1
             # save to history if we can trace this email back to a buyer
@@ -70,8 +77,9 @@ def email_history(request, bu_id):
         ).exclude(Email='').values_list('Email', flat=True)
 
     context = {
-        'buyer':         buyer,
-        'email_history': email_history,
-        'emails':        emails,
+        'buyer':          buyer,
+        'email_history':  email_history,
+        'emails':         emails,
+        'email_accounts': settings.EMAIL_ACCOUNTS,
     }
     return render(request, 'email_history.html', context)

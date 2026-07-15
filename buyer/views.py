@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
 import pandas as pd
+from django.conf import settings
 
 from buyer.models import buyer_details, Buyer_contact_details, Buyer_addresses, Purchase_products
 
@@ -163,5 +164,6 @@ def buyer_list(request):
         'country': country, #'city': city, 'state': state,
         'Product_group': Product_group,
         'buyers': buyers,
+        'email_accounts': settings.EMAIL_ACCOUNTS,
     }
     return render(request, "buyer_list.html", context)

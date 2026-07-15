@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
-import pandas as pd
-from supplier.models import supplier_details, supplier_contact_details,supplier_addresses, Sell_products
 from django.db.models import Q
 from django.utils import timezone
+from django.conf import settings
+import pandas as pd
 import json
+
+from supplier.models import supplier_details, supplier_contact_details,supplier_addresses, Sell_products
 
 SUPPLIER_FIELDS = [
     'Description', 'Website_link', 'GST_number', 'IEC_code',
@@ -172,6 +174,7 @@ def suppliers_list(request):
         'country': country, #'city': city, 'state': state,
         'Product_group': Product_group,
         'suppliers': suppliers,
+        'email_accounts': settings.EMAIL_ACCOUNTS,
     }
     return render(request, 'suppliers_list.html', context)
 

@@ -207,6 +207,16 @@
       </div>
 
       <div class="modal-body">
+        <div class="form-group">
+          <label>From</label>
+          <select id="bulk-from">
+            <option value="" selected disabled>Select mail</option>
+            {% for key, acc in email_accounts.items %}
+              <option value="{{ key }}">{{ acc.EMAIL_HOST_USER }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
         <div>
           <label>Recipients — all emails on file for each selected supplier</label>
           <div class="recipient-list" id="recipient-list">
@@ -360,6 +370,7 @@
     }
 
     function sendBulkEmail() {
+      const from = document.getElementById('bulk-from').value.trim();
       const subject = document.getElementById('bulk-subject').value.trim();
       const body    = document.getElementById('bulk-body').value.trim();
       const status  = document.getElementById('bulk-status');
@@ -368,6 +379,11 @@
       const chips  = document.querySelectorAll('#recipient-list .recipient-chip');
       const emails = Array.from(chips).map(c => c.dataset.email).filter(Boolean);
 
+      if (!from) {
+        status.textContent = 'Select sender(from) id.';
+        status.className   = 'send-status error';
+        return;
+      }
       if (emails.length === 0) {
         status.textContent = 'No recipients.';
         status.className   = 'send-status error';
@@ -397,7 +413,7 @@
           'Content-Type': 'application/json',
           'X-CSRFToken':  csrf,
         },
-        body: JSON.stringify({ emails, subject, body }),
+        body: JSON.stringify({ from, emails, subject, body }),
       })
       .then(r => r.json())
       .then(data => {
