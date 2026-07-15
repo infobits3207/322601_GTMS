@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 import pandas as pd
 from django.utils import timezone
+from datetime import timedelta
 import os
 from django.conf import settings
 from django.views.decorators.http import require_POST
@@ -14,11 +15,17 @@ from enquiry.models import Enquiry_details
 def dashboard(request):
     
     return render(request,'dashboard.html',{
-        'Total_buyers': buyer_details.objects.all().count(),
-        'Total_suppliers': supplier_details.objects.all().count(),
-        'Total_enquiries': Enquiry_details.objects.all().count(),
-        'Active_enquiries': Enquiry_details.objects.filter(Closing_date__gt=timezone.localdate()).count(),
-        'Closing_today': Enquiry_details.objects.filter(Closing_date=timezone.localdate()).count(),
+        'today'            : timezone.localdate(),
+        'Total_buyers'     : buyer_details.objects.all().count(),
+        'Total_suppliers'  : supplier_details.objects.all().count(),
+        'Total_enquiries'  : Enquiry_details.objects.all().count(),
+        'Active_enquiries' : Enquiry_details.objects.filter(Closing_date__gt=timezone.localdate()).count(),
+        'Closing_today'    : Enquiry_details.objects.filter(Closing_date=timezone.localdate()).count(),
+
+        'closing_this_week': Enquiry_details.objects.filter(Closing_date__gte = timezone.localdate(),Closing_date__lt = (timezone.localdate()+timedelta(days=7))),
+        'new_enquirires'   : Enquiry_details.objects.order_by('-Enquiry_date')[:5],
+        'new_buyers'       : buyer_details.objects.order_by('-Created_at')[:5],
+        'new_suppliers'    : supplier_details.objects.order_by('-Created_at')[:5],
     })
 
 _recipe_df = pd.read_excel(

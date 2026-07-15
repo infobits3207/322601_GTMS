@@ -2,64 +2,305 @@
 
 {% block extra_head %}
   <style>
-    .static-cards {
-      padding: 10px 20px;
-      display: grid; gap: 10px;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1.1fr;
+    .dashboard-stats {
+      display: grid; gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      margin-bottom: 1.25rem;
     }
-    .card {
-      display: flex; gap: 10px; padding: 1rem;
-      flex-direction: row; text-decoration: none;
+    .stat-card {
+      display: flex; align-items: center;
+      flex-direction: row; gap: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0;
     }
-    .card-icon {
-      display: flex; justify-content: center;
-      align-items: center; color: white;
+    .stat-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; flex-shrink: 0;
+      justify-content: center;
+      align-items: center;
       background: var(--GTMS-primary);
-      height: 40px; width: 40px;
-      border-radius: 50%;
-      border: 2px solid var(--GTMS-extra);
+      color: #fff; font-size: 18px;
     }
-    .section-title { font-size: 10px; margin-bottom: 10px;}
-    .static-value{}
+    .stat-text { display: flex; flex-direction: column; }
+    .stat-title {
+      font-size: 12px; margin-bottom: 2px;
+      color: var(--GTMS-text-muted);
+    }
+    .stat-value {
+      font-size: 22px; font-weight: 600; 
+      line-height: 1.1;
+      color: var(--GTMS-text-primary);
+    }
+    .dashboard-grid {
+      display: grid; gap: 1.25rem;
+      grid-template-columns: 1fr 1fr;
+    }
+    .dashboard-card {
+      padding: 0; display: flex;
+      flex-direction: column; margin-bottom: 0;
+    }
+    .card-header {
+      padding: 14px 18px; font-weight: 600;
+      color: var(--GTMS-text-primary); font-size: 14px;
+      border-bottom: 1px solid var(--GTMS-secondary-dark);
+    }
+    .card-body { padding: 4px 18px; }
+    .card-body.is-empty { padding: 0; }
+    .dashboard-item {
+      display: flex; align-items: center;
+      gap: 10px; padding: 10px 0;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--GTMS-secondary-dark);
+    }
+    .dashboard-item:last-child { border: none; }
+    .item-left {
+      display: flex; align-items: center;
+      gap: 10px; min-width: 0;
+    }
+    .item-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--GTMS-secondary);
+      color: var(--GTMS-primary);
+      font-size: 12px; font-weight: 600;
+      display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0;
+    }
+    .item-title {
+      font-size: 13px; font-weight: 600;
+      color: var(--GTMS-text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-sub {
+      font-size: 12px;
+      color: var(--GTMS-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-right {
+      text-align: right; flex-shrink: 0;
+    }
+    .item-date {
+      font-size: 12px;
+      color: var(--GTMS-text-secondary);
+      display: block;
+    }
+    .status-badge {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+      white-space: nowrap; margin-top: 3px;
+    }
+    .status-open {
+      background: #eaf3de; color: #3b6d11;
+    }
+    .status-today {
+      background: #fef3d9; color: #92530a;
+    }
+    .empty-row {
+      text-align: center; padding: 2rem 1rem;
+      color: var(--GTMS-text-muted); font-size: 13px;
+    }
+    .card-footer {
+      padding: 12px 18px; display: flex;
+      border-top: 1px solid var(--GTMS-secondary-dark);
+      justify-content: space-between; font-size: 13px;
+    }
+    .card-footer a {
+      color: var(--GTMS-primary-light);
+      text-decoration: none; font-weight: 500;
+    }
+    .card-footer a:hover { text-decoration: underline; }
   </style>
 {% endblock %}
 
 {% block content %}
-  <div class="static-cards">
-    <a class="card">
-      <div class="card-icon"><i class="fa-solid fa-cart-plus"></i></div>
-      <div>
-        <div class="section-title">Total buyers</div>
-        <div class="static-value">{{ Total_buyers }}</div>
-      </div>  
-    </a>
-    <a class="card">
-      <div class="card-icon"><i class="fa-solid fa-truck-field"></i></div>
-      <div>
-        <div class="section-title">Total suppliers</div>
-        <div class="static-value">{{ Total_suppliers|default:0 }}</div>
-      </div>  
-    </a>
-    <a class="card">
-      <div class="card-icon"><i class="fa-solid fa-clipboard-question"></i></div>
-      <div>
-        <div class="section-title">Total enquiries</div>
-        <div class="static-value">{{ Total_enquiries|default:0 }}</div>
-      </div>  
-    </a>
-    <a class="card">
-      <div class="card-icon"><i class="fa-solid fa-business-time"></i></div>
-      <div>
-        <div class="section-title">Active enquiries</div>
-        <div class="static-value">{{ Active_enquiries|default:0 }}</div>
-      </div>  
-    </a>
-    <a class="card">
-      <div class="card-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <div>
-        <div class="section-title">Enquiry closing today</div>
-        <div class="static-value">{{ Closing_today|default:0 }}</div>
-      </div>  
-    </a>
+  <div class="dashboard-stats">
+    <div class="card stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-text">
+        <div class="stat-title">Total Buyers</div>
+        <div class="stat-value">{{ Total_buyers }}</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-truck"></i></div>
+      <div class="stat-text">
+        <div class="stat-title">Total Suppliers</div>
+        <div class="stat-value">{{ Total_suppliers }}</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-clipboard-question"></i></div>
+      <div class="stat-text">
+        <div class="stat-title">Total Enquiries</div>
+        <div class="stat-value">{{ Total_enquiries }}</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-business-time"></i></div>
+      <div class="stat-text">
+        <div class="stat-title">Active Enquiries</div>
+        <div class="stat-value">{{ Active_enquiries }}</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="stat-text">
+        <div class="stat-title">Closing Today</div>
+        <div class="stat-value">{{ Closing_today }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Closing This Week -->
+    <div class="card dashboard-card">
+      <div class="card-header">
+        Active Enquiries Closing This Week
+      </div>
+      <div class="card-body {% if not closing_this_week %}is-empty{% endif %}">
+        {% for enquiry in closing_this_week %}
+        <div class="dashboard-item">
+          <div class="item-left">
+            <div class="item-avatar">
+              {% if enquiry.buyer %}{{ enquiry.buyer.Company_name|slice:":2"|upper }}
+              {% else %}{{ enquiry.Company_name|slice:":2"|upper }}{% endif %}
+            </div>
+            <div>
+              <div class="item-title">
+                {% if enquiry.buyer %}{{ enquiry.buyer.Company_name }}
+                {% else %}{{ enquiry.Company_name }}{% endif %}
+              </div>
+              {% if enquiry.Enquiry_type %}
+              <div class="item-sub">{{ enquiry.Enquiry_type }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="item-right">
+            <span class="item-date">{{ enquiry.Closing_date|date:"d M Y" }}</span>
+            {% if enquiry.Closing_date == today %}
+            <span class="status-badge status-today">Today</span>
+            {% else %}
+            <span class="status-badge status-open">Open</span>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-row">No enquiries closing this week.</div>
+        {% endfor %}
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'enquiry:enquiry_list' %}">View all</a>
+        <a href="{% url 'enquiry:add_enquiry' %}">Add enquiry</a>
+      </div>
+    </div>
+
+    <!-- Recent Enquiries -->
+    <div class="card dashboard-card">
+      <div class="card-header">
+        Recently Added Enquiries
+      </div>
+      <div class="card-body {% if not new_enquirires %}is-empty{% endif %}">
+        {% for enquiry in new_enquirires %}
+        <div class="dashboard-item">
+          <div class="item-left">
+            <div class="item-avatar">
+              {% if enquiry.buyer %}{{ enquiry.buyer.Company_name|slice:":2"|upper }}
+              {% else %}{{ enquiry.Company_name|slice:":2"|upper }}{% endif %}
+            </div>
+            <div>
+              <div class="item-title">
+                {% if enquiry.buyer %}{{ enquiry.buyer.Company_name }}
+                {% else %}{{ enquiry.Company_name }}{% endif %}
+              </div>
+              {% if enquiry.Enquiry_type %}
+              <div class="item-sub">{{ enquiry.Enquiry_type }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="item-right">
+            <span class="item-date">{{ enquiry.Enquiry_date|date:"d M Y" }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-row">No enquiries yet.</div>
+        {% endfor %}
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'enquiry:enquiry_list' %}">View all</a>
+        <a href="{% url 'enquiry:add_enquiry' %}">Add enquiry</a>
+      </div>
+    </div>
+
+    <!-- Buyers -->
+    <div class="card dashboard-card">
+      <div class="card-header">
+        Recently Added Buyers
+      </div>
+      <div class="card-body {% if not new_buyers %}is-empty{% endif %}">
+        {% for buyer in new_buyers %}
+        <div class="dashboard-item">
+          <div class="item-left">
+            <div class="item-avatar">{{ buyer.Company_name|slice:":2"|upper }}</div>
+            <div>
+              <div class="item-title">{{ buyer.Company_name }}</div>
+              {% if buyer.Contact_person %}
+              <div class="item-sub">{{ buyer.Contact_person }}</div>
+              {% endif %}
+            </div>
+          </div>
+          {% if buyer.WCPD_code %}
+          <div class="item-right">
+            <span class="item-date">{{ buyer.WCPD_code }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% empty %}
+        <div class="empty-row">No buyers yet.</div>
+        {% endfor %}
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'buyer:buyer_list' %}">View all</a>
+        <a href="{% url 'buyer:add_buyer' %}">Add buyer</a>
+      </div>
+    </div>
+
+    <!-- Suppliers -->
+    <div class="card dashboard-card">
+      <div class="card-header">
+        Recently Added Suppliers
+      </div>
+      <div class="card-body {% if not new_suppliers %}is-empty{% endif %}">
+        {% for supplier in new_suppliers %}
+        <div class="dashboard-item">
+          <div class="item-left">
+            <div class="item-avatar">{{ supplier.Company_name|slice:":2"|upper }}</div>
+            <div>
+              <div class="item-title">{{ supplier.Company_name }}</div>
+              {% if supplier.Contact_person %}
+              <div class="item-sub">{{ supplier.Contact_person }}</div>
+              {% endif %}
+            </div>
+          </div>
+          {% if supplier.WCPD_code %}
+          <div class="item-right">
+            <span class="item-date">{{ supplier.WCPD_code }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% empty %}
+        <div class="empty-row">No suppliers yet.</div>
+        {% endfor %}
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'supplier:suppliers_list' %}">View all</a>
+        <a href="{% url 'supplier:supplier_add' %}">Add supplier</a>
+      </div>
+    </div>
   </div>
 {% endblock %}
