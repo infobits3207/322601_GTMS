@@ -34,6 +34,7 @@
               onclick="openThread({{ forloop.counter }})"
               data-subject="{{ email.Subject }}"
               data-to="{{ email.To }}"
+              data-from="{{ email.From }}"
               data-body="{{ email.Body }}"
               data-time="{{ email.Time|date:'d M Y, H:i' }}"
               data-searchtext="{{ email.Subject|lower }} {{ email.To|lower }} {{ email.Body|lower }}">
@@ -68,6 +69,7 @@
           <div class="detail-subject" id="detail-subject"></div>
           <div class="detail-meta">
             <span><i class="ti ti-send" aria-hidden="true"></i> To: <strong id="detail-to"></strong></span>
+            <span><i class="fa-regular fa-envelope"></i> From: <strong id="detail-from"></strong></span>
             <span><i class="ti ti-clock" aria-hidden="true"></i> <span id="detail-time"></span></span>
           </div>
         </div>
@@ -146,6 +148,7 @@
 
       document.getElementById('detail-subject').textContent = item.dataset.subject;
       document.getElementById('detail-to').textContent      = item.dataset.to;
+      document.getElementById('detail-from').textContent      = item.dataset.from;
       document.getElementById('detail-time').textContent    = item.dataset.time;
       document.getElementById('detail-body').textContent    = item.dataset.body;
 

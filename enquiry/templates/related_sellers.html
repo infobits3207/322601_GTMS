@@ -58,7 +58,7 @@
           <i class="ti ti-chevron-down toggle-icon"></i>
         </div>
 
-        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
+        {% include 'email_panel.html' with to_email_list=item.supplier.supplier_contact_details.all company_type="supplier" company_id=item.supplier.id %}
       </div>
     {% empty %}
       <p class="empty-note">No suppliers found who directly sell the enquired products.</p>
@@ -97,7 +97,7 @@
           <i class="ti ti-chevron-down toggle-icon"></i>
         </div>
 
-        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
+        {% include 'email_panel.html' with to_email_list=item.supplier.supplier_contact_details.all company_type="supplier" company_id=item.supplier.id %}
       </div>
     {% empty %}
       <p class="empty-note">No upstream suppliers found via recipe relationships.</p>

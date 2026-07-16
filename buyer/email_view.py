@@ -56,6 +56,7 @@ def send_bulk_email(request):
             if buyer:
                 Buyer_email_messages.objects.create(
                     Buyer = buyer,
+                    From = account['EMAIL_HOST_USER'],
                     To       = email,
                     Subject  = subject,
                     Body     = body,
@@ -80,6 +81,5 @@ def email_history(request, bu_id):
         'buyer':          buyer,
         'email_history':  email_history,
         'emails':         emails,
-        'email_accounts': settings.EMAIL_ACCOUNTS,
     }
     return render(request, 'email_history.html', context)

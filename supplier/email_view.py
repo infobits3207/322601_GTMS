@@ -23,7 +23,6 @@ def email_history(request, sp_id):
         'supplier':      supplier,
         'email_history': email_history,
         'emails':        emails,
-        'email_accounts': settings.EMAIL_ACCOUNTS,
     }
     return render(request, 'email_history.html', context)
 
@@ -75,6 +74,7 @@ def send_bulk_email(request):
             if supplier:
                 supplier_email_messages.objects.create(
                     Supplier = supplier,
+                    From = account['EMAIL_HOST_USER'],
                     To       = email,
                     Subject  = subject,
                     Body     = body,

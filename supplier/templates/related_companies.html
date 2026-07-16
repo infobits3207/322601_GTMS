@@ -39,7 +39,7 @@
           <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
         </div>
 
-        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
+        {% include 'email_panel.html' with to_email_list=bp.Buyer.Buyer_contact_details.all company_type="buyer" company_id=bp.Buyer.id %}
       </div>
     {% empty %}
       <p class="empty-note">No buyers currently purchase the same products.</p>
@@ -72,7 +72,7 @@
           <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
         </div>
 
-        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
+        {% include 'email_panel.html' with to_email_list=item.Supplier.supplier_contact_details.all company_type="supplier" company_id=item.Supplier.id %}
       </div>
     {% empty %}
       <p class="empty-note">No downstream suppliers found via recipe relationships.</p>
@@ -104,7 +104,7 @@
           </div>
           <i class="ti ti-chevron-down toggle-icon" aria-hidden="true"></i>
         </div>
-        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all %}
+        {% include 'email_panel.html' with to_email_list=sp.Supplier.supplier_contact_details.all company_type="supplier" company_id=sp.Supplier.id %}
       </div>
     {% endfor %}
   </div>

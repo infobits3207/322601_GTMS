@@ -174,7 +174,6 @@ def suppliers_list(request):
         'country': country, #'city': city, 'state': state,
         'Product_group': Product_group,
         'suppliers': suppliers,
-        'email_accounts': settings.EMAIL_ACCOUNTS,
     }
     return render(request, 'suppliers_list.html', context)
 

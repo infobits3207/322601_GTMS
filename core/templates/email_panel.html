@@ -1,10 +1,26 @@
+<style>
+  .form-grid { gap: 10px; }
+  .form-group select, .form-group input { margin-bottom: 0px;}
+  .btn-custom:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+
 <div class="email-panel">
   <form onsubmit="sendEmail(event, this)">
     {% csrf_token %}
-    <input type="hidden" name="company_type" value="buyer">
-    <input type="hidden" name="company_id"   value="{{ bp.Buyer.id }}">
+    <input type="hidden" name="company_type" value="{{ company_type }}">
+    <input type="hidden" name="company_id"  value="{{ company_id }}">
+
     <p class="email-panel-label">Send email</p>
     <div class="form-grid">
+      <div class="form-group">
+        <label>From</label>
+        <select name="from_email">
+          <option value="" selected disabled>Select mail</option>
+          {% for key, acc in email_accounts.items %}
+            <option value="{{ key }}">{{ acc.EMAIL_HOST_USER }}</option>
+          {% endfor %}
+        </select>
+      </div>
       <div class="form-group">
         <label>To</label>
         <select name="to_email_select" onchange="handleEmailSelect(this)">
@@ -15,14 +31,16 @@
           <option value="manual">Type manually</option>
         </select>
         <input type="email" name="to_email" class="email-input" placeholder="Enter email address">
-        <a class="back-to-select" onclick="resetEmailSelect(this.closest('form-grid'));return false">
+        <a class="back-to-select" onclick="resetEmailSelect(this.closest('.form-grid'));return false">
           ← Pick from list
         </a>
       </div>
-      <div class="form-group">
+
+      <div class="form-group full">
         <label>Subject</label>
-        <input type="text" name="subject" value="Product enquiry — {{ supplier.Company_name }}" placeholder="Email subject">
+        <input type="text" name="subject" value="" placeholder="Email subject">
       </div>
+      
       <div class="form-group full">
         <label>Message</label>
         <textarea name="content" placeholder="Write your message here…"></textarea>
@@ -55,6 +73,7 @@
   }
 
   function resetEmailSelect(container) {
+    console.log(container)
     const select = container.querySelector('select[name="to_email_select"]');
     const input  = container.querySelector('input[name="to_email"]');
     const link   = container.querySelector('a');
@@ -66,7 +85,7 @@
 
   function sendEmail(event, form) {
     event.preventDefault();
-    const btn    = form.querySelector('.btn-send');
+    const btn    = form.querySelector('.btn-custom');
     const status = form.querySelector('.send-status');
     const data   = new FormData(form);
 

@@ -64,6 +64,7 @@ def send_company_email(request):
 
     # send the email
     sent = send_notification_email(to_email, subject, content, account)
+    
     if not sent:
         return JsonResponse({'success': False, 'error': 'Email could not be sent. Check server logs.'})
 
@@ -72,7 +73,8 @@ def send_company_email(request):
         if company_type == 'buyer':
             buyer = get_object_or_404(buyer_details, id=company_id)
             Buyer_email_messages.objects.create(
-                Buyer=buyer,
+                Buyer = buyer,
+                From = account['EMAIL_HOST_USER'],
                 To = to_email,
                 Subject = subject,
                 Body = content,
@@ -82,6 +84,7 @@ def send_company_email(request):
             supplier = get_object_or_404(supplier_details, id=company_id)
             supplier_email_messages.objects.create(
                 Supplier=supplier,
+                From = account['EMAIL_HOST_USER'],
                 To = to_email,
                 Subject = subject,
                 Body = content,

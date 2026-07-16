@@ -164,6 +164,5 @@ def buyer_list(request):
         'country': country, #'city': city, 'state': state,
         'Product_group': Product_group,
         'buyers': buyers,
-        'email_accounts': settings.EMAIL_ACCOUNTS,
     }
     return render(request, "buyer_list.html", context)

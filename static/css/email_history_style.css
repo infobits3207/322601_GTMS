@@ -110,7 +110,7 @@
   display: flex; align-items: center; 
   justify-content: space-between; 
 }
-.btn-custom:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .send-status { font-size: 12px; }
 .send-status.success { color: #3b6d11; }
 .send-status.error   { color: #a32d2d; }

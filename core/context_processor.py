@@ -1,5 +1,8 @@
+from django.conf import settings
+
 def data(request):
     return {
+        'email_accounts': settings.EMAIL_ACCOUNTS,
         'product_group_choices': ['FCSL','ICSL','FCCL','ICCL','FCSC','ICSC','DCSC','DCSL'],
         'currency_choices' : [
             "AED", "AFN", "ALL", "AMD", "AOA", "ARS", "AUD", "AZN",
@@ -21,5 +24,5 @@ def data(request):
             "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH",
             "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST",
             "XAF", "XCD", "XOF", "XPF", "YER", "ZAR", "ZMW", "ZWG"
-        ]
+        ],
     }

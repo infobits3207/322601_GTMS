@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -149,5 +149,45 @@ EMAIL_ACCOUNTS = {
         "EMAIL_USE_TLS" : True,
         "EMAIL_HOST_USER" : config("EMAIL_USER2"),
         "EMAIL_HOST_PASSWORD" : config("EMAIL_PASSWORD2")
-    }
+    },
+    "Account3" : {
+        "EMAIL_BACKEND" : 'django.core.mail.backends.smtp.EmailBackend',
+        "EMAIL_HOST" : 'smtp.gmail.com',
+        "EMAIL_PORT" : 587,
+        "EMAIL_USE_TLS" : True,
+        "EMAIL_HOST_USER" : config("EMAIL_USER3"),
+        "EMAIL_HOST_PASSWORD" : config("EMAIL_PASSWORD3")
+    },
+    "Account4" : {
+        "EMAIL_BACKEND" : 'django.core.mail.backends.smtp.EmailBackend',
+        "EMAIL_HOST" : 'smtp.gmail.com',
+        "EMAIL_PORT" : 587,
+        "EMAIL_USE_TLS" : True,
+        "EMAIL_HOST_USER" : config("EMAIL_USER4"),
+        "EMAIL_HOST_PASSWORD" : config("EMAIL_PASSWORD4")
+    },
+    "Account5" : {
+        "EMAIL_BACKEND" : 'django.core.mail.backends.smtp.EmailBackend',
+        "EMAIL_HOST" : 'smtp.gmail.com',
+        "EMAIL_PORT" : 587,
+        "EMAIL_USE_TLS" : True,
+        "EMAIL_HOST_USER" : config("EMAIL_USER5"),
+        "EMAIL_HOST_PASSWORD" : config("EMAIL_PASSWORD5")
+    },
+    "Account6" : {
+        "EMAIL_BACKEND" : 'django.core.mail.backends.smtp.EmailBackend',
+        "EMAIL_HOST" : 'smtp.gmail.com',
+        "EMAIL_PORT" : 587,
+        "EMAIL_USE_TLS" : True,
+        "EMAIL_HOST_USER" : config("EMAIL_USER6"),
+        "EMAIL_HOST_PASSWORD" : config("EMAIL_PASSWORD6")
+    },
+    "Account7" : {
+        "EMAIL_BACKEND" : 'django.core.mail.backends.smtp.EmailBackend',
+        "EMAIL_HOST" : 'smtp.gmail.com',
+        "EMAIL_PORT" : 587,
+        "EMAIL_USE_TLS" : True,
+        "EMAIL_HOST_USER" : config("EMAIL_USER7"),
+        "EMAIL_HOST_PASSWORD" : config("EMAIL_PASSWORD7")
+    },
 }

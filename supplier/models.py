@@ -31,6 +31,7 @@ class supplier_addresses(models.Model):
 
 class supplier_email_messages(models.Model):
     Supplier = models.ForeignKey(supplier_details,on_delete=models.CASCADE,related_name='supplier_email_messages')
+    From = models.EmailField(blank=True)
     To = models.EmailField(blank=True)
     Subject = models.TextField(blank=True)
     Body = models.TextField(blank=True)

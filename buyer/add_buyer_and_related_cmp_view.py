@@ -148,7 +148,9 @@ def related_sellers(request, bu_id):
             .apply(list)
             .to_dict()
         )
+        print(input_to_outputs)
         raw_material_names = list(input_to_outputs.keys())
+        print(raw_material_names)
 
         # Step 2: find suppliers who sell those raw materials
         indirect_qs = Sell_products.objects.filter(
@@ -168,7 +170,12 @@ def related_sellers(request, bu_id):
             if pair in seen_pairs:
                 continue
             seen_pairs.add(pair)
-            outputs = [str(o) for o in input_to_outputs.get(sp.Product.strip(), [])]
+
+            product = sp.Product.strip().upper()
+            temp_input_to_outputs = {k.upper(): (i.upper() for i in v) for k, v in input_to_outputs.items()}
+            
+            outputs = [str(o) for o in temp_input_to_outputs.get(product, [])]
+
             if sid not in indirect_map:
                 indirect_map[sid] = {
                     'supplier':            sp.Supplier,

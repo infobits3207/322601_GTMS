@@ -75,7 +75,7 @@
         <i class="ti ti-chevron-down notes-chevron"></i>
       </div>
       <div class="notes-body" id="buyer-notes-body">
-        {% include 'import_notes.html' with extra_notes=buyer_extra_notes %}
+        {% include 'import_notes.html' with extra_notes=buyer_extra_notes  %}
       </div>
     </div>
   </div>
@@ -319,7 +319,6 @@
       let hasAny = false;
       selectedIds.forEach(id => {
         const emails = buyerEmails[id] || [];
-        console.log(emails)
         emails.forEach(email => {
           if (!email) return;
           hasAny = true;
